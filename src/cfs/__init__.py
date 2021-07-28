@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """.. include:: ../../README.md"""
 
-from .scaler import StandardScaler
+from .correlation import Correlation
 
 __version__ = '0.1.0'

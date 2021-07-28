@@ -1,65 +1,66 @@
 # -*- coding: utf-8 -*-
-"""Class for handling input data.
+"""Class for estimating correlation matrix.
 
 MIT License
 Copyright (c) 2021, Daniel Nagel
 All rights reserved.
 
 """
+from enum import Enum, auto
+
 import numpy as np
 from sklearn import preprocessing
+    
 
+class Correlation:  # noqa: WPS214
+    """Class for handling input data.
 
-class StandardScaler:  # noqa: WPS214
-    """Class for handling input data."""
+    Parameters
+    ----------
+    metric : str, default='correlation'
+        the correlation metric to use for the distance matrix.
 
-    def __init__(self, data=None):
-        """Initialize StandardScalar.
+        - 'correlation' will use absolute value of the Pearson correlation
+        - 'nmi' will use mutual information normalized by joined entropy
 
-        If called with string (filename), online methods will be used which is
-        much slower but needs less memory.
+        Note: 'nmi' is supported only 
+    
+    online : bool, default=True
+        If True the input of fit X needs to be a file name and the correlation
+        is calculated on the fly. Otherwise, an array is assumed as input X.
+    
+    """
 
-        Parameters
-        ----------
-        data : ndarray of shape (n_samples, n_features) or str
-            The data used to create scaler or a path to the file to be parsed.
-
-        """
-        self.data = data
-
-    @property
-    def data(self):
-        """Return normalized data with zero mean and std=1.
-
-        Returns
-        -------
-        data : ndarray of shape (n_samples, n_features) or generator
-            Array holding normalized data or generator iterating over file.
-
-        """
-        if self._is_file:
-            return self._data_gen(scaler=True)
-        else:
-            return self._data
-
-    @data.setter
-    def data(self, data):
-        """Set the input data.
+    def __init__(self, *, metric='correlation', online=True):
+        """Initialize Correlation class."""
+        self._metric = metric
+        self._online = online
+    
+    def _reset(self):
+        """Reset internal data-dependent state of correlation."""
+        pass
+        #if hasattr(self, 'a')
+        self._mean = self._std = self._corr = None
+    
+    def fit(self, X, y=None):
+        """Compute the correlation/nmi distance matrix.
 
         Parameters
         ----------
-        trajs : list of ndarrays
-            List of ndarrays holding the input data.
+        X : ndarray of shape (n_samples, n_features) or str if online=True
+            Training data.
+
+        y : Ignored
+            Not used, present for scikit API consistency by convention.
 
         """
-        self._parse_input(data)
+        self._parse_input(X)
         self._dtype = np.float64
 
         # reset values on changeing input source
-        self._mean = self._std = self._corr = None
 
         if self._is_file:
-            self._filename = data
+            self._filename = X
             self._n_features = len(next(self._data_gen()))
             # parse mean, std and corr
             self._welford()
@@ -67,32 +68,8 @@ class StandardScaler:  # noqa: WPS214
             self._n_samples, self._n_features = input.shape
             self._dtype = input.dtype
 
-            scaler = preprocessing.StandardScaler().fit(data)
-            self._data = scaler.transform(data)
-
-    def __repr__(self):
-        """Return representation of class."""
-        kw = {
-            'clname': self.__class__.__name__,
-            'filename': self._filename,
-            'data': self._data,
-        }
-        if self._is_file:
-            return ('{clname}({filename})'.format(**kw))
-        else:
-            return ('{clname}({data})'.format(**kw))
-
-    def __str__(self):
-        """Return string representation of class."""
-        kw = {
-            'clname': self.__class__.__name__,
-            'filename': self._filename,
-            'data': self._data,
-        }
-        if self._is_file:
-            return ('{clname}({filename!s})'.format(**kw))
-        else:
-            return ('{clname}({data!s})'.format(**kw))
+            scaler = preprocessing.StandardScaler().fit(X)
+            self._data = scaler.transform(X)
 
     def correlation(self):
         """Return the correlation.
@@ -171,8 +148,12 @@ class StandardScaler:  # noqa: WPS214
     def _parse_input(self, data):
         # check if is string
         self._is_file = isinstance(data, str)
-        self._is_array = isinstance(data, np.ndarray)
+        if self._is_file and not self._online:
+            raise ValueError(
+                'Filename input is supported only with online=True'
+            )
 
+        self._is_array = isinstance(data, np.ndarray)
         error_dim1 = (
             'Reshape your data either using array.reshape(-1, 1) if your data '
             'has a single feature or array.reshape(1, -1) if it contains a '
@@ -187,7 +168,10 @@ class StandardScaler:  # noqa: WPS214
                 )
             
         if not self._is_file and not self._is_array:
-            raise ValueError(
-                'StandardScaler can be constructed only from "str" or '
-                f'"np.ndarray", but "{type(data)}" given'
-            )
+            if self._online:
+                raise ValueError(
+                    'Input needs to be of type "str" (filename), but '
+                    f'"{type(data)}" given'
+                )
+            else:
+        
