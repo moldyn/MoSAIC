@@ -6,8 +6,6 @@ Copyright (c) 2021, Daniel Nagel
 All rights reserved.
 
 """
-from enum import Enum, auto
-
 import numpy as np
 from sklearn import preprocessing
     
@@ -29,18 +27,49 @@ class Correlation:  # noqa: WPS214
         If True the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
     
-    """
+    Attributes
+    ----------
+    matrix_ : ndarray of shape (n_features, n_features)
+        The correlation-measure matrix of the data. Depenening on the mode
+        it scales from [-1, 1] for 'correlation' and [0, 1] for all other 
+        modes.
+    
+    Examples
+    --------
+    >>> import cfs
+    >>> # data is either nxm array or filename
+    >>> x = np.linspace(0, np.pi, 1000)
+    >>> data = np.array([np.cos(x), np.sin(x)])
+    >>> corr = Correlation()
+    >>> corr.fit(data)
+    >>> corr.matrix_
+    #TODO: add result here
 
-    def __init__(self, *, metric='correlation', online=True):
+    Notes
+    -----
+
+    The correlation is defined by
+    $$\rho_{X,Y} = \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
+    where for the online algorithm the Welford algorithm taken from Donald E.
+    Knuth were used [1][Knuth98].
+
+    [Knuth98]: Welford algorithm, generalized to correlation. Taken from:
+    Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
+    Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
+    
+    """
+    _dtype = np.float64
+
+    def __init__(self, *, metric='correlation', online=False):
         """Initialize Correlation class."""
         self._metric = metric
         self._online = online
     
     def _reset(self):
         """Reset internal data-dependent state of correlation."""
-        pass
-        #if hasattr(self, 'a')
-        self._mean = self._std = self._corr = None
+        if hasattr(self, '_is_file'):
+            del self._is_file
+            del self.matrix_
     
     def fit(self, X, y=None):
         """Compute the correlation/nmi distance matrix.
@@ -54,24 +83,31 @@ class Correlation:  # noqa: WPS214
             Not used, present for scikit API consistency by convention.
 
         """
-        self._parse_input(X)
-        self._dtype = np.float64
+        self._reset()
+        self._is_file = self._is_file(X)
 
-        # reset values on changeing input source
-
+        # parse data
         if self._is_file:
-            self._filename = X
-            self._n_features = len(next(self._data_gen()))
-            # parse mean, std and corr
-            self._welford()
+            if self.metric == 'correlation':
+                self._filename = X
+                self._n_features = len(next(self._data_gen()))
+                # parse mean, std and corr
+                corr = self._welford()
+                self.matrix_ = np.clip(corr, a_min=-1, a_max=1)
+            else:
+                raise ValueError(
+                    'Mode online=True is online implemented for correlation.'
+                )
         else:
             self._n_samples, self._n_features = input.shape
-            self._dtype = input.dtype
+            if self.metric == 'correlation':
+                corr = self._correlation(X)
+                self.matrix_ = np.clip(corr, a_min=-1, a_max=1)
+            elif self.metric == 'nmi':
+                nmi = self._nmi(X)
+                self.matrix_ = np.clip(nmi, a_min=0, a_max=1)
 
-            scaler = preprocessing.StandardScaler().fit(X)
-            self._data = scaler.transform(X)
-
-    def correlation(self):
+    def _correlation(self, X):
         """Return the correlation.
 
         Calculate the correlation matrix
@@ -83,43 +119,27 @@ class Correlation:  # noqa: WPS214
             Correlation matrix bound to [-1, 1].
 
         """
+        X = self._standard_scaler(X)
+        corr = np.empty(
+            (self._n_features, self._n_features), dtype=self._dtype,
+        )
+        for i in range(self._n_features):
+            xi = X[:, i]
+            corr[i, i] = 1
+            for j in range(i + 1, self._n_features):
+                xj = X[:, i]
+                corr[i, j] = corr[j, i] = np.dot(xi, xj) / self._n_samples
+        return corr
 
-        if self._is_file:
-            corr = self._corr
-        else:
-            corr = np.empty(
-                (self._n_features, self._n_features), dtype=self._dtype,
-            )
-            for i in range(self._n_features):
-                xi = self._data[:, i]
-                corr[i, i] = 1
-                for j in range(i + 1,self._n_features):
-                    xj = self._data[:, i]
-                    corr[i, j] = corr[j, i] = np.dot(xi, xj) / self._n_samples
-
-        return np.clip(corr, a_min=-1, a_max=1)
-
-    def _data_gen(
-        self,
-        comments=('#', '@'),
-        scaler=False,
-    ):
-        if scaler:
-            if self._mean is None or self._std is None:
-                raise ValueError('First run needs to be with scaler=False')
-
+    def _data_gen(self, comments=('#', '@')):
+        """Generator for looping over file."""
         for line in open(self._filename):
             if line.startswith(comments):
                 continue
-            if scaler:
-                yield (
-                    np.array(line.split()).astype(self._dtype) - self._mean
-                ) / self._std
-            else:
-                yield np.array(line.split()).astype(self._dtype)
+            yield np.array(line.split()).astype(self._dtype)
     
     def _welford(self):
-        """Calculate the online welford mean and variance.
+        """Calculate the online welford mean, variance and correlation.
 
         Welford algorithm, generalized to correlation. Taken from:
         Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
@@ -137,41 +157,52 @@ class Correlation:  # noqa: WPS214
             corr = corr + dx.reshape(-1, 1) * (x - mean).reshape(1, -1)
         
         self._n_samples = n
-        self._mean = mean
         if n < 2:
-            self._std = np.full_like(mean, np.nan)
-            self._corr = np.full_like(corr, np.nan)
+            return np.full_like(corr, np.nan)
         else:
-            self._std = np.sqrt(np.diag(corr) / (n - 1))
-            self._corr = corr / (n - 1) / (self._std.reshape(-1, 1) * self._std.reshape(1, -1))
+            return corr / (n - 1) / (
+                self._std.reshape(-1, 1) * self._std.reshape(1, -1)
+            )
 
-    def _parse_input(self, data):
+    def _is_file(self, X):
         # check if is string
-        self._is_file = isinstance(data, str)
-        if self._is_file and not self._online:
+        is_file = isinstance(X, str)
+        if is_file and not self._online:
             raise ValueError(
                 'Filename input is supported only with online=True'
             )
 
-        self._is_array = isinstance(data, np.ndarray)
+        is_array = isinstance(X, np.ndarray)
         error_dim1 = (
             'Reshape your data either using array.reshape(-1, 1) if your data '
             'has a single feature or array.reshape(1, -1) if it contains a '
             'single sample.'
         ) 
-        if self._is_array:
-            if data.ndim == 1:
+        if is_array:
+            if X.ndim == 1:
                 raise ValueError(error_dim1)
-            elif data.ndim > 2:
+            elif X.ndim > 2:
                 raise ValueError(
-                    f'Found array with dim {data.ndim} but dim=2 expected.'
+                    f'Found array with dim {X.ndim} but dim=2 expected.'
                 )
             
-        if not self._is_file and not self._is_array:
+        if not is_file and not is_array:
             if self._online:
                 raise ValueError(
                     'Input needs to be of type "str" (filename), but '
-                    f'"{type(data)}" given'
+                    f'"{type(X)}" given'
                 )
             else:
+                raise ValueError(
+                    'Input needs to be of type "ndarray", but '
+                    f'"{type(X)}" given'
+                )
+        
+        return is_file
+
+    @classmethod
+    def _standard_scaler(X):
+        """Make data mean-free and std=1."""
+        scaler = preprocessing.StandardScaler().fit(X)
+        return scaler.transform(X)
         
