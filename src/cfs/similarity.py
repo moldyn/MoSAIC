@@ -2,7 +2,7 @@
 """Class for estimating correlation matrix.
 
 MIT License
-Copyright (c) 2021, Daniel Nagel
+Copyright (c) 2021, Daniel Nagel, Georg Diez
 All rights reserved.
 
 """
@@ -122,21 +122,31 @@ class Similarity:  # noqa: WPS214
                 corr[i, j] = corr[j, i] = np.dot(xi, xj) / self._n_samples
         return corr
 
-    def _nmi(self, X):
-        """Returns the normalized mutual information."""
+    def _mi(self, X):
+        """Returns the mutual information matrix."""
         X = self._standard_scaler(X)
-        nmi = np.empty(
+        mi = np.empty(
             (self._n_features, self._n_features), dtype=self._dtype,
         )
         for i in range(self._n_features):
             xi = X[:, i]
-            nmi[i, i] = 0
+            mi[i, i] = 1
             for j in range(i + 1, self._n_features):
                 xj = X[:, j]
-                # TODO: calc nmi
-                # nmi[i, j] = nmi[j, i] = np.dot(xi, xj) / self._n_samples
-        return nmi
+                # Calculate joint and marginal probability density
+                p_ij = self._estimate_density(xi, xj)
+                p_i = np.sum(p_ij, axis=1)
+                p_j = np.sum(p_ij, axis=0)
+                pi_times_pj = p_i[:, np.newaxis] * p_j[np.newaxis, :]
+                mutual_info = np.sum(
+                    p_ij * np.ma.log(np.ma.divide(p_ij, pi_times_pj))
+                )
+                mi[i, j] = mi[j, i] = mutual_info
 
+        return mi
+
+    def _nmi(self, ):
+        """Returns the normalized mutual information matrix."""
 
     def _data_gen(self, comments=('#', '@')):
         """Generator for looping over file."""
@@ -214,3 +224,11 @@ class Similarity:  # noqa: WPS214
         scaler = preprocessing.StandardScaler().fit(X)
         return scaler.transform(X)
 
+    @staticmethod
+    def _estimate_density(x, y, bins=100):
+        """Calculates two dimensional probability density."""
+        hist, _, _ = np.histogram2d(x, y, bins, density=True)
+        # transpose since numpy considers axis 0 as y and axis 1 as x
+        hist_transposed = hist.T
+
+        return hist_transposed / np.sum(hist)
