@@ -8,7 +8,7 @@ All rights reserved.
 """
 import numpy as np
 from sklearn import preprocessing
-
+from scipy.spatial.distance import jensenshannon
 
 class Similarity:  # noqa: WPS214
     """Class for calculating similarity measure.
@@ -20,12 +20,23 @@ class Similarity:  # noqa: WPS214
 
         - 'correlation' will use absolute value of the Pearson correlation
         - 'nmi' will use mutual information normalized by joined entropy
+        - 'JSD' will use the Jensen-Shannon divergence between the joint
+          probability distribution and the product of the marginal probability
+          distributions to calculate their dissimilarity
 
         Note: 'nmi' is supported only with online=False
 
     online : bool, default=False
         If True the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
+
+    normalize_method : str, default='individual'
+        Only necessary for metric 'nmi'. Determines the normalization factor
+        for the mutual information.
+
+        - 'individual' is the square root of the product of the individual
+          entropies
+        - 'joint' is the joint entropy
 
     Attributes
     ----------
@@ -56,13 +67,31 @@ class Similarity:  # noqa: WPS214
     Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
     Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
+    The Jensen-Shannon divergence is defined by
+    $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M) + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)$$,
+    where $M = \frac{1}{2} [p(x,y) + p(x)p(y)]$ is an averaged probability
+    distribution and $D_{\text{KL}}$ denotes the Kullback-Leibler divergence.
+
     """
     _dtype = np.float64
+    _normalize_method = 'individual'
 
-    def __init__(self, *, metric='correlation', online=False):
+    def __init__(
+        self,
+        *,
+        metric='correlation',
+        online=False,
+        normalize_method=None,
+    ):
         """Initialize Similarity class."""
         self._metric = metric
         self._online = online
+        self._normalize_method = normalize_method
+        if self._metric == 'correlation' and self._normalize_method:
+            raise ValueError(
+                'Linear correlation is already normalized.' +
+                'Please unset normalize_method'
+            )
 
     def _reset(self):
         """Reset internal data-dependent state of correlation."""
@@ -114,25 +143,26 @@ class Similarity:  # noqa: WPS214
         corr = np.empty(
             (self._n_features, self._n_features), dtype=self._dtype,
         )
-        for i in range(self._n_features):
-            xi = X[:, i]
-            corr[i, i] = 1
-            for j in range(i + 1, self._n_features):
-                xj = X[:, j]
-                corr[i, j] = corr[j, i] = np.dot(xi, xj) / self._n_samples
+        for idx_i in range(self._n_features):
+            xi = X[:, idx_i]
+            corr[idx_i, idx_i] = 1
+            for idx_j in range(idx_i + 1, self._n_features):
+                xj = X[:, idx_j]
+                correlation = np.dot(xi, xj) / self._n_samples
+                corr[idx_i, idx_j] = corr[idx_j, idx_i] = correlation
         return corr
 
-    def _mi(self, X):
-        """Returns the mutual information matrix."""
+    def _nmi(self, X):
+        """Returns the normalized mutual information matrix."""
         X = self._standard_scaler(X)
-        mi = np.empty(
+        nmi = np.empty(
             (self._n_features, self._n_features), dtype=self._dtype,
         )
-        for i in range(self._n_features):
-            xi = X[:, i]
-            mi[i, i] = 1
-            for j in range(i + 1, self._n_features):
-                xj = X[:, j]
+        for idx_i in range(self._n_features):
+            xi = X[:, idx_i]
+            nmi[idx_i, idx_i] = 1
+            for idx_j in range(idx_i + 1, self._n_features):
+                xj = X[:, idx_j]
                 # Calculate joint and marginal probability density
                 p_ij = self._estimate_density(xi, xj)
                 p_i = np.sum(p_ij, axis=1)
@@ -141,12 +171,46 @@ class Similarity:  # noqa: WPS214
                 mutual_info = np.sum(
                     p_ij * np.ma.log(np.ma.divide(p_ij, pi_times_pj))
                 )
-                mi[i, j] = mi[j, i] = mutual_info
+                normalization = self._normalization(p_i, p_j, p_ij)
+                normalized_mi = mutual_info / normalization
+                nmi[idx_i, idx_j] = nmi[idx_j, idx_i] = normalized_mi
 
-        return mi
+        return nmi
 
-    def _nmi(self, ):
-        """Returns the normalized mutual information matrix."""
+    def _jsd(self, X):
+        """Returns the Jensen-Shannon based similarity"""
+        X = self._standard_scaler(X)
+        jsd = np.empty(
+            (self._n_features, self._n_features), dtype=self._dtype
+        )
+        for idx_i in range(self._n_features):
+            xi = X[:, idx_i]
+            jsd[idx_i, idx_i] = 0
+            for idx_j in range(idx_j + 1, self._n_features):
+                xj = X[:, idx_j]
+                p_ij = self._estimate_density(xi, xj)
+                p_i = np.sum(p_ij, axis=1)
+                p_j = np.sum(p_ij, axis=0)
+                pi_times_pj = p_i[:, np.newaxis] * p_j[np.newaxis, :]
+                jsdivergence = jensenshannon(
+                    p_ij.flatten(),
+                    pi_times_pj.flatten(),
+                    base=2,
+                )
+                # 1-jsd to get similarity instead of dissimilarity
+                jsd[idx_i, idx_j] = jsd[idx_j, idx_i] = 1 - jsdivergence
+
+        return jsd
+
+    def _normalization(self, p_i, p_j, p_ij):
+        """Calculates the normalization factor for the MI matrix."""
+        method = self._normalize_method
+        if method == 'individual':
+            return np.sqrt(
+                np.sum(p_i * np.ma.log(p_i) * np.sum(p_j * np.ma.log(p_j)))
+            )
+        if method == 'joint':
+            return np.sum(p_ij * np.ma.log(p_ij))
 
     def _data_gen(self, comments=('#', '@')):
         """Generator for looping over file."""
