@@ -50,11 +50,18 @@ class Clustering:
             )
 
 
-    def _construct_graph(self, matrix, mode):
+    def _construct_graph(self, matrix, weighted, neighbors):
         """Calculates the graph.
 
         Parameters
         ----------
-        matrix :
+        matrix : ndarray of shape (n_features, n_features)
+            Contains the correlation data.
+
+        weighted : bool,
+            Determines whether graph is weighted or unweighted
+
+        neighbors : int, default=sqrt(n_samples)
+            The number of k nearest neighbors for constructing the graph
         """
 
