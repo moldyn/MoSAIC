@@ -19,12 +19,12 @@ class Similarity:  # noqa: WPS214
         the correlation metric to use for the distance matrix.
 
         - 'correlation' will use absolute value of the Pearson correlation
-        - 'nmi' will use mutual information normalized by joined entropy
+        - 'NMI' will use mutual information normalized by joined entropy
         - 'JSD' will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
 
-        Note: 'nmi' is supported only with online=False
+        Note: 'NMI' is supported only with online=False
 
     online : bool, default=False
         If True the input of fit X needs to be a file name and the correlation
@@ -49,9 +49,9 @@ class Similarity:  # noqa: WPS214
     >>> import cfs
     >>> x = np.linspace(0, np.pi, 1000)
     >>> data = np.array([np.cos(x), np.sin(x)]).T
-    >>> diss = Dissimilarity()
-    >>> diss.fit(data)
-    >>> diss.matrix_
+    >>> sim = cfs.Similarity()
+    >>> sim.fit(data)
+    >>> sim.matrix_
     array([[1.        , 0.91666054],
            [0.91666054, 1.        ]])
 
@@ -74,7 +74,7 @@ class Similarity:  # noqa: WPS214
 
     """
     _dtype = np.float64
-    _normalize_method = 'individual'
+    _default_normalize_method = 'individual'
 
     def __init__(
         self,
@@ -86,10 +86,13 @@ class Similarity:  # noqa: WPS214
         """Initialize Similarity class."""
         self._metric = metric
         self._online = online
-        self._normalize_method = normalize_method
-        if self._metric == 'correlation' and self._normalize_method:
+        if self._metric == 'NMI':
+            if normalize_method is None:
+                normalize_method = self._default_normalize_method
+            self._normalize_method = normalize_method
+        elif self._normalize_method:
             raise ValueError(
-                'Linear correlation is already normalized.' +
+                'Linear correlation is already normalized.'
                 'Please unset normalize_method'
             )
 
