@@ -10,6 +10,7 @@ import numpy as np
 from sklearn import preprocessing
 from scipy.spatial.distance import jensenshannon
 
+
 class Similarity:  # noqa: WPS214
     """Class for calculating similarity measure.
 
@@ -91,9 +92,8 @@ class Similarity:  # noqa: WPS214
                 normalize_method = self._default_normalize_method
             self._normalize_method = normalize_method
         elif self._normalize_method:
-            raise ValueError(
-                'Linear correlation is already normalized.'
-                'Please unset normalize_method'
+            raise NotImplementedError(
+                'Normalize methods are only supported with metric="NMI"'
             )
 
     def _reset(self):
@@ -115,10 +115,10 @@ class Similarity:  # noqa: WPS214
 
         """
         self._reset()
-        self._is_file = self._is_file_input(X)
+        self._check_input_with_params(X)
 
         # parse data
-        if self._is_file:
+        if self._online:
             if self._metric == 'correlation':
                 self._filename = X
                 self._n_features = len(next(self._data_gen()))
@@ -137,7 +137,10 @@ class Similarity:  # noqa: WPS214
                 matrix_ = np.abs(corr)
             elif self._metric == 'nmi':
                 nmi = self._nmi(X)
-                matrix_ = 1 - nmi
+                matrix_ = nmi
+            elif self._metric == 'jsd':
+                jsd = self._jsd(X)
+                matrix_ = 1 - jsd
 
         self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
 
@@ -181,7 +184,7 @@ class Similarity:  # noqa: WPS214
         return nmi
 
     def _jsd(self, X):
-        """Returns the Jensen-Shannon based similarity"""
+        """Returns the Jensen-Shannon based dissimilarity"""
         X = self._standard_scaler(X)
         jsd = np.empty(
             (self._n_features, self._n_features), dtype=self._dtype
@@ -201,7 +204,7 @@ class Similarity:  # noqa: WPS214
                     base=2,
                 )
                 # 1-jsd to get similarity instead of dissimilarity
-                jsd[idx_i, idx_j] = jsd[idx_j, idx_i] = 1 - jsdivergence
+                jsd[idx_i, idx_j] = jsd[idx_j, idx_i] = jsdivergence
 
         return jsd
 
@@ -249,11 +252,11 @@ class Similarity:  # noqa: WPS214
                 std.reshape(-1, 1) * std.reshape(1, -1)
             )
 
-    def _is_file_input(self, X):
+    def _check_input_with_params(self, X):
         # check if is string
         is_file = isinstance(X, str)
         if is_file and not self._online:
-            raise ValueError(
+            raise TypeError(
                 'Filename input is supported only with online=True'
             )
 
@@ -273,17 +276,15 @@ class Similarity:  # noqa: WPS214
 
         if not is_file and not is_array:
             if self._online:
-                raise ValueError(
+                raise TypeError(
                     'Input needs to be of type "str" (filename), but '
                     f'"{type(X)}" given'
                 )
             else:
-                raise ValueError(
+                raise TypeError(
                     'Input needs to be of type "ndarray", but '
                     f'"{type(X)}" given'
                 )
-
-        return is_file
 
     @staticmethod
     def _standard_scaler(X):
