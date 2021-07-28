@@ -10,8 +10,8 @@ import numpy as np
 from sklearn import preprocessing
     
 
-class Correlation:  # noqa: WPS214
-    """Class for handling input data.
+class Dissimilarity:  # noqa: WPS214
+    """Class for calculating dissimilarity measure.
 
     Parameters
     ----------
@@ -19,31 +19,31 @@ class Correlation:  # noqa: WPS214
         the correlation metric to use for the distance matrix.
 
         - 'correlation' will use absolute value of the Pearson correlation
-        - 'nmi' will use mutual information normalized by joined entropy
+        - 'nmi' will use $1 - NMI$ mutual information normalized by joined
+          entropy
 
-        Note: 'nmi' is supported only 
+        Note: 'nmi' is supported only with online=False
     
-    online : bool, default=True
+    online : bool, default=False
         If True the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
     
     Attributes
     ----------
     matrix_ : ndarray of shape (n_features, n_features)
-        The correlation-measure matrix of the data. Depenening on the mode
-        it scales from [-1, 1] for 'correlation' and [0, 1] for all other 
-        modes.
+        The correlation-measure-based pairwise distance matrix of the data. It
+        scales from [0, 1].
     
     Examples
     --------
     >>> import cfs
-    >>> # data is either nxm array or filename
     >>> x = np.linspace(0, np.pi, 1000)
-    >>> data = np.array([np.cos(x), np.sin(x)])
-    >>> corr = Correlation()
-    >>> corr.fit(data)
-    >>> corr.matrix_
-    #TODO: add result here
+    >>> data = np.array([np.cos(x), np.sin(x)]).T
+    >>> diss = Dissimilarity()
+    >>> diss.fit(data)
+    >>> diss.matrix_
+    array([[1.        , 0.91666054],
+           [0.91666054, 1.        ]])
 
     Notes
     -----
@@ -61,7 +61,7 @@ class Correlation:  # noqa: WPS214
     _dtype = np.float64
 
     def __init__(self, *, metric='correlation', online=False):
-        """Initialize Correlation class."""
+        """Initialize Dissimilarity class."""
         self._metric = metric
         self._online = online
     
@@ -84,41 +84,33 @@ class Correlation:  # noqa: WPS214
 
         """
         self._reset()
-        self._is_file = self._is_file(X)
+        self._is_file = self._is_file_input(X)
 
         # parse data
         if self._is_file:
-            if self.metric == 'correlation':
+            if self._metric == 'correlation':
                 self._filename = X
                 self._n_features = len(next(self._data_gen()))
                 # parse mean, std and corr
                 corr = self._welford()
-                self.matrix_ = np.clip(corr, a_min=-1, a_max=1)
+                matrix_ = np.abs(corr)
             else:
                 raise ValueError(
                     'Mode online=True is online implemented for correlation.'
                 )
         else:
-            self._n_samples, self._n_features = input.shape
-            if self.metric == 'correlation':
+            self._n_samples, self._n_features = X.shape
+            if self._metric == 'correlation':
                 corr = self._correlation(X)
-                self.matrix_ = np.clip(corr, a_min=-1, a_max=1)
-            elif self.metric == 'nmi':
+                matrix_ = np.abs(corr)
+            elif self._metric == 'nmi':
                 nmi = self._nmi(X)
-                self.matrix_ = np.clip(nmi, a_min=0, a_max=1)
+                matrix_ = 1 - nmi
+
+        self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
 
     def _correlation(self, X):
-        """Return the correlation.
-
-        Calculate the correlation matrix
-        $$\rho_{X,Y} = \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
-
-        Returns
-        ----------
-        corr : ndarray of shape (n_features, n_features)
-            Correlation matrix bound to [-1, 1].
-
-        """
+        """Return the correlation."""
         X = self._standard_scaler(X)
         corr = np.empty(
             (self._n_features, self._n_features), dtype=self._dtype,
@@ -127,9 +119,25 @@ class Correlation:  # noqa: WPS214
             xi = X[:, i]
             corr[i, i] = 1
             for j in range(i + 1, self._n_features):
-                xj = X[:, i]
+                xj = X[:, j]
                 corr[i, j] = corr[j, i] = np.dot(xi, xj) / self._n_samples
         return corr
+
+    def _nmi(self, X):
+        """Return the normalized mutual information."""
+        X = self._standard_scaler(X)
+        nmi = np.empty(
+            (self._n_features, self._n_features), dtype=self._dtype,
+        )
+        for i in range(self._n_features):
+            xi = X[:, i]
+            nmi[i, i] = 0
+            for j in range(i + 1, self._n_features):
+                xj = X[:, j]
+                # TODO: calc nmi
+                # nmi[i, j] = nmi[j, i] = np.dot(xi, xj) / self._n_samples
+        return nmi
+
 
     def _data_gen(self, comments=('#', '@')):
         """Generator for looping over file."""
@@ -160,11 +168,12 @@ class Correlation:  # noqa: WPS214
         if n < 2:
             return np.full_like(corr, np.nan)
         else:
+            std = np.sqrt(np.diag(corr) / (n - 1))
             return corr / (n - 1) / (
-                self._std.reshape(-1, 1) * self._std.reshape(1, -1)
+                std.reshape(-1, 1) * std.reshape(1, -1)
             )
 
-    def _is_file(self, X):
+    def _is_file_input(self, X):
         # check if is string
         is_file = isinstance(X, str)
         if is_file and not self._online:
@@ -200,7 +209,7 @@ class Correlation:  # noqa: WPS214
         
         return is_file
 
-    @classmethod
+    @staticmethod
     def _standard_scaler(X):
         """Make data mean-free and std=1."""
         scaler = preprocessing.StandardScaler().fit(X)
