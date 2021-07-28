@@ -30,16 +30,16 @@ class Clustering:
     neighbors: int, default=None,
         If NaN, the number of neighbors is chosen as the square root of the
         number of features.
+
+    Attributes
+    ----------
+    clusters_ : list of arrays
+        The result of the clustering process. A list containing of arrays,
+        each containing all features for each cluster.
     """
 
     def __init__(self, *, mode='CPM', weighted=True, neighbors=None):
-        """Class for clustering a correlation matrix.
-
-        Parameters
-        ----------
-        matrix : ndarray of shape(n_features, n_features)
-            The linear/nonlinear correlation matrix which will be clustered.
-        """
+        """Initializes Clustering class."""
         self._mode = mode
         self._weighted = weighted
         self._neighbors = neighbors
@@ -50,5 +50,11 @@ class Clustering:
             )
 
 
-    def
+    def _construct_graph(self, matrix, mode):
+        """Calculates the graph.
+
+        Parameters
+        ----------
+        matrix :
+        """
 
