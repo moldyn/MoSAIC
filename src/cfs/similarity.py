@@ -59,7 +59,7 @@ class Similarity:  # noqa: WPS214
     Notes
     -----
 
-    The correlation is defined by
+    The correlation is defined as
     $$\rho_{X,Y} = \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
     where for the online algorithm the Welford algorithm taken from Donald E.
     Knuth were used [1][Knuth98].
@@ -68,7 +68,7 @@ class Similarity:  # noqa: WPS214
     Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
     Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
-    The Jensen-Shannon divergence is defined by
+    The Jensen-Shannon divergence is defined as
     $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M) + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)$$,
     where $M = \frac{1}{2} [p(x,y) + p(x)p(y)]$ is an averaged probability
     distribution and $D_{\text{KL}}$ denotes the Kullback-Leibler divergence.
