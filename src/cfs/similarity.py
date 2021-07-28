@@ -120,10 +120,7 @@ class Similarity:  # noqa: WPS214
         # parse data
         if self._online:
             if self._metric == 'correlation':
-                self._filename = X
-                self._n_features = len(next(self._data_gen()))
-                # parse mean, std and corr
-                corr = self._welford()
+                corr = self._online_correlation(X)
                 matrix_ = np.abs(corr)
             else:
                 raise ValueError(
@@ -218,6 +215,13 @@ class Similarity:  # noqa: WPS214
         if method == 'joint':
             return np.sum(p_ij * np.ma.log(p_ij))
 
+    def _online_correlation(self, X):
+        """Calculate correlation on the fly."""
+        self._filename = X
+        self._n_features = len(next(self._data_gen()))
+        # parse mean, std and corr
+        return self._welford_correlation()
+
     def _data_gen(self, comments=('#', '@')):
         """Generator for looping over file."""
         for line in open(self._filename):
@@ -225,8 +229,8 @@ class Similarity:  # noqa: WPS214
                 continue
             yield np.array(line.split()).astype(self._dtype)
 
-    def _welford(self):
-        """Calculate the online welford mean, variance and correlation.
+    def _welford_correlation(self):
+        """Calculate the correlation via online Welford algorithm.
 
         Welford algorithm, generalized to correlation. Taken from:
         Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
