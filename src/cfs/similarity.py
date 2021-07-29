@@ -154,7 +154,7 @@ class Similarity:  # noqa: WPS214
                 )
 
         self.matrix_ = matrix_
-        #self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
+        # self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
 
     def _correlation(self, X):
         """Return the correlation."""
