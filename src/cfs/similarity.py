@@ -150,7 +150,7 @@ class Similarity:  # noqa: WPS214
                 matrix_ = jsd
             else:
                 raise NotImplementedError(
-                    'Metric {self._metric} is not implemented',
+                    f'Metric {self._metric} is not implemented',
                 )
 
         self.matrix_ = matrix_
