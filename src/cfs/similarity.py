@@ -31,13 +31,16 @@ class Similarity:  # noqa: WPS214
         If True the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
-    normalize_method : str, default='individual'
+    normalize_method : str, default='arithmetic'
         Only necessary for metric 'nmi'. Determines the normalization factor
-        for the mutual information.
+        for the mutual information in decreasing order:
 
-        - 'individual' is the square root of the product of the individual
-          entropies
         - 'joint' is the joint entropy
+        - 'max' is the maximum of the individual entropies
+        - 'arithmetic' is the mean of the individual entropies
+        - 'geometric' is the square root of the product of the individual
+          entropies
+        - 'min' is the minimum of the individual entropies
 
     Attributes
     ----------
@@ -74,8 +77,9 @@ class Similarity:  # noqa: WPS214
     distribution and $D_{\text{KL}}$ denotes the Kullback-Leibler divergence.
 
     """
-    _dtype = np.float64
-    _default_normalize_method = 'individual'
+    _dtype = np.float128
+    _default_normalize_method = 'arithmetic'
+    _available_metrics = ('correlation', 'NMI', 'JSD')
 
     def __init__(
         self,
@@ -85,15 +89,21 @@ class Similarity:  # noqa: WPS214
         normalize_method=None,
     ):
         """Initialize Similarity class."""
+        if metric not in self._available_metrics:
+            raise NotImplementedError(
+                f'Metric {metric} is not implemented, use one of ['
+                f'{" ".join(self._available_metrics)}].',
+            )
+
         self._metric = metric
         self._online = online
         if self._metric == 'NMI':
             if normalize_method is None:
                 normalize_method = self._default_normalize_method
             self._normalize_method = normalize_method
-        elif self._normalize_method:
+        elif normalize_method is not None:
             raise NotImplementedError(
-                'Normalize methods are only supported with metric="NMI"'
+                'Normalize methods are only supported with metric="NMI"',
             )
 
     def _reset(self):
@@ -132,14 +142,19 @@ class Similarity:  # noqa: WPS214
             if self._metric == 'correlation':
                 corr = self._correlation(X)
                 matrix_ = np.abs(corr)
-            elif self._metric == 'nmi':
+            elif self._metric == 'NMI':
                 nmi = self._nmi(X)
                 matrix_ = nmi
-            elif self._metric == 'jsd':
+            elif self._metric == 'JSD':
                 jsd = self._jsd(X)
-                matrix_ = 1 - jsd
+                matrix_ = jsd
+            else:
+                raise NotImplementedError(
+                    'Metric {self._metric} is not implemented',
+                )
 
-        self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
+        self.matrix_ = matrix_
+        #self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
 
     def _correlation(self, X):
         """Return the correlation."""
@@ -167,14 +182,9 @@ class Similarity:  # noqa: WPS214
             for idx_j in range(idx_i + 1, self._n_features):
                 xj = X[:, idx_j]
                 # Calculate joint and marginal probability density
-                p_ij = self._estimate_density(xi, xj)
-                p_i = np.sum(p_ij, axis=1)
-                p_j = np.sum(p_ij, axis=0)
-                pi_times_pj = p_i[:, np.newaxis] * p_j[np.newaxis, :]
-                mutual_info = np.sum(
-                    p_ij * np.ma.log(np.ma.divide(p_ij, pi_times_pj))
-                )
-                normalization = self._normalization(p_i, p_j, p_ij)
+                pij, pipj, pi, pj = self._estimate_density(xi, xj)
+                mutual_info = self._kullback(pij, pipj)
+                normalization = self._normalization(pi, pj, pij)
                 normalized_mi = mutual_info / normalization
                 nmi[idx_i, idx_j] = nmi[idx_j, idx_i] = normalized_mi
 
@@ -188,16 +198,13 @@ class Similarity:  # noqa: WPS214
         )
         for idx_i in range(self._n_features):
             xi = X[:, idx_i]
-            jsd[idx_i, idx_i] = 0
-            for idx_j in range(idx_j + 1, self._n_features):
+            jsd[idx_i, idx_i] = 1
+            for idx_j in range(idx_i + 1, self._n_features):
                 xj = X[:, idx_j]
-                p_ij = self._estimate_density(xi, xj)
-                p_i = np.sum(p_ij, axis=1)
-                p_j = np.sum(p_ij, axis=0)
-                pi_times_pj = p_i[:, np.newaxis] * p_j[np.newaxis, :]
+                pij, pipj, _, _ = self._estimate_density(xi, xj)
                 jsdivergence = jensenshannon(
-                    p_ij.flatten(),
-                    pi_times_pj.flatten(),
+                    pij.flatten(),
+                    pipj.flatten(),
                     base=2,
                 )
                 # 1-jsd to get similarity instead of dissimilarity
@@ -205,15 +212,19 @@ class Similarity:  # noqa: WPS214
 
         return jsd
 
-    def _normalization(self, p_i, p_j, p_ij):
+    def _normalization(self, pi, pj, pij):
         """Calculates the normalization factor for the MI matrix."""
         method = self._normalize_method
-        if method == 'individual':
-            return np.sqrt(
-                np.sum(p_i * np.ma.log(p_i) * np.sum(p_j * np.ma.log(p_j)))
-            )
         if method == 'joint':
-            return np.sum(p_ij * np.ma.log(p_ij))
+            return self._entropy(pij)
+
+        func = {
+            'geometric': lambda arr: np.sqrt(np.prod(arr)),
+            'arithmetic': np.mean,
+            'min': np.min,
+            'max': np.max,
+        }[method]
+        return func([self._entropy(pi), self._entropy(pj)])
 
     def _online_correlation(self, X):
         """Calculate correlation on the fly."""
@@ -291,6 +302,18 @@ class Similarity:  # noqa: WPS214
                 )
 
     @staticmethod
+    def _entropy(p):
+        """Calculate entropy of density p."""
+        return -1 * np.sum(p * np.ma.log(p))
+
+    @staticmethod
+    def _kullback(p, q):
+        """Calculate Kullback-Leibler divergence of density p, q."""
+        return np.sum(
+            p * np.ma.log(np.ma.divide(p, q)),
+        )
+
+    @staticmethod
     def _standard_scaler(X):
         """Make data mean-free and std=1."""
         scaler = preprocessing.StandardScaler().fit(X)
@@ -303,4 +326,9 @@ class Similarity:  # noqa: WPS214
         # transpose since numpy considers axis 0 as y and axis 1 as x
         hist_transposed = hist.T
 
-        return hist_transposed / np.sum(hist)
+        pij = hist_transposed / np.sum(hist)
+        pi = np.sum(pij, axis=1)
+        pj = np.sum(pij, axis=0)
+        pipj = pi[:, np.newaxis] * pj[np.newaxis, :]
+
+        return pij, pipj, pi, pj
