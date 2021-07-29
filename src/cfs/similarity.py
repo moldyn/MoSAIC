@@ -32,7 +32,7 @@ class Similarity:  # noqa: WPS214
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
     normalize_method : str, default='arithmetic'
-        Only necessary for metric 'nmi'. Determines the normalization factor
+        Only required for metric 'NMI'. Determines the normalization factor
         for the mutual information in decreasing order:
 
         - 'joint' is the joint entropy
