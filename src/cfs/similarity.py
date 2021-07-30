@@ -78,6 +78,7 @@ class Similarity:  # noqa: WPS214
     distribution and $D_{\text{KL}}$ denotes the Kullback-Leibler divergence.
 
     """
+
     _dtype = np.float128
     _default_normalize_method = 'arithmetic'
     _available_metrics = ('correlation', 'NMI', 'JSD')
@@ -106,12 +107,6 @@ class Similarity:  # noqa: WPS214
             raise NotImplementedError(
                 'Normalize methods are only supported with metric="NMI"',
             )
-
-    def _reset(self):
-        """Reset internal data-dependent state of correlation."""
-        if hasattr(self, '_is_file'):
-            del self._is_file
-            del self.matrix_
 
     def fit(self, X, y=None):
         """Compute the correlation/nmi distance matrix.
@@ -143,19 +138,20 @@ class Similarity:  # noqa: WPS214
             if self._metric == 'correlation':
                 corr = self._correlation(X)
                 matrix_ = np.abs(corr)
-            elif self._metric == 'NMI':
-                nmi = self._nmi(X)
-                matrix_ = nmi
-            elif self._metric == 'JSD':
-                jsd = self._jsd(X)
-                matrix_ = jsd
+            elif self._metric in {'NMI', 'JSD'}:
+                matrix_ = self._nonlinear_correlation(X)
             else:
                 raise NotImplementedError(
                     f'Metric {self._metric} is not implemented',
                 )
 
-        self.matrix_ = matrix_
-        # self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
+        self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
+
+    def _reset(self):
+        """Reset internal data-dependent state of correlation."""
+        if hasattr(self, '_is_file'):
+            del self._is_file
+            del self.matrix_
 
     def _correlation(self, X):
         """Return the correlation."""
@@ -171,47 +167,43 @@ class Similarity:  # noqa: WPS214
                 corr[idx_i, idx_j] = corr[idx_j, idx_i] = correlation
         return corr
 
-    def _nmi(self, X):
-        """Returns the normalized mutual information matrix."""
+    def _nonlinear_correlation(self, X):
+        """Returns the nonlinear correlation."""
+        if self._metric == 'NMI':
+            calc_nlcorr = self._nmi
+        else:
+            calc_nlcorr = self._jsd
+
         X = self._standard_scaler(X)
-        nmi = np.empty(
+        nlcorr = np.empty(
             (self._n_features, self._n_features), dtype=self._dtype,
         )
         for idx_i in range(self._n_features):
             xi = X[:, idx_i]
-            nmi[idx_i, idx_i] = 1
+            nlcorr[idx_i, idx_i] = 1
             for idx_j in range(idx_i + 1, self._n_features):
                 xj = X[:, idx_j]
-                # Calculate joint and marginal probability density
-                pij, pipj, pi, pj = self._estimate_density(xi, xj)
-                mutual_info = self._kullback(pij, pipj)
-                normalization = self._normalization(pi, pj, pij)
-                normalized_mi = mutual_info / normalization
-                nmi[idx_i, idx_j] = nmi[idx_j, idx_i] = normalized_mi
 
-        return nmi
+                densities = self._estimate_density(xi, xj)
+                nlcorr_ij = calc_nlcorr(*densities)
+                nlcorr[idx_i, idx_j] = nlcorr_ij
+                nlcorr[idx_j, idx_i] = nlcorr_ij
 
-    def _jsd(self, X):
+        return nlcorr
+
+    def _nmi(self, pij, pipj, pi, pj):
         """Returns the Jensen-Shannon based dissimilarity"""
-        X = self._standard_scaler(X)
-        jsd = np.empty(
-            (self._n_features, self._n_features), dtype=self._dtype
-        )
-        for idx_i in range(self._n_features):
-            xi = X[:, idx_i]
-            jsd[idx_i, idx_i] = 1
-            for idx_j in range(idx_i + 1, self._n_features):
-                xj = X[:, idx_j]
-                pij, pipj, _, _ = self._estimate_density(xi, xj)
-                jsdivergence = jensenshannon(
-                    pij.flatten(),
-                    pipj.flatten(),
-                    base=2,
-                )
-                # 1-jsd to get similarity instead of dissimilarity
-                jsd[idx_i, idx_j] = jsd[idx_j, idx_i] = jsdivergence
+        mutual_info = self._kullback(pij, pipj)
+        normalization = self._normalization(pi, pj, pij)
+        return mutual_info / normalization
 
-        return jsd
+    def _jsd(self, pij, pipj, pi, pj):
+        """Returns the Jensen-Shannon based dissimilarity"""
+        return jensenshannon(
+            pij.flatten(),
+            pipj.flatten(),
+            base=2,
+        )
 
     def _normalization(self, pi, pj, pij):
         """Calculates the normalization factor for the MI matrix."""
