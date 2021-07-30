@@ -84,17 +84,22 @@ class Clustering:
 
         """
         if self._mode == 'CPM':
-            graph = self._construct_full_weighted_graph(matrix)
+            mat = np.copy(matrix)
         elif self._mode == 'modularity':
-            graph = self._construct_knn_graph(matrix)
+            mat = self._construct_knn_mat(matrix)
         else:
             raise NotImplementedError(
                 f'Mode {self._mode} is not implemented',
             )
-        self._clustering_leiden(graph)
+        mat[np.isnan(mat)] = 0
+        graph = ig.Graph.Weighted_Adjacency(
+            mat.astype(np.float64), loops=False,
+        )
+        clusters = self._clustering_leiden(graph)
+        self.clusters_ = self._sort_clusters(clusters, matrix)
 
-    def _construct_knn_graph(self, matrix):
-        """Constructs the graph."""
+    def _construct_knn_mat(self, matrix):
+        """Constructs the knn matrix."""
         if self._neighbors is None:
             self._neighbors = np.floor(np.sqrt(len(matrix))).astype(int)
         neigh = NearestNeighbors(
@@ -102,12 +107,14 @@ class Clustering:
             metric='precomputed',
         )
         neigh.fit(1 - matrix)
-        dist_mat = neigh.kneighbors_graph(mode='distance').toarray()
-        return ig.Graph.Weighted_Adjacency(dist_mat, loops=False)
+        if self._weighted:
+            dist_mat = neigh.kneighbors_graph(mode='distance').toarray()
+            dist_mat[dist_mat == 0] = 1
+            mat = 1 - dist_mat
+        else:
+            mat = neigh.kneighbors_graph(mode='connectivity').toarray()
 
-    def _construct_full_weighted_graph(self, matrix):
-        """Constructs a full, weighted graph."""
-        return ig.Graph.Weighted_Adjacency(matrix, loops=False)
+        return mat
 
     def _setup_leiden_kwargs(self, graph):
         """Sets up the parameters for the Leiden clustering"""
@@ -127,7 +134,19 @@ class Clustering:
         return kwargs_leiden
 
     def _clustering_leiden(self, graph):
-        """Performs the Leiden clustering on the graph."""
-        self.clusters_ = la.find_partition(
+        """Perform the Leiden clustering on the graph."""
+        return la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
         )
+
+    def _sort_clusters(self, clusters, mat):
+        """Sort clusters by largest average values within cluster."""
+        sorted_clusters = []
+        for cluster in clusters:
+            perm = np.argsort(
+                np.nanmean(mat[np.ix_(cluster, cluster)], axis=1)
+            )[::-1]
+            sorted_clusters.append(
+                np.array(cluster)[perm],
+            )
+        return sorted_clusters
