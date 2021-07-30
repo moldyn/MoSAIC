@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 """Class for estimating correlation matrix.
 
 MIT License
