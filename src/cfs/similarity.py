@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Class for estimating correlation matrix.
 
 MIT License
@@ -114,8 +113,8 @@ class Similarity:  # noqa: WPS214
     The Jensen-Shannon divergence is defined as
     $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
     + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)$$,
-    where $M = \frac{1}{2} [p(x,y) + p(x)p(y)]$ is an averaged probability
-    distribution and $D_{\text{KL}}$ denotes the Kullback-Leibler divergence.
+    where \(M = \frac{1}{2} [p(x,y) + p(x)p(y)]\) is an averaged probability
+    distribution and \(D_{\text{KL}}\) denotes the Kullback-Leibler divergence.
 
     """
 

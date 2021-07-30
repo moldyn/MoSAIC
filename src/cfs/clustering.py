@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """Class for clustering the correlation matrices.
 
 MIT License
