@@ -42,19 +42,9 @@ def _estimate_density(x, y, bins=100):
     return pij, pipj, pi, pj
 
 
-def _correlation(self, X):
+def _correlation(X):
     """Return the correlation."""
-    corr = np.empty(
-        (self._n_features, self._n_features), dtype=self._dtype,
-    )
-    for idx_i in range(self._n_features):
-        xi = X[:, idx_i]
-        corr[idx_i, idx_i] = 1
-        for idx_j in range(idx_i + 1, self._n_features):
-            xj = X[:, idx_j]
-            correlation = np.dot(xi, xj) / self._n_samples
-            corr[idx_i, idx_j] = corr[idx_j, idx_i] = correlation
-    return corr
+    return X.T / len(X) @ X
 
 
 class Similarity:  # noqa: WPS214
@@ -182,7 +172,7 @@ class Similarity:  # noqa: WPS214
             self._n_samples, self._n_features = X.shape
             X = _standard_scaler(X)
             if self._metric == 'correlation':
-                corr = self._correlation(X)
+                corr = _correlation(X)
                 matrix_ = np.abs(corr)
             elif self._metric in {'NMI', 'JSD'}:
                 matrix_ = self._nonlinear_correlation(X)
@@ -199,20 +189,6 @@ class Similarity:  # noqa: WPS214
             del self._is_file  # noqa: WPS420
             del self.matrix_  # noqa: WPS420
 
-    def _correlation(self, X):
-        """Return the correlation."""
-        corr = np.empty(
-            (self._n_features, self._n_features), dtype=self._dtype,
-        )
-        for idx_i in range(self._n_features):
-            xi = X[:, idx_i]
-            corr[idx_i, idx_i] = 1
-            for idx_j in range(idx_i + 1, self._n_features):
-                xj = X[:, idx_j]
-                correlation = np.dot(xi, xj) / self._n_samples
-                corr[idx_i, idx_j] = corr[idx_j, idx_i] = correlation
-        return corr
-
     def _nonlinear_correlation(self, X):
         """Returns the nonlinear correlation."""
         if self._metric == 'NMI':
@@ -220,7 +196,7 @@ class Similarity:  # noqa: WPS214
         else:
             calc_nl_corr = self._jsd
 
-        nl_corr = np.empty(
+        nl_corr = np.empty(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
         )
         for idx_i in range(self._n_features):
@@ -228,7 +204,7 @@ class Similarity:  # noqa: WPS214
             nl_corr[idx_i, idx_i] = 1
             for idx_j in range(idx_i + 1, self._n_features):
                 xj = X[:, idx_j]
-                nl_corr_ij = calc_nl_corr(_estimate_density(xi, xj))
+                nl_corr_ij = calc_nl_corr(*_estimate_density(xi, xj))
                 nl_corr[idx_i, idx_j] = nl_corr_ij
                 nl_corr[idx_j, idx_i] = nl_corr_ij
 
