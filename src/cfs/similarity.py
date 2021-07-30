@@ -12,8 +12,53 @@ from sklearn import preprocessing
 from scipy.spatial.distance import jensenshannon
 
 
+def _entropy(p):
+    """Calculate entropy of density p."""
+    return -1 * np.sum(p * np.ma.log(p))
+
+
+def _kullback(p, q):
+    """Calculate Kullback-Leibler divergence of density p, q."""
+    return np.sum(
+        p * np.ma.log(np.ma.divide(p, q)),
+    )
+
+
+def _standard_scaler(X):
+    """Make data mean-free and std=1."""
+    scaler = preprocessing.StandardScaler().fit(X)
+    return scaler.transform(X)
+
+
+def _estimate_density(x, y, bins=100):
+    """Calculates two dimensional probability density."""
+    hist, _, _ = np.histogram2d(x, y, bins, density=True)
+    # transpose since numpy considers axis 0 as y and axis 1 as x
+    pij = hist.T / np.sum(hist)
+    pi = np.sum(pij, axis=1)
+    pj = np.sum(pij, axis=0)
+    pipj = pi[:, np.newaxis] * pj[np.newaxis, :]
+
+    return pij, pipj, pi, pj
+
+
+def _correlation(self, X):
+    """Return the correlation."""
+    corr = np.empty(
+        (self._n_features, self._n_features), dtype=self._dtype,
+    )
+    for idx_i in range(self._n_features):
+        xi = X[:, idx_i]
+        corr[idx_i, idx_i] = 1
+        for idx_j in range(idx_i + 1, self._n_features):
+            xj = X[:, idx_j]
+            correlation = np.dot(xi, xj) / self._n_samples
+            corr[idx_i, idx_j] = corr[idx_j, idx_i] = correlation
+    return corr
+
+
 class Similarity:  # noqa: WPS214
-    """Class for calculating similarity measure.
+    r"""Class for calculating similarity measure.
 
     Parameters
     ----------
@@ -62,9 +107,9 @@ class Similarity:  # noqa: WPS214
 
     Notes
     -----
-
     The correlation is defined as
-    $$\rho_{X,Y} = \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
+    $$\rho_{X,Y} =
+    \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
     where for the online algorithm the Welford algorithm taken from Donald E.
     Knuth were used [1][Knuth98].
 
@@ -73,7 +118,8 @@ class Similarity:  # noqa: WPS214
     Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
     The Jensen-Shannon divergence is defined as
-    $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M) + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)$$,
+    $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
+    + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)$$,
     where $M = \frac{1}{2} [p(x,y) + p(x)p(y)]$ is an averaged probability
     distribution and $D_{\text{KL}}$ denotes the Kullback-Leibler divergence.
 
@@ -134,7 +180,7 @@ class Similarity:  # noqa: WPS214
                 )
         else:
             self._n_samples, self._n_features = X.shape
-            X = self._standard_scaler(X)
+            X = _standard_scaler(X)
             if self._metric == 'correlation':
                 corr = self._correlation(X)
                 matrix_ = np.abs(corr)
@@ -149,9 +195,9 @@ class Similarity:  # noqa: WPS214
 
     def _reset(self):
         """Reset internal data-dependent state of correlation."""
-        if hasattr(self, '_is_file'):
-            del self._is_file
-            del self.matrix_
+        if hasattr(self, '_is_file'):  # noqa: WPS421
+            del self._is_file  # noqa: WPS420
+            del self.matrix_  # noqa: WPS420
 
     def _correlation(self, X):
         """Return the correlation."""
@@ -170,30 +216,27 @@ class Similarity:  # noqa: WPS214
     def _nonlinear_correlation(self, X):
         """Returns the nonlinear correlation."""
         if self._metric == 'NMI':
-            calc_nlcorr = self._nmi
+            calc_nl_corr = self._nmi
         else:
-            calc_nlcorr = self._jsd
+            calc_nl_corr = self._jsd
 
-        X = self._standard_scaler(X)
-        nlcorr = np.empty(
+        nl_corr = np.empty(
             (self._n_features, self._n_features), dtype=self._dtype,
         )
         for idx_i in range(self._n_features):
             xi = X[:, idx_i]
-            nlcorr[idx_i, idx_i] = 1
+            nl_corr[idx_i, idx_i] = 1
             for idx_j in range(idx_i + 1, self._n_features):
                 xj = X[:, idx_j]
+                nl_corr_ij = calc_nl_corr(_estimate_density(xi, xj))
+                nl_corr[idx_i, idx_j] = nl_corr_ij
+                nl_corr[idx_j, idx_i] = nl_corr_ij
 
-                densities = self._estimate_density(xi, xj)
-                nlcorr_ij = calc_nlcorr(*densities)
-                nlcorr[idx_i, idx_j] = nlcorr_ij
-                nlcorr[idx_j, idx_i] = nlcorr_ij
-
-        return nlcorr
+        return nl_corr
 
     def _nmi(self, pij, pipj, pi, pj):
         """Returns the Jensen-Shannon based dissimilarity"""
-        mutual_info = self._kullback(pij, pipj)
+        mutual_info = _kullback(pij, pipj)
         normalization = self._normalization(pi, pj, pij)
         return mutual_info / normalization
 
@@ -209,7 +252,7 @@ class Similarity:  # noqa: WPS214
         """Calculates the normalization factor for the MI matrix."""
         method = self._normalize_method
         if method == 'joint':
-            return self._entropy(pij)
+            return _entropy(pij)
 
         func = {
             'geometric': lambda arr: np.sqrt(np.prod(arr)),
@@ -217,7 +260,7 @@ class Similarity:  # noqa: WPS214
             'min': np.min,
             'max': np.max,
         }[method]
-        return func([self._entropy(pi), self._entropy(pj)])
+        return func([_entropy(pi), _entropy(pj)])
 
     def _online_correlation(self, X):
         """Calculate correlation on the fly."""
@@ -243,7 +286,9 @@ class Similarity:  # noqa: WPS214
         """
         n = 0
         mean = np.zeros(self._n_features, dtype=self._dtype)
-        corr = np.zeros((self._n_features, self._n_features), dtype=self._dtype)
+        corr = np.zeros(  # noqa: WPS317
+            (self._n_features, self._n_features), dtype=self._dtype,
+        )
 
         for x in self._data_gen():
             n += 1
@@ -286,42 +331,10 @@ class Similarity:  # noqa: WPS214
             if self._online:
                 raise TypeError(
                     'Input needs to be of type "str" (filename), but '
-                    f'"{type(X)}" given'
+                    f'"{type(X)}" given',
                 )
             else:
                 raise TypeError(
                     'Input needs to be of type "ndarray", but '
-                    f'"{type(X)}" given'
+                    f'"{type(X)}" given',
                 )
-
-    @staticmethod
-    def _entropy(p):
-        """Calculate entropy of density p."""
-        return -1 * np.sum(p * np.ma.log(p))
-
-    @staticmethod
-    def _kullback(p, q):
-        """Calculate Kullback-Leibler divergence of density p, q."""
-        return np.sum(
-            p * np.ma.log(np.ma.divide(p, q)),
-        )
-
-    @staticmethod
-    def _standard_scaler(X):
-        """Make data mean-free and std=1."""
-        scaler = preprocessing.StandardScaler().fit(X)
-        return scaler.transform(X)
-
-    @staticmethod
-    def _estimate_density(x, y, bins=100):
-        """Calculates two dimensional probability density."""
-        hist, _, _ = np.histogram2d(x, y, bins, density=True)
-        # transpose since numpy considers axis 0 as y and axis 1 as x
-        hist_transposed = hist.T
-
-        pij = hist_transposed / np.sum(hist)
-        pi = np.sum(pij, axis=1)
-        pj = np.sum(pij, axis=0)
-        pipj = pi[:, np.newaxis] * pj[np.newaxis, :]
-
-        return pij, pipj, pi, pj

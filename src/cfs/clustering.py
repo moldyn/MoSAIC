@@ -10,7 +10,6 @@ All rights reserved.
 import igraph as ig
 import leidenalg as la
 import numpy as np
-from numpy.core.fromnumeric import reshape
 from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csgraph
 
