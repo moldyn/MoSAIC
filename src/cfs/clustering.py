@@ -10,7 +10,9 @@ All rights reserved.
 import igraph as ig
 import leidenalg as la
 import numpy as np
+from numpy.core.fromnumeric import reshape
 from sklearn.neighbors import NearestNeighbors
+from scipy.sparse import csgraph
 
 
 class Clustering:
@@ -156,12 +158,44 @@ class Clustering:
             graph, **self._setup_leiden_kwargs(graph),
         )
 
+    def _coarse_clustermatrix(clusters, mat):
+        """Constructs a coarse cluster matrix by averaging over all clusters"""
+        nclusters = len(clusters)
+        return np.array(
+            [mat[
+                np.ix_(clusters[idx_i], clusters[idx_j])
+            ].mean() for idx_i, idx_j in np.ndindex(nclusters, nclusters)]
+        ).reshape(nclusters, nclusters)
+
+    def _cuthill_mckee_sorting(coarsemat):
+        """Resorts clusters to minimize off-diagonal distances."""
+        nclusters = len(coarsemat)
+        if nclusters > 5:
+            cutoff = nclusters**2 - 5 * nclusters
+        elif nclusters > 3:
+            cutoff = nclusters**2 - 3 * nclusters
+        else:
+            cutoff = 0
+        coarsemat[
+            coarsemat < np.sort(coarsemat, axis=None)[cutoff]
+        ] = np.nan
+        rCMcKee = csgraph.csgraph_from_dense(coarsemat)
+        return csgraph.reverse_cuthill_mckee(
+            rCMcKee,
+            symmetric_mode=True,
+        )
+
     def _sort_clusters(self, clusters, mat):
         """Sort clusters by largest average values within cluster."""
         sorted_clusters = []
-        for cluster in clusters:
+        clusters_permuted = np.array(clusters)[
+            self._cuthill_mckee_sorting(
+                self._coarse_clustermatrix(clusters, mat),
+            )
+        ]
+        for cluster in clusters_permuted:
             perm = np.argsort(
-                np.nanmean(mat[np.ix_(cluster, cluster)], axis=1)
+                np.nanmean(mat[np.ix_(cluster, cluster)], axis=1),
             )[::-1]
             sorted_clusters.append(
                 np.array(cluster)[perm],
