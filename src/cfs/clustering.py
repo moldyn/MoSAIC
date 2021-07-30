@@ -82,23 +82,36 @@ class Clustering:
         is constructed using the adjacency matrix.
 
     neighbors: int, default=None,
-        Only required for mode 'modularity'. If NaN, the number of neighbors
+        Only required for mode 'modularity'. If None, the number of neighbors
         is chosen as the square root of the number of features.
 
-    resolution_parameter : float, default= 0.7
-        Only required for mode 'CPM'
+    resolution_parameter : float, default=None
+        Only required for mode 'CPM'. If None, the resolution parameter will
+        be set to the median value of the matrix.
 
     Attributes
     ----------
     clusters_ : list of ndarrays
-        The result of the clustering process. A list of arrays, each containing
-        all indices (features) for each cluster.
+        The result of the clustering process. A list of arrays, each
+        containing all indices (features) for each cluster.
 
     matrix_ : ndarray of shape (n_features, n_features)
-        Permuted matrix according to clusters
+        Permuted matrix according to clusters.
 
     ticks_ : ndarray of shape (n_clusters)
-        Get cumulative indices where new cluster starts in matrix_.
+        Get cumulative indices where new cluster starts in `matrix_`.
+
+    permutation_ : ndarray of shape (n_features)
+        Permutation of the input features (corresponds to flattened
+        `clusters_`).
+
+    nneighbors_ : int
+        Only for mode 'modularity'. Indicates the number of nearest neighbors
+        used for constructin the knn-graph.
+
+    resolution_param_ : float
+        Only for mode 'CPM'. Indicates the resolution parameter used for the
+        CPM based Leiden clustering.
 
     Examples
     --------
@@ -122,7 +135,7 @@ class Clustering:
         mode='CPM',
         weighted=True,
         neighbors=None,
-        resolution_parameter=0.7,
+        resolution_parameter=None,
     ):
         """Initializes Clustering class."""
         if mode not in self._available_modes:
@@ -157,6 +170,8 @@ class Clustering:
         """
         if self._mode == 'CPM':
             mat = np.copy(matrix)
+            if self._resolution_parameter is None:
+                self._resolution_parameter = np.median(mat)
         elif self._mode == 'modularity':
             mat = self._construct_knn_mat(matrix)
         else:
@@ -170,14 +185,22 @@ class Clustering:
         clusters = self._clustering_leiden(graph)
         self.clusters_ = _sort_clusters(clusters, matrix)
 
-        idx_clusters = np.hstack(self.clusters_)
-        self.matrix_ = matrix[np.ix_(idx_clusters, idx_clusters)]
+        self.permutation_ = np.hstack(self.clusters_)
+        self.matrix_ = matrix[np.ix_(self.permutation_, self.permutation_)]
         self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
+        self.resolution_param_ = self._resolution_parameter
 
     def _construct_knn_mat(self, matrix):
         """Constructs the knn matrix."""
         if self._neighbors is None:
-            self._neighbors = np.floor(np.sqrt(len(matrix))).astype(int)
+            n_features = len(matrix)
+            self._neighbors = np.floor(np.sqrt(n_features)).astype(int)
+            self.nneighbors_ = self._neighbors
+        elif self._neighbors > len(matrix):
+            raise ValueError(
+                'The number of nearest neighbors must be smaller than the '
+                'number of features.'
+            )
         neigh = NearestNeighbors(
             n_neighbors=self._neighbors,
             metric='precomputed',
