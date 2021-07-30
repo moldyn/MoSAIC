@@ -70,9 +70,9 @@ class Clustering:
     ):
         """Initializes Clustering class."""
         if mode not in self._available_modes:
+            modes = ', '.join([f'"{m}"' for m in self._available_modes])
             raise NotImplementedError(
-                f'Mode {mode} is not implemented, use one of ['
-                f'{" ".join(self._available_modes)}].',
+                f'Mode {mode} is not implemented, use one of [{modes}].',
             )
 
         self._mode = mode

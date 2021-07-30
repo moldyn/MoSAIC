@@ -90,9 +90,9 @@ class Similarity:  # noqa: WPS214
     ):
         """Initialize Similarity class."""
         if metric not in self._available_metrics:
+            metrics = ', '.join([f'"{m}"' for m in self._available_modes])
             raise NotImplementedError(
-                f'Metric {metric} is not implemented, use one of ['
-                f'{" ".join(self._available_metrics)}].',
+                f'Metric {metric} is not implemented, use one of [{metrics}]'
             )
 
         self._metric = metric
