@@ -188,7 +188,7 @@ class Clustering:
     def _sort_clusters(self, clusters, mat):
         """Sort clusters by largest average values within cluster."""
         sorted_clusters = []
-        clusters_permuted = np.asarray(clusters)[
+        clusters_permuted = np.asarray(clusters, dtype=object)[
             _cuthill_mckee_sorting(
                 _coarse_clustermatrix(clusters, mat),
             )
