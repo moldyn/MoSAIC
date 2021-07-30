@@ -43,7 +43,11 @@ def _estimate_density(x, y, bins=100):
 
 
 def _correlation(X):
-    """Return the correlation."""
+    """Return the correlation of input.
+
+    Each feature (column) of X need to be mean-free with standard deviation 1.
+
+    """
     return X.T / len(X) @ X
 
 
@@ -169,7 +173,10 @@ class Similarity:  # noqa: WPS214
                     'Mode online=True is only implemented for correlation.'
                 )
         else:
-            self._n_samples, self._n_features = X.shape
+            n_samples, n_features = X.shape
+            self._n_samples = n_samples
+            self._n_features = n_features
+
             X = _standard_scaler(X)
             if self._metric == 'correlation':
                 corr = _correlation(X)
@@ -247,10 +254,11 @@ class Similarity:  # noqa: WPS214
 
     def _data_gen(self, comments=('#', '@')):
         """Generator for looping over file."""
-        for line in open(self._filename):
-            if line.startswith(comments):
-                continue
-            yield np.array(line.split()).astype(self._dtype)
+        with open(self._filename) as file_obj:
+            for line in file_obj:
+                if line.startswith(comments):
+                    continue
+                yield np.array(line.split()).astype(self._dtype)
 
     def _welford_correlation(self):
         """Calculate the correlation via online Welford algorithm.
@@ -270,16 +278,18 @@ class Similarity:  # noqa: WPS214
             n += 1
             dx = x - mean
             mean = mean + dx / n
-            corr = corr + dx.reshape(-1, 1) * (x - mean).reshape(1, -1)
+            corr = corr + dx.reshape(-1, 1) * (
+                x - mean
+            ).reshape(1, -1)
 
         self._n_samples = n
         if n < 2:
             return np.full_like(corr, np.nan)
-        else:
-            std = np.sqrt(np.diag(corr) / (n - 1))
-            return corr / (n - 1) / (
-                std.reshape(-1, 1) * std.reshape(1, -1)
-            )
+
+        std = np.sqrt(np.diag(corr) / (n - 1))
+        return corr / (n - 1) / (
+            std.reshape(-1, 1) * std.reshape(1, -1)
+        )
 
     def _check_input_with_params(self, X):
         # check if is string
@@ -309,8 +319,7 @@ class Similarity:  # noqa: WPS214
                     'Input needs to be of type "str" (filename), but '
                     f'"{type(X)}" given',
                 )
-            else:
-                raise TypeError(
-                    'Input needs to be of type "ndarray", but '
-                    f'"{type(X)}" given',
-                )
+            raise TypeError(
+                'Input needs to be of type "ndarray", but '
+                f'"{type(X)}" given',
+            )
