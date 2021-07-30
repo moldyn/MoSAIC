@@ -6,9 +6,9 @@ Copyright (c) 2021, Daniel Nagel, Georg Diez
 All rights reserved.
 
 """
-import numpy as np
 import igraph as ig
 import leidenalg as la
+import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -40,6 +40,22 @@ class Clustering:
     clusters_ : list of ndarrays
         The result of the clustering process. A list of arrays, each containing
         all indices (features) for each cluster.
+
+    matrix_ : ndarray of shape (n_features, n_features)
+        Permuted matrix according to clusters
+
+    Examples
+    --------
+    >>> import cfs
+    >>> mat = np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.0], [0.8, 0.1, 1.0]])
+    >>> clust = cfs.Clustering()
+    >>> clust.fit(mat)
+    >>> clust.matrix_
+    array([[1. , 0.9, 0.1],
+           [0.8, 1. , 0.1],
+           [0.1, 0. , 1. ]])
+    >>> clust.clusters_
+    [array([0, 2]), array([1])]
 
     """
     _available_modes = ('CPM', 'modularity')
@@ -97,6 +113,9 @@ class Clustering:
         )
         clusters = self._clustering_leiden(graph)
         self.clusters_ = self._sort_clusters(clusters, matrix)
+
+        idx_clusters = np.hstack(self.clusters_)
+        self.matrix_ = matrix[np.ix_(idx_clusters, idx_clusters)]
 
     def _construct_knn_mat(self, matrix):
         """Constructs the knn matrix."""
