@@ -159,7 +159,7 @@ class Clustering:
         )
 
     def _coarse_clustermatrix(clusters, mat):
-        """Constructs a coarse cluster matrix by averaging over all clusters"""
+        """Construct a coarse cluster matrix by averaging over all clusters."""
         nclusters = len(clusters)
         return np.array(
             [mat[
@@ -168,7 +168,7 @@ class Clustering:
         ).reshape(nclusters, nclusters)
 
     def _cuthill_mckee_sorting(coarsemat):
-        """Resorts clusters to minimize off-diagonal distances."""
+        """Resort clusters to minimize off-diagonal distances."""
         nclusters = len(coarsemat)
         if nclusters > 5:
             cutoff = nclusters**2 - 5 * nclusters
