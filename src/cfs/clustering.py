@@ -16,6 +16,9 @@ from scipy.sparse import csgraph
 
 def _coarse_clustermatrix(clusters, mat):
     """Construct a coarse cluster matrix by averaging over all clusters."""
+    if len(clusters) == len(mat):
+        return np.copy(mat)
+
     nclusters = len(clusters)
     return np.array([
         mat[np.ix_(clusters[idx_i], clusters[idx_j])].mean()
@@ -39,6 +42,27 @@ def _cuthill_mckee_sorting(coarsemat):
     return csgraph.reverse_cuthill_mckee(
         rCMcKee,
         symmetric_mode=True,
+    )
+
+
+def _sort_clusters(clusters, mat):
+    """Sort clusters by largest average values within cluster."""
+    clusters_permuted = clusters[
+        _cuthill_mckee_sorting(
+            _coarse_clustermatrix(clusters, mat),
+        )
+    ]
+
+    return np.array(
+        [
+            np.array(cluster)[
+                np.argsort(
+                    np.nanmean(mat[np.ix_(cluster, cluster)], axis=1),
+                )[::-1]
+            ]
+            for cluster in clusters_permuted
+        ],
+        dtype=object,
     )
 
 
@@ -73,6 +97,9 @@ class Clustering:
 
     matrix_ : ndarray of shape (n_features, n_features)
         Permuted matrix according to clusters
+
+    ticks_ : ndarray of shape (n_clusters)
+        Get cumulative indices where new cluster starts in matrix_.
 
     Examples
     --------
@@ -142,10 +169,11 @@ class Clustering:
             mat.astype(np.float64), loops=False,
         )
         clusters = self._clustering_leiden(graph)
-        self.clusters_ = self._sort_clusters(clusters, matrix)
+        self.clusters_ = _sort_clusters(clusters, matrix)
 
         idx_clusters = np.hstack(self.clusters_)
         self.matrix_ = matrix[np.ix_(idx_clusters, idx_clusters)]
+        self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
 
     def _construct_knn_mat(self, matrix):
         """Constructs the knn matrix."""
@@ -181,23 +209,7 @@ class Clustering:
 
     def _clustering_leiden(self, graph):
         """Perform the Leiden clustering on the graph."""
-        return la.find_partition(
+        clusters =  la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
         )
-
-    def _sort_clusters(self, clusters, mat):
-        """Sort clusters by largest average values within cluster."""
-        sorted_clusters = []
-        clusters_permuted = np.asarray(clusters, dtype=object)[
-            _cuthill_mckee_sorting(
-                _coarse_clustermatrix(clusters, mat),
-            )
-        ]
-        for cluster in clusters_permuted:
-            perm = np.argsort(
-                np.nanmean(mat[np.ix_(cluster, cluster)], axis=1),
-            )[::-1]
-            sorted_clusters.append(
-                np.array(cluster)[perm],
-            )
-        return sorted_clusters
+        return np.array(list(clusters), dtype=object)
