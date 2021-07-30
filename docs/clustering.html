@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.8.1" />
+<meta name="generator" content="pdoc 0.9.2" />
 <title>cfs.clustering API documentation</title>
 <meta name="description" content="Class for clustering the correlation matrices …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -124,14 +124,18 @@ class Clustering:
     Attributes
     ----------
     clusters_ : list of ndarrays
-        The result of the clustering process. A list of arrays, each containing
-        all indices (features) for each cluster.
+        The result of the clustering process. A list of arrays, each
+        containing all indices (features) for each cluster.
 
     matrix_ : ndarray of shape (n_features, n_features)
-        Permuted matrix according to clusters
+        Permuted matrix according to clusters.
 
     ticks_ : ndarray of shape (n_clusters)
-        Get cumulative indices where new cluster starts in matrix_.
+        Get cumulative indices where new cluster starts in `matrix_`.
+
+    permutation_ : ndarray of shape (n_features)
+        Permutation of the input features (corresponds to flattened
+        `clusters_`).
 
     Examples
     --------
@@ -203,8 +207,8 @@ class Clustering:
         clusters = self._clustering_leiden(graph)
         self.clusters_ = _sort_clusters(clusters, matrix)
 
-        idx_clusters = np.hstack(self.clusters_)
-        self.matrix_ = matrix[np.ix_(idx_clusters, idx_clusters)]
+        self.permutation_ = np.hstack(self.clusters_)
+        self.matrix_ = matrix[np.ix_(self.permutation_, self.permutation_)]
         self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
 
     def _construct_knn_mat(self, matrix):
@@ -285,15 +289,18 @@ is chosen as the square root of the number of features.</dd>
 <h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>clusters_</code></strong> :&ensp;<code>list</code> of <code>ndarrays</code></dt>
-<dd>The result of the clustering process. A list of arrays, each containing
-all indices (features) for each cluster.</dd>
+<dd>The result of the clustering process. A list of arrays, each
+containing all indices (features) for each cluster.</dd>
 <dt><strong><code>matrix_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_features, n_features)</code></dt>
-<dd>Permuted matrix according to clusters</dd>
+<dd>Permuted matrix according to clusters.</dd>
 <dt><strong><code>ticks_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_clusters)</code></dt>
-<dd>Get cumulative indices where new cluster starts in matrix_.</dd>
+<dd>Get cumulative indices where new cluster starts in <code>matrix_</code>.</dd>
+<dt><strong><code>permutation_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_features)</code></dt>
+<dd>Permutation of the input features (corresponds to flattened
+<code>clusters_</code>).</dd>
 </dl>
 <h2 id="examples">Examples</h2>
-<pre><code class="language-python">&gt;&gt;&gt; import cfs
+<pre><code class="language-python-repl">&gt;&gt;&gt; import cfs
 &gt;&gt;&gt; mat = np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.0], [0.8, 0.1, 1.0]])
 &gt;&gt;&gt; clust = cfs.Clustering()
 &gt;&gt;&gt; clust.fit(mat)
@@ -335,14 +342,18 @@ array([[1. , 0.9, 0.1],
     Attributes
     ----------
     clusters_ : list of ndarrays
-        The result of the clustering process. A list of arrays, each containing
-        all indices (features) for each cluster.
+        The result of the clustering process. A list of arrays, each
+        containing all indices (features) for each cluster.
 
     matrix_ : ndarray of shape (n_features, n_features)
-        Permuted matrix according to clusters
+        Permuted matrix according to clusters.
 
     ticks_ : ndarray of shape (n_clusters)
-        Get cumulative indices where new cluster starts in matrix_.
+        Get cumulative indices where new cluster starts in `matrix_`.
+
+    permutation_ : ndarray of shape (n_features)
+        Permutation of the input features (corresponds to flattened
+        `clusters_`).
 
     Examples
     --------
@@ -414,8 +425,8 @@ array([[1. , 0.9, 0.1],
         clusters = self._clustering_leiden(graph)
         self.clusters_ = _sort_clusters(clusters, matrix)
 
-        idx_clusters = np.hstack(self.clusters_)
-        self.matrix_ = matrix[np.ix_(idx_clusters, idx_clusters)]
+        self.permutation_ = np.hstack(self.clusters_)
+        self.matrix_ = matrix[np.ix_(self.permutation_, self.permutation_)]
         self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
 
     def _construct_knn_mat(self, matrix):
@@ -506,8 +517,8 @@ and 0 no correlation.</dd>
     clusters = self._clustering_leiden(graph)
     self.clusters_ = _sort_clusters(clusters, matrix)
 
-    idx_clusters = np.hstack(self.clusters_)
-    self.matrix_ = matrix[np.ix_(idx_clusters, idx_clusters)]
+    self.permutation_ = np.hstack(self.clusters_)
+    self.matrix_ = matrix[np.ix_(self.permutation_, self.permutation_)]
     self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])</code></pre>
 </details>
 </dd>
@@ -554,7 +565,7 @@ CFS
 </svg>
 </a>
 <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>
