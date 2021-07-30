@@ -130,11 +130,8 @@ class Clustering:
         if self._weighted:
             dist_mat = neigh.kneighbors_graph(mode='distance').toarray()
             dist_mat[dist_mat == 0] = 1
-            mat = 1 - dist_mat
-        else:
-            mat = neigh.kneighbors_graph(mode='connectivity').toarray()
-
-        return mat
+            return 1 - dist_mat
+        return neigh.kneighbors_graph(mode='connectivity').toarray()
 
     def _setup_leiden_kwargs(self, graph):
         """Sets up the parameters for the Leiden clustering"""
