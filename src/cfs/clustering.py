@@ -180,7 +180,7 @@ class Clustering:
             )
         mat[np.isnan(mat)] = 0
         graph = ig.Graph.Weighted_Adjacency(
-            mat.astype(np.float64), loops=False,
+            list(mat.astype(np.float64)), loops=False,
         )
         clusters = self._clustering_leiden(graph)
         self.clusters_ = _sort_clusters(clusters, matrix)
