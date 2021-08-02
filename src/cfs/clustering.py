@@ -85,7 +85,7 @@ class Clustering:
         Only required for mode 'modularity'. If None, the number of neighbors
         is chosen as the square root of the number of features.
 
-    resolution_parameter : float, default=None
+    resolution_parameter : float, default=None,
         Only required for mode 'CPM'. If None, the resolution parameter will
         be set to the median value of the matrix.
 
