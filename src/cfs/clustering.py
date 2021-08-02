@@ -96,7 +96,7 @@ class Clustering:
         containing all indices (features) for each cluster.
 
     matrix_ : ndarray of shape (n_features, n_features)
-        Permuted matrix according to clusters.
+        Permuted matrix according to the found clusters.
 
     ticks_ : ndarray of shape (n_clusters)
         Get cumulative indices where new cluster starts in `matrix_`.

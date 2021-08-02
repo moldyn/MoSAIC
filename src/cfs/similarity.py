@@ -51,15 +51,15 @@ def _correlation(X):
 
 
 class Similarity:  # noqa: WPS214
-    r"""Class for calculating similarity measure.
+    r"""Class for calculating the similarity measure.
 
     Parameters
     ----------
     metric : str, default='correlation'
-        the correlation metric to use for the distance matrix.
+        the correlation metric to use for the feature distance matrix.
 
-        - 'correlation' will use absolute value of the Pearson correlation
-        - 'NMI' will use mutual information normalized by joined entropy
+        - 'correlation' will use the absolute value of the Pearson correlation
+        - 'NMI' will use the mutual information normalized by joined entropy
         - 'JSD' will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
@@ -67,12 +67,12 @@ class Similarity:  # noqa: WPS214
         Note: 'NMI' is supported only with online=False
 
     online : bool, default=False
-        If True the input of fit X needs to be a file name and the correlation
+        If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
     normalize_method : str, default='arithmetic'
         Only required for metric 'NMI'. Determines the normalization factor
-        for the mutual information in decreasing order:
+        for the mutual information:
 
         - 'joint' is the joint entropy
         - 'max' is the maximum of the individual entropies
