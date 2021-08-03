@@ -28,12 +28,12 @@ def _coarse_clustermatrix(clusters, mat):
 def _cuthill_mckee_sorting(coarsemat):
     """Resort clusters to minimize off-diagonal distances."""
     nclusters = len(coarsemat)
-    if nclusters > 5:
-        cutoff = nclusters**2 - 5 * nclusters
-    elif nclusters > 3:
-        cutoff = nclusters**2 - 3 * nclusters
+    if nclusters > 1:
+        cutoff = nclusters**2 - (nclusters - 1) * nclusters
     else:
-        cutoff = 0
+        raise ValueError(
+            'Only one cluster was found. Try different parameters'
+        )
     coarsemat[
         coarsemat < np.sort(coarsemat, axis=None)[cutoff]
     ] = np.nan
@@ -45,7 +45,8 @@ def _cuthill_mckee_sorting(coarsemat):
 
 
 def _sort_clusters(clusters, mat):
-    """Sort clusters by largest average values within cluster."""
+    """Sort clusters globally by the reverse Cuthill-McKee algorithm and
+    internally by the largest average values within cluster."""
     clusters_permuted = clusters[
         _cuthill_mckee_sorting(
             _coarse_clustermatrix(clusters, mat),
