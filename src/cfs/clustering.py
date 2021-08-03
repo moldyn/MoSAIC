@@ -81,6 +81,10 @@ class Clustering:
         If True, the underlying graph has weighted edges. Otherwise, the graph
         is constructed using the adjacency matrix.
 
+    iterations : int, default=-1,
+        Number of iterations to run the Leiden algorithm. -1 means that the
+        algorithm runs until no further improvement is achieved.
+
     neighbors: int, default=None,
         Only required for mode 'modularity'. If None, the number of neighbors
         is chosen as the square root of the number of features.
@@ -136,6 +140,7 @@ class Clustering:
         weighted=True,
         neighbors=None,
         resolution_parameter=None,
+        iterations=None,
     ):
         """Initializes Clustering class."""
         if mode not in self._available_modes:
@@ -148,6 +153,7 @@ class Clustering:
         self._weighted = weighted
         self._neighbors = neighbors
         self._resolution_parameter = resolution_parameter
+        self._iterations = iterations
 
         if self._mode == 'CPM' and not self._weighted:
             raise NotImplementedError(
@@ -215,6 +221,8 @@ class Clustering:
     def _setup_leiden_kwargs(self, graph):
         """Sets up the parameters for the Leiden clustering"""
         kwargs_leiden = {}
+        if self._iterations is None:
+            kwargs_leiden['n_iterations'] = -1
         if self._mode == 'CPM':
             kwargs_leiden['partition_type'] = la.CPMVertexPartition
             kwargs_leiden[
@@ -231,7 +239,7 @@ class Clustering:
 
     def _clustering_leiden(self, graph):
         """Perform the Leiden clustering on the graph."""
-        clusters =  la.find_partition(
+        clusters = la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
         )
         return np.array(list(clusters), dtype=object)
