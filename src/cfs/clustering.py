@@ -29,7 +29,8 @@ def _cuthill_mckee_sorting(coarsemat):
     """Resort clusters to minimize off-diagonal distances."""
     nclusters = len(coarsemat)
     if nclusters > 1:
-        cutoff = nclusters**2 - int(np.ceil(np.sqrt(nclusters))) * nclusters
+        scale_factor = int(np.ceil(np.sqrt(nclusters)))
+        cutoff = nclusters**2 - scale_factor * nclusters
     else:
         raise ValueError(
             'Only one cluster was found. Try different parameters'
