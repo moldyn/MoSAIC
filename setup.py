@@ -42,11 +42,10 @@ setuptools.setup(
     install_requires=[
         'numpy',
         'pandas',
+        'beartype',
         'scipy',
         'scikit-learn',
         'leidenalg',
         'umap-learn',
-        'numba',
-        'decorit',
     ],
 )

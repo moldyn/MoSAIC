@@ -33,7 +33,7 @@ def _cuthill_mckee_sorting(coarsemat):
         cutoff = nclusters**2 - scale_factor * nclusters
     else:
         raise ValueError(
-            'Only one cluster was found. Try different parameters'
+            'Only one cluster was found. Try different parameters',
         )
     coarsemat[
         coarsemat < np.sort(coarsemat, axis=None)[cutoff]
@@ -133,6 +133,7 @@ class Clustering:
     [array([0, 2]), array([1])]
 
     """
+
     _available_modes = ('CPM', 'modularity')
 
     def __init__(
