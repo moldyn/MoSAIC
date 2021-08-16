@@ -143,7 +143,7 @@ class Similarity:  # noqa: WPS214
         if metric not in self._available_metrics:
             metrics = ', '.join([f'"{m}"' for m in self._available_modes])
             raise NotImplementedError(
-                f'Metric {metric} is not implemented, use one of [{metrics}]'
+                f'Metric {metric} is not implemented, use one of [{metrics}]',
             )
 
         self._metric: str = metric
@@ -180,7 +180,7 @@ class Similarity:  # noqa: WPS214
                 matrix_ = np.abs(corr)
             else:
                 raise ValueError(
-                    'Mode online=True is only implemented for correlation.'
+                    'Mode online=True is only implemented for correlation.',
                 )
         else:
             n_samples, n_features = X.shape
@@ -209,7 +209,7 @@ class Similarity:  # noqa: WPS214
 
     @beartype
     def _nonlinear_correlation(self, X: np.ndarray) -> np.ndarray:
-        """Returns the nonlinear correlation."""
+        """Return the nonlinear correlation."""
         if self._metric == 'NMI':
             calc_nl_corr: Callable = self._nmi
         else:
@@ -237,7 +237,7 @@ class Similarity:  # noqa: WPS214
         pi: np.ndarray,
         pj: np.ndarray,
     ) -> float:
-        """Returns the Jensen-Shannon based dissimilarity"""
+        """Return the Jensen-Shannon based dissimilarity."""
         mutual_info: float = _kullback(pij, pipj)
         normalization: float = self._normalization(pi, pj, pij)
         return mutual_info / normalization
@@ -250,7 +250,7 @@ class Similarity:  # noqa: WPS214
         pi: np.ndarray,
         pj: np.ndarray,
     ) -> float:
-        """Returns the Jensen-Shannon based dissimilarity"""
+        """Return the Jensen-Shannon based dissimilarity."""
         return jensenshannon(
             pij.flatten(),
             pipj.flatten(),
@@ -261,7 +261,7 @@ class Similarity:  # noqa: WPS214
     def _normalization(
         self, pi: np.ndarray, pj: np.ndarray, pij: np.ndarray,
     ) -> float:
-        """Calculates the normalization factor for the MI matrix."""
+        """Calculate the normalization factor for the MI matrix."""
         method: str = self._normalize_method
         if method == 'joint':
             return _entropy(pij)
@@ -284,9 +284,9 @@ class Similarity:  # noqa: WPS214
 
     @beartype
     def _data_gen(
-        self, comments: str=('#', '@'),
+        self, comments: str = ('#', '@'),
     ) -> Generator[np.ndarray, None, None]:
-        """Generator for looping over file."""
+        """Return all non comment lines as generator."""
         with open(self._filename) as file_obj:
             for line in file_obj:
                 if line.startswith(comments):
@@ -310,7 +310,7 @@ class Similarity:  # noqa: WPS214
 
         for x in self._data_gen():
             n += 1
-            dx: np.ndarray= x - mean
+            dx: np.ndarray = x - mean
             mean = mean + dx / n
             corr = corr + dx.reshape(-1, 1) * (
                 x - mean
@@ -331,7 +331,7 @@ class Similarity:  # noqa: WPS214
         is_file = isinstance(X, str)
         if is_file and not self._online:
             raise TypeError(
-                'Filename input is supported only with online=True'
+                'Filename input is supported only with online=True',
             )
 
         is_array = isinstance(X, np.ndarray)
