@@ -174,12 +174,12 @@ class Clustering:
             )
 
     @beartype
-    def fit(self, matrix: np.ndarray, y: Optional[np.ndarray] = None) -> None:
+    def fit(self, X: np.ndarray, y: Optional[np.ndarray] = None) -> None:
         """Clusters the correlation matrix by Leiden clustering on a graph.
 
         Parameters
         ----------
-        matrix : ndarray of shape (n_features, n_features)
+        X : ndarray of shape (n_features, n_features)
             Matrix containing the correlation metric which is clustered. The
             values should go from [0, 1] where 1 means completely correlated
             and 0 no correlation.
@@ -189,11 +189,11 @@ class Clustering:
 
         """
         if self._mode == 'CPM':
-            mat = np.copy(matrix)
+            mat = np.copy(X)
             if self._resolution_parameter is None:
                 self._resolution_parameter = np.median(mat)
         elif self._mode == 'modularity':
-            mat = self._construct_knn_mat(matrix)
+            mat = self._construct_knn_mat(X)
         else:
             raise NotImplementedError(
                 f'Mode {self._mode} is not implemented',
@@ -203,10 +203,10 @@ class Clustering:
             list(mat.astype(np.float64)), loops=False,
         )
         clusters = self._clustering_leiden(graph)
-        self.clusters_ = _sort_clusters(clusters, matrix)
+        self.clusters_ = _sort_clusters(clusters, X)
 
         self.permutation_ = np.hstack(self.clusters_)
-        self.matrix_ = matrix[np.ix_(self.permutation_, self.permutation_)]
+        self.matrix_ = X[np.ix_(self.permutation_, self.permutation_)]
         self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
         self.resolution_param_ = self._resolution_parameter
 
