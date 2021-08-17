@@ -127,9 +127,9 @@ class Similarity:  # noqa: WPS214
 
     """
 
-    _dtype = np.float128
+    _dtype: np.dtype = np.float128
     _default_normalize_method: str = 'arithmetic'
-    _available_metrics = ('correlation', 'NMI', 'JSD')
+    _available_metrics: Tuple[str] = ('correlation', 'NMI', 'JSD')
 
     @beartype
     def __init__(
@@ -173,6 +173,9 @@ class Similarity:  # noqa: WPS214
         self._reset()
         self._check_input_with_params(X)
 
+        corr: np.ndarray
+        matrix_: np.ndarray
+
         # parse data
         if self._online:
             if self._metric == 'correlation':
@@ -183,11 +186,14 @@ class Similarity:  # noqa: WPS214
                     'Mode online=True is only implemented for correlation.',
                 )
         else:
+            n_features: int
+            n_samples: int
             n_samples, n_features = X.shape
-            self._n_samples = n_samples
-            self._n_features = n_features
 
-            X = _standard_scaler(X)
+            self._n_samples: int = n_samples
+            self._n_features: int = n_features
+
+            X: np.ndarray = _standard_scaler(X)
             if self._metric == 'correlation':
                 corr = _correlation(X)
                 matrix_ = np.abs(corr)
@@ -198,7 +204,7 @@ class Similarity:  # noqa: WPS214
                     f'Metric {self._metric} is not implemented',
                 )
 
-        self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
+        self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
     @beartype
     def _reset(self) -> None:
