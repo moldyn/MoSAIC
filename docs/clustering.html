@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2" />
+<meta name="generator" content="pdoc 0.8.1" />
 <title>cfs.clustering API documentation</title>
 <meta name="description" content="Class for clustering the correlation matrices …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -39,14 +39,20 @@ Copyright (c) 2021, Daniel Nagel, Georg Diez
 All rights reserved.
 
 &#34;&#34;&#34;
+from typing import Any, Dict, Optional
+
 import igraph as ig
 import leidenalg as la
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
+from beartype import beartype
 from scipy.sparse import csgraph
+from sklearn.neighbors import NearestNeighbors
 
 
-def _coarse_clustermatrix(clusters, mat):
+@beartype
+def _coarse_clustermatrix(
+    clusters: np.ndarray, mat: np.ndarray,
+) -&gt; np.ndarray:
     &#34;&#34;&#34;Construct a coarse cluster matrix by averaging over all clusters.&#34;&#34;&#34;
     if len(clusters) == len(mat):
         return np.copy(mat)
@@ -61,12 +67,13 @@ def _coarse_clustermatrix(clusters, mat):
 def _cuthill_mckee_sorting(coarsemat):
     &#34;&#34;&#34;Resort clusters to minimize off-diagonal distances.&#34;&#34;&#34;
     nclusters = len(coarsemat)
-    if nclusters &gt; 5:
-        cutoff = nclusters**2 - 5 * nclusters
-    elif nclusters &gt; 3:
-        cutoff = nclusters**2 - 3 * nclusters
+    if nclusters &gt; 1:
+        scale_factor = int(np.ceil(np.sqrt(nclusters)))
+        cutoff = nclusters**2 - scale_factor * nclusters
     else:
-        cutoff = 0
+        raise ValueError(
+            &#39;Only one cluster was found. Try different parameters&#39;,
+        )
     coarsemat[
         coarsemat &lt; np.sort(coarsemat, axis=None)[cutoff]
     ] = np.nan
@@ -77,8 +84,12 @@ def _cuthill_mckee_sorting(coarsemat):
     )
 
 
-def _sort_clusters(clusters, mat):
-    &#34;&#34;&#34;Sort clusters by largest average values within cluster.&#34;&#34;&#34;
+@beartype
+def _sort_clusters(
+    clusters: np.ndarray, mat: np.ndarray,
+) -&gt; np.ndarray:
+    &#34;&#34;&#34;Sort clusters globally by the reverse Cuthill-McKee algorithm and
+    internally by the largest average values within cluster.&#34;&#34;&#34;
     clusters_permuted = clusters[
         _cuthill_mckee_sorting(
             _coarse_clustermatrix(clusters, mat),
@@ -114,12 +125,17 @@ class Clustering:
         If True, the underlying graph has weighted edges. Otherwise, the graph
         is constructed using the adjacency matrix.
 
+    iterations : int, default=-1,
+        Number of iterations to run the Leiden algorithm. -1 means that the
+        algorithm runs until no further improvement is achieved.
+
     neighbors: int, default=None,
-        Only required for mode &#39;modularity&#39;. If NaN, the number of neighbors
+        Only required for mode &#39;modularity&#39;. If None, the number of neighbors
         is chosen as the square root of the number of features.
 
-    resolution_parameter : float, default= 0.7
-        Only required for mode &#39;CPM&#39;
+    resolution_parameter : float, default=None,
+        Only required for mode &#39;CPM&#39;. If None, the resolution parameter will
+        be set to the median value of the matrix.
 
     Attributes
     ----------
@@ -128,7 +144,7 @@ class Clustering:
         containing all indices (features) for each cluster.
 
     matrix_ : ndarray of shape (n_features, n_features)
-        Permuted matrix according to clusters.
+        Permuted matrix according to the found clusters.
 
     ticks_ : ndarray of shape (n_clusters)
         Get cumulative indices where new cluster starts in `matrix_`.
@@ -136,6 +152,14 @@ class Clustering:
     permutation_ : ndarray of shape (n_features)
         Permutation of the input features (corresponds to flattened
         `clusters_`).
+
+    nneighbors_ : int
+        Only for mode &#39;modularity&#39;. Indicates the number of nearest neighbors
+        used for constructin the knn-graph.
+
+    resolution_param_ : float
+        Only for mode &#39;CPM&#39;. Indicates the resolution parameter used for the
+        CPM based Leiden clustering.
 
     Examples
     --------
@@ -151,17 +175,20 @@ class Clustering:
     [array([0, 2]), array([1])]
 
     &#34;&#34;&#34;
+
     _available_modes = (&#39;CPM&#39;, &#39;modularity&#39;)
 
+    @beartype
     def __init__(
         self,
         *,
-        mode=&#39;CPM&#39;,
-        weighted=True,
-        neighbors=None,
-        resolution_parameter=0.7,
-    ):
-        &#34;&#34;&#34;Initializes Clustering class.&#34;&#34;&#34;
+        mode: str = &#39;CPM&#39;,
+        weighted: bool = True,
+        neighbors: int = None,
+        resolution_parameter: float = None,
+        iterations: int = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Initialize Clustering class.&#34;&#34;&#34;
         if mode not in self._available_modes:
             modes = &#39;, &#39;.join([f&#39;&#34;{m}&#34;&#39; for m in self._available_modes])
             raise NotImplementedError(
@@ -172,13 +199,15 @@ class Clustering:
         self._weighted = weighted
         self._neighbors = neighbors
         self._resolution_parameter = resolution_parameter
+        self._iterations = iterations
 
         if self._mode == &#39;CPM&#39; and not self._weighted:
             raise NotImplementedError(
-                &#39;mode=&#34;CPM&#34; does not support an unweighted=True.&#39;
+                &#39;mode=&#34;CPM&#34; does not support an unweighted=True.&#39;,
             )
 
-    def fit(self, matrix, y=None):
+    @beartype
+    def fit(self, matrix: np.ndarray, y: Optional[np.ndarray] = None) -&gt; None:
         &#34;&#34;&#34;Clusters the correlation matrix by Leiden clustering on a graph.
 
         Parameters
@@ -194,6 +223,8 @@ class Clustering:
         &#34;&#34;&#34;
         if self._mode == &#39;CPM&#39;:
             mat = np.copy(matrix)
+            if self._resolution_parameter is None:
+                self._resolution_parameter = np.median(mat)
         elif self._mode == &#39;modularity&#39;:
             mat = self._construct_knn_mat(matrix)
         else:
@@ -202,7 +233,7 @@ class Clustering:
             )
         mat[np.isnan(mat)] = 0
         graph = ig.Graph.Weighted_Adjacency(
-            mat.astype(np.float64), loops=False,
+            list(mat.astype(np.float64)), loops=False,
         )
         clusters = self._clustering_leiden(graph)
         self.clusters_ = _sort_clusters(clusters, matrix)
@@ -210,11 +241,20 @@ class Clustering:
         self.permutation_ = np.hstack(self.clusters_)
         self.matrix_ = matrix[np.ix_(self.permutation_, self.permutation_)]
         self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
+        self.resolution_param_ = self._resolution_parameter
 
-    def _construct_knn_mat(self, matrix):
-        &#34;&#34;&#34;Constructs the knn matrix.&#34;&#34;&#34;
+    @beartype
+    def _construct_knn_mat(self, matrix: np.ndarray) -&gt; np.ndarray:
+        &#34;&#34;&#34;Construct the knn matrix.&#34;&#34;&#34;
         if self._neighbors is None:
-            self._neighbors = np.floor(np.sqrt(len(matrix))).astype(int)
+            n_features = len(matrix)
+            self._neighbors = np.floor(np.sqrt(n_features)).astype(int)
+            self.nneighbors_ = self._neighbors
+        elif self._neighbors &gt; len(matrix):
+            raise ValueError(
+                &#39;The number of nearest neighbors must be smaller than the &#39;
+                &#39;number of features.&#39;,
+            )
         neigh = NearestNeighbors(
             n_neighbors=self._neighbors,
             metric=&#39;precomputed&#39;,
@@ -226,9 +266,12 @@ class Clustering:
             return 1 - dist_mat
         return neigh.kneighbors_graph(mode=&#39;connectivity&#39;).toarray()
 
-    def _setup_leiden_kwargs(self, graph):
-        &#34;&#34;&#34;Sets up the parameters for the Leiden clustering&#34;&#34;&#34;
+    @beartype
+    def _setup_leiden_kwargs(self, graph) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Set up the parameters for the Leiden clustering.&#34;&#34;&#34;
         kwargs_leiden = {}
+        if self._iterations is None:
+            kwargs_leiden[&#39;n_iterations&#39;] = -1
         if self._mode == &#39;CPM&#39;:
             kwargs_leiden[&#39;partition_type&#39;] = la.CPMVertexPartition
             kwargs_leiden[
@@ -243,9 +286,10 @@ class Clustering:
 
         return kwargs_leiden
 
-    def _clustering_leiden(self, graph):
+    @beartype
+    def _clustering_leiden(self, graph: ig.Graph) -&gt; np.ndarray:
         &#34;&#34;&#34;Perform the Leiden clustering on the graph.&#34;&#34;&#34;
-        clusters =  la.find_partition(
+        clusters = la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
         )
         return np.array(list(clusters), dtype=object)</code></pre>
@@ -262,7 +306,7 @@ class Clustering:
 <dl>
 <dt id="cfs.clustering.Clustering"><code class="flex name class">
 <span>class <span class="ident">Clustering</span></span>
-<span>(</span><span>*, mode='CPM', weighted=True, neighbors=None, resolution_parameter=0.7)</span>
+<span>(</span><span>*, mode='CPM', weighted=True, neighbors=None, resolution_parameter=None, iterations=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Class for clustering a correlation matrix.</p>
@@ -280,11 +324,15 @@ algorithm.</p>
 <dt><strong><code>weighted</code></strong> :&ensp;<code>bool</code>, default=<code>True,</code></dt>
 <dd>If True, the underlying graph has weighted edges. Otherwise, the graph
 is constructed using the adjacency matrix.</dd>
+<dt><strong><code>iterations</code></strong> :&ensp;<code>int</code>, default=<code>-1,</code></dt>
+<dd>Number of iterations to run the Leiden algorithm. -1 means that the
+algorithm runs until no further improvement is achieved.</dd>
 <dt><strong><code>neighbors</code></strong> :&ensp;<code>int</code>, default=<code>None,</code></dt>
-<dd>Only required for mode 'modularity'. If NaN, the number of neighbors
+<dd>Only required for mode 'modularity'. If None, the number of neighbors
 is chosen as the square root of the number of features.</dd>
-<dt><strong><code>resolution_parameter</code></strong> :&ensp;<code>float</code>, default= <code>0.7</code></dt>
-<dd>Only required for mode 'CPM'</dd>
+<dt><strong><code>resolution_parameter</code></strong> :&ensp;<code>float</code>, default=<code>None,</code></dt>
+<dd>Only required for mode 'CPM'. If None, the resolution parameter will
+be set to the median value of the matrix.</dd>
 </dl>
 <h2 id="attributes">Attributes</h2>
 <dl>
@@ -292,15 +340,21 @@ is chosen as the square root of the number of features.</dd>
 <dd>The result of the clustering process. A list of arrays, each
 containing all indices (features) for each cluster.</dd>
 <dt><strong><code>matrix_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_features, n_features)</code></dt>
-<dd>Permuted matrix according to clusters.</dd>
+<dd>Permuted matrix according to the found clusters.</dd>
 <dt><strong><code>ticks_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_clusters)</code></dt>
 <dd>Get cumulative indices where new cluster starts in <code>matrix_</code>.</dd>
 <dt><strong><code>permutation_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_features)</code></dt>
 <dd>Permutation of the input features (corresponds to flattened
 <code>clusters_</code>).</dd>
+<dt><strong><code>nneighbors_</code></strong> :&ensp;<code>int</code></dt>
+<dd>Only for mode 'modularity'. Indicates the number of nearest neighbors
+used for constructin the knn-graph.</dd>
+<dt><strong><code>resolution_param_</code></strong> :&ensp;<code>float</code></dt>
+<dd>Only for mode 'CPM'. Indicates the resolution parameter used for the
+CPM based Leiden clustering.</dd>
 </dl>
 <h2 id="examples">Examples</h2>
-<pre><code class="language-python-repl">&gt;&gt;&gt; import cfs
+<pre><code class="language-python">&gt;&gt;&gt; import cfs
 &gt;&gt;&gt; mat = np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.0], [0.8, 0.1, 1.0]])
 &gt;&gt;&gt; clust = cfs.Clustering()
 &gt;&gt;&gt; clust.fit(mat)
@@ -311,7 +365,7 @@ array([[1. , 0.9, 0.1],
 &gt;&gt;&gt; clust.clusters_
 [array([0, 2]), array([1])]
 </code></pre>
-<p>Initializes Clustering class.</p></div>
+<p>Initialize Clustering class.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -332,12 +386,17 @@ array([[1. , 0.9, 0.1],
         If True, the underlying graph has weighted edges. Otherwise, the graph
         is constructed using the adjacency matrix.
 
+    iterations : int, default=-1,
+        Number of iterations to run the Leiden algorithm. -1 means that the
+        algorithm runs until no further improvement is achieved.
+
     neighbors: int, default=None,
-        Only required for mode &#39;modularity&#39;. If NaN, the number of neighbors
+        Only required for mode &#39;modularity&#39;. If None, the number of neighbors
         is chosen as the square root of the number of features.
 
-    resolution_parameter : float, default= 0.7
-        Only required for mode &#39;CPM&#39;
+    resolution_parameter : float, default=None,
+        Only required for mode &#39;CPM&#39;. If None, the resolution parameter will
+        be set to the median value of the matrix.
 
     Attributes
     ----------
@@ -346,7 +405,7 @@ array([[1. , 0.9, 0.1],
         containing all indices (features) for each cluster.
 
     matrix_ : ndarray of shape (n_features, n_features)
-        Permuted matrix according to clusters.
+        Permuted matrix according to the found clusters.
 
     ticks_ : ndarray of shape (n_clusters)
         Get cumulative indices where new cluster starts in `matrix_`.
@@ -354,6 +413,14 @@ array([[1. , 0.9, 0.1],
     permutation_ : ndarray of shape (n_features)
         Permutation of the input features (corresponds to flattened
         `clusters_`).
+
+    nneighbors_ : int
+        Only for mode &#39;modularity&#39;. Indicates the number of nearest neighbors
+        used for constructin the knn-graph.
+
+    resolution_param_ : float
+        Only for mode &#39;CPM&#39;. Indicates the resolution parameter used for the
+        CPM based Leiden clustering.
 
     Examples
     --------
@@ -369,17 +436,20 @@ array([[1. , 0.9, 0.1],
     [array([0, 2]), array([1])]
 
     &#34;&#34;&#34;
+
     _available_modes = (&#39;CPM&#39;, &#39;modularity&#39;)
 
+    @beartype
     def __init__(
         self,
         *,
-        mode=&#39;CPM&#39;,
-        weighted=True,
-        neighbors=None,
-        resolution_parameter=0.7,
-    ):
-        &#34;&#34;&#34;Initializes Clustering class.&#34;&#34;&#34;
+        mode: str = &#39;CPM&#39;,
+        weighted: bool = True,
+        neighbors: int = None,
+        resolution_parameter: float = None,
+        iterations: int = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Initialize Clustering class.&#34;&#34;&#34;
         if mode not in self._available_modes:
             modes = &#39;, &#39;.join([f&#39;&#34;{m}&#34;&#39; for m in self._available_modes])
             raise NotImplementedError(
@@ -390,13 +460,15 @@ array([[1. , 0.9, 0.1],
         self._weighted = weighted
         self._neighbors = neighbors
         self._resolution_parameter = resolution_parameter
+        self._iterations = iterations
 
         if self._mode == &#39;CPM&#39; and not self._weighted:
             raise NotImplementedError(
-                &#39;mode=&#34;CPM&#34; does not support an unweighted=True.&#39;
+                &#39;mode=&#34;CPM&#34; does not support an unweighted=True.&#39;,
             )
 
-    def fit(self, matrix, y=None):
+    @beartype
+    def fit(self, matrix: np.ndarray, y: Optional[np.ndarray] = None) -&gt; None:
         &#34;&#34;&#34;Clusters the correlation matrix by Leiden clustering on a graph.
 
         Parameters
@@ -412,6 +484,8 @@ array([[1. , 0.9, 0.1],
         &#34;&#34;&#34;
         if self._mode == &#39;CPM&#39;:
             mat = np.copy(matrix)
+            if self._resolution_parameter is None:
+                self._resolution_parameter = np.median(mat)
         elif self._mode == &#39;modularity&#39;:
             mat = self._construct_knn_mat(matrix)
         else:
@@ -420,7 +494,7 @@ array([[1. , 0.9, 0.1],
             )
         mat[np.isnan(mat)] = 0
         graph = ig.Graph.Weighted_Adjacency(
-            mat.astype(np.float64), loops=False,
+            list(mat.astype(np.float64)), loops=False,
         )
         clusters = self._clustering_leiden(graph)
         self.clusters_ = _sort_clusters(clusters, matrix)
@@ -428,11 +502,20 @@ array([[1. , 0.9, 0.1],
         self.permutation_ = np.hstack(self.clusters_)
         self.matrix_ = matrix[np.ix_(self.permutation_, self.permutation_)]
         self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
+        self.resolution_param_ = self._resolution_parameter
 
-    def _construct_knn_mat(self, matrix):
-        &#34;&#34;&#34;Constructs the knn matrix.&#34;&#34;&#34;
+    @beartype
+    def _construct_knn_mat(self, matrix: np.ndarray) -&gt; np.ndarray:
+        &#34;&#34;&#34;Construct the knn matrix.&#34;&#34;&#34;
         if self._neighbors is None:
-            self._neighbors = np.floor(np.sqrt(len(matrix))).astype(int)
+            n_features = len(matrix)
+            self._neighbors = np.floor(np.sqrt(n_features)).astype(int)
+            self.nneighbors_ = self._neighbors
+        elif self._neighbors &gt; len(matrix):
+            raise ValueError(
+                &#39;The number of nearest neighbors must be smaller than the &#39;
+                &#39;number of features.&#39;,
+            )
         neigh = NearestNeighbors(
             n_neighbors=self._neighbors,
             metric=&#39;precomputed&#39;,
@@ -444,9 +527,12 @@ array([[1. , 0.9, 0.1],
             return 1 - dist_mat
         return neigh.kneighbors_graph(mode=&#39;connectivity&#39;).toarray()
 
-    def _setup_leiden_kwargs(self, graph):
-        &#34;&#34;&#34;Sets up the parameters for the Leiden clustering&#34;&#34;&#34;
+    @beartype
+    def _setup_leiden_kwargs(self, graph) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Set up the parameters for the Leiden clustering.&#34;&#34;&#34;
         kwargs_leiden = {}
+        if self._iterations is None:
+            kwargs_leiden[&#39;n_iterations&#39;] = -1
         if self._mode == &#39;CPM&#39;:
             kwargs_leiden[&#39;partition_type&#39;] = la.CPMVertexPartition
             kwargs_leiden[
@@ -461,9 +547,10 @@ array([[1. , 0.9, 0.1],
 
         return kwargs_leiden
 
-    def _clustering_leiden(self, graph):
+    @beartype
+    def _clustering_leiden(self, graph: ig.Graph) -&gt; np.ndarray:
         &#34;&#34;&#34;Perform the Leiden clustering on the graph.&#34;&#34;&#34;
-        clusters =  la.find_partition(
+        clusters = la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
         )
         return np.array(list(clusters), dtype=object)</code></pre>
@@ -488,7 +575,8 @@ and 0 no correlation.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fit(self, matrix, y=None):
+<pre><code class="python">@beartype
+def fit(self, matrix: np.ndarray, y: Optional[np.ndarray] = None) -&gt; None:
     &#34;&#34;&#34;Clusters the correlation matrix by Leiden clustering on a graph.
 
     Parameters
@@ -504,6 +592,8 @@ and 0 no correlation.</dd>
     &#34;&#34;&#34;
     if self._mode == &#39;CPM&#39;:
         mat = np.copy(matrix)
+        if self._resolution_parameter is None:
+            self._resolution_parameter = np.median(mat)
     elif self._mode == &#39;modularity&#39;:
         mat = self._construct_knn_mat(matrix)
     else:
@@ -512,14 +602,15 @@ and 0 no correlation.</dd>
         )
     mat[np.isnan(mat)] = 0
     graph = ig.Graph.Weighted_Adjacency(
-        mat.astype(np.float64), loops=False,
+        list(mat.astype(np.float64)), loops=False,
     )
     clusters = self._clustering_leiden(graph)
     self.clusters_ = _sort_clusters(clusters, matrix)
 
     self.permutation_ = np.hstack(self.clusters_)
     self.matrix_ = matrix[np.ix_(self.permutation_, self.permutation_)]
-    self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])</code></pre>
+    self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
+    self.resolution_param_ = self._resolution_parameter</code></pre>
 </details>
 </dd>
 </dl>
@@ -565,7 +656,7 @@ CFS
 </svg>
 </a>
 <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>

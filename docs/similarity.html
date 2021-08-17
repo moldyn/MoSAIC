@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.9.2" />
+<meta name="generator" content="pdoc 0.8.1" />
 <title>cfs.similarity API documentation</title>
 <meta name="description" content="Class for estimating correlation matrix …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -39,17 +39,22 @@ Copyright (c) 2021, Daniel Nagel, Georg Diez
 All rights reserved.
 
 &#34;&#34;&#34;
+from typing import Callable, Generator, Optional, Tuple, Union
+
 import numpy as np
-from sklearn import preprocessing
+from beartype import beartype
 from scipy.spatial.distance import jensenshannon
+from sklearn import preprocessing
 
 
-def _entropy(p):
+@beartype
+def _entropy(p: np.ndarray) -&gt; float:
     &#34;&#34;&#34;Calculate entropy of density p.&#34;&#34;&#34;
     return -1 * np.sum(p * np.ma.log(p))
 
 
-def _kullback(p, q):
+@beartype
+def _kullback(p: np.ndarray, q: np.ndarray) -&gt; float:
     &#34;&#34;&#34;Calculate Kullback-Leibler divergence of density p, q.&#34;&#34;&#34;
     return np.sum(
         p * np.ma.log(np.ma.divide(p, q)),
@@ -62,8 +67,11 @@ def _standard_scaler(X):
     return scaler.transform(X)
 
 
-def _estimate_density(x, y, bins=100):
-    &#34;&#34;&#34;Calculates two dimensional probability density.&#34;&#34;&#34;
+@beartype
+def _estimate_densities(
+    x: np.ndarray, y: np.ndarray, bins: int = 100,
+) -&gt; Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    &#34;&#34;&#34;Calculate two dimensional probability densities.&#34;&#34;&#34;
     hist, _, _ = np.histogram2d(x, y, bins, density=True)
     # transpose since numpy considers axis 0 as y and axis 1 as x
     pij = hist.T / np.sum(hist)
@@ -74,7 +82,8 @@ def _estimate_density(x, y, bins=100):
     return pij, pipj, pi, pj
 
 
-def _correlation(X):
+@beartype
+def _correlation(X: np.ndarray) -&gt; np.ndarray:
     &#34;&#34;&#34;Return the correlation of input.
 
     Each feature (column) of X need to be mean-free with standard deviation 1.
@@ -84,15 +93,16 @@ def _correlation(X):
 
 
 class Similarity:  # noqa: WPS214
-    r&#34;&#34;&#34;Class for calculating similarity measure.
+    r&#34;&#34;&#34;Class for calculating the similarity measure.
 
     Parameters
     ----------
     metric : str, default=&#39;correlation&#39;
-        the correlation metric to use for the distance matrix.
+        the correlation metric to use for the feature distance matrix.
 
-        - &#39;correlation&#39; will use absolute value of the Pearson correlation
-        - &#39;NMI&#39; will use mutual information normalized by joined entropy
+        - &#39;correlation&#39; will use the absolute value of the Pearson correlation
+        - &#39;NMI&#39; will use the mutual information normalized by joined entropy
+        - &#39;GY&#39; use Gel&#39;fand and Yaglom normalization[^1]
         - &#39;JSD&#39; will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
@@ -100,12 +110,12 @@ class Similarity:  # noqa: WPS214
         Note: &#39;NMI&#39; is supported only with online=False
 
     online : bool, default=False
-        If True the input of fit X needs to be a file name and the correlation
+        If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
     normalize_method : str, default=&#39;arithmetic&#39;
         Only required for metric &#39;NMI&#39;. Determines the normalization factor
-        for the mutual information in decreasing order:
+        for the mutual information:
 
         - &#39;joint&#39; is the joint entropy
         - &#39;max&#39; is the maximum of the individual entropies
@@ -137,50 +147,65 @@ class Similarity:  # noqa: WPS214
     $$\rho_{X,Y} =
     \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
     where for the online algorithm the Welford algorithm taken from Donald E.
-    Knuth were used [1][Knuth98].
+    Knuth were used [^2].
 
-    [Knuth98]: Welford algorithm, generalized to correlation. Taken from:
-    Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
-    Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
+    [^1]: Gel&#39;fand, I.M. and Yaglom, A.M. (1957). &#34;Calculation of amount of
+        information about a random function contained in another such function&#34;.
+        American Mathematical Society Translations, series 2, 12, pp. 199–246.
+
+    [^2]: Welford algorithm, generalized to correlation. Taken from:
+        Donald E. Knuth (1998). &#34;The Art of Computer Programming&#34;, volume 2:
+        Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
     The Jensen-Shannon divergence is defined as
     $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
-    + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)$$,
+    + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)\;,$$
     where \(M = \frac{1}{2} [p(x,y) + p(x)p(y)]\) is an averaged probability
     distribution and \(D_{\text{KL}}\) denotes the Kullback-Leibler divergence.
 
     &#34;&#34;&#34;
 
-    _dtype = np.float128
-    _default_normalize_method = &#39;arithmetic&#39;
-    _available_metrics = (&#39;correlation&#39;, &#39;NMI&#39;, &#39;JSD&#39;)
+    _dtype: np.dtype = np.float128
+    _default_normalize_method: str = &#39;arithmetic&#39;
+    _available_metrics: Tuple[str, ...] = (&#39;correlation&#39;, &#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;)
+    _available_norms: Tuple[str, ...] = (
+        &#39;joint&#39;, &#39;geometric&#39;, &#39;arithmetic&#39;, &#39;min&#39;, &#39;max&#39;,
+    )
 
+    @beartype
     def __init__(
         self,
         *,
-        metric=&#39;correlation&#39;,
-        online=False,
-        normalize_method=None,
+        metric: str = &#39;correlation&#39;,
+        online: bool = False,
+        normalize_method: Optional[str] = None,
     ):
         &#34;&#34;&#34;Initialize Similarity class.&#34;&#34;&#34;
         if metric not in self._available_metrics:
-            metrics = &#39;, &#39;.join([f&#39;&#34;{m}&#34;&#39; for m in self._available_modes])
+            metrics = &#39;, &#39;.join([f&#39;&#34;{m}&#34;&#39; for m in self._available_metrics])
             raise NotImplementedError(
-                f&#39;Metric {metric} is not implemented, use one of [{metrics}]&#39;
+                f&#39;Metric {metric} is not implemented, use one of [{metrics}]&#39;,
             )
 
-        self._metric = metric
-        self._online = online
+        self._metric: str = metric
+        self._online: bool = online
         if self._metric == &#39;NMI&#39;:
             if normalize_method is None:
                 normalize_method = self._default_normalize_method
-            self._normalize_method = normalize_method
+            if normalize_method not in self._available_norms:
+                norms = &#39;, &#39;.join([f&#39;&#34;{n}&#34;&#39; for n in self._available_norms])
+                raise NotImplementedError(
+                    f&#39;Normalization method {normalize_method} is not &#39;
+                    f&#39;implemented, use one of [{norms}]&#39;,
+                )
+            self._normalize_method: str = normalize_method
         elif normalize_method is not None:
             raise NotImplementedError(
                 &#39;Normalize methods are only supported with metric=&#34;NMI&#34;&#39;,
             )
 
-    def fit(self, X, y=None):
+    @beartype
+    def fit(self, X: np.ndarray, y=None) -&gt; None:
         &#34;&#34;&#34;Compute the correlation/nmi distance matrix.
 
         Parameters
@@ -195,6 +220,9 @@ class Similarity:  # noqa: WPS214
         self._reset()
         self._check_input_with_params(X)
 
+        corr: np.ndarray
+        matrix_: np.ndarray
+
         # parse data
         if self._online:
             if self._metric == &#39;correlation&#39;:
@@ -202,40 +230,49 @@ class Similarity:  # noqa: WPS214
                 matrix_ = np.abs(corr)
             else:
                 raise ValueError(
-                    &#39;Mode online=True is only implemented for correlation.&#39;
+                    &#39;Mode online=True is only implemented for correlation.&#39;,
                 )
         else:
+            n_features: int
+            n_samples: int
             n_samples, n_features = X.shape
-            self._n_samples = n_samples
-            self._n_features = n_features
 
-            X = _standard_scaler(X)
+            self._n_samples: int = n_samples
+            self._n_features: int = n_features
+
+            X: np.ndarray = _standard_scaler(X)
             if self._metric == &#39;correlation&#39;:
                 corr = _correlation(X)
                 matrix_ = np.abs(corr)
-            elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;}:
+            elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;}:
                 matrix_ = self._nonlinear_correlation(X)
             else:
                 raise NotImplementedError(
                     f&#39;Metric {self._metric} is not implemented&#39;,
                 )
 
-        self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
+        self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
-    def _reset(self):
+    @beartype
+    def _reset(self) -&gt; None:
         &#34;&#34;&#34;Reset internal data-dependent state of correlation.&#34;&#34;&#34;
-        if hasattr(self, &#39;_is_file&#39;):  # noqa: WPS421
-            del self._is_file  # noqa: WPS420
+        if hasattr(self, &#39;_filename&#39;):  # noqa: WPS421
+            del self._filename  # noqa: WPS420
+        if hasattr(self, &#39;matrix_&#39;):  # noqa: WPS421
             del self.matrix_  # noqa: WPS420
 
-    def _nonlinear_correlation(self, X):
-        &#34;&#34;&#34;Returns the nonlinear correlation.&#34;&#34;&#34;
+    @beartype
+    def _nonlinear_correlation(self, X: np.ndarray) -&gt; np.ndarray:
+        &#34;&#34;&#34;Return the nonlinear correlation.&#34;&#34;&#34;
+        calc_nl_corr: Callable
         if self._metric == &#39;NMI&#39;:
             calc_nl_corr = self._nmi
+        elif self._metric == &#39;GY&#39;:
+            calc_nl_corr = self._gy
         else:
             calc_nl_corr = self._jsd
 
-        nl_corr = np.empty(  # noqa: WPS317
+        nl_corr: np.ndarray = np.empty(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
         )
         for idx_i in range(self._n_features):
@@ -243,33 +280,64 @@ class Similarity:  # noqa: WPS214
             nl_corr[idx_i, idx_i] = 1
             for idx_j in range(idx_i + 1, self._n_features):
                 xj = X[:, idx_j]
-                nl_corr_ij = calc_nl_corr(*_estimate_density(xi, xj))
+                nl_corr_ij = calc_nl_corr(*_estimate_densities(xi, xj))
                 nl_corr[idx_i, idx_j] = nl_corr_ij
                 nl_corr[idx_j, idx_i] = nl_corr_ij
 
         return nl_corr
 
-    def _nmi(self, pij, pipj, pi, pj):
-        &#34;&#34;&#34;Returns the Jensen-Shannon based dissimilarity&#34;&#34;&#34;
-        mutual_info = _kullback(pij, pipj)
-        normalization = self._normalization(pi, pj, pij)
+    @beartype
+    def _gy(
+        self,
+        pij: np.ndarray,
+        pipj: np.ndarray,
+        pi: np.ndarray,
+        pj: np.ndarray,
+    ) -&gt; float:
+        &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
+        mutual_info: float = _kullback(pij, pipj)
+        return -0.5 * np.sqrt(
+            1 - np.exp(-2 * mutual_info),
+        )
+
+    @beartype
+    def _nmi(
+        self,
+        pij: np.ndarray,
+        pipj: np.ndarray,
+        pi: np.ndarray,
+        pj: np.ndarray,
+    ) -&gt; float:
+        &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
+        mutual_info: float = _kullback(pij, pipj)
+        normalization: float = self._normalization(pi, pj, pij)
         return mutual_info / normalization
 
-    def _jsd(self, pij, pipj, pi, pj):
-        &#34;&#34;&#34;Returns the Jensen-Shannon based dissimilarity&#34;&#34;&#34;
+    @beartype
+    def _jsd(
+        self,
+        pij: np.ndarray,
+        pipj: np.ndarray,
+        pi: np.ndarray,
+        pj: np.ndarray,
+    ) -&gt; float:
+        &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
         return jensenshannon(
             pij.flatten(),
             pipj.flatten(),
             base=2,
         )
 
-    def _normalization(self, pi, pj, pij):
-        &#34;&#34;&#34;Calculates the normalization factor for the MI matrix.&#34;&#34;&#34;
-        method = self._normalize_method
+    @beartype
+    def _normalization(
+        self, pi: np.ndarray, pj: np.ndarray, pij: np.ndarray,
+    ) -&gt; float:
+        &#34;&#34;&#34;Calculate the normalization factor for the MI matrix.&#34;&#34;&#34;
+        method: str = self._normalize_method
         if method == &#39;joint&#39;:
             return _entropy(pij)
 
-        func = {
+        func: Callable = {
             &#39;geometric&#39;: lambda arr: np.sqrt(np.prod(arr)),
             &#39;arithmetic&#39;: np.mean,
             &#39;min&#39;: np.min,
@@ -277,22 +345,27 @@ class Similarity:  # noqa: WPS214
         }[method]
         return func([_entropy(pi), _entropy(pj)])
 
-    def _online_correlation(self, X):
+    @beartype
+    def _online_correlation(self, X: str) -&gt; np.ndarray:
         &#34;&#34;&#34;Calculate correlation on the fly.&#34;&#34;&#34;
-        self._filename = X
-        self._n_features = len(next(self._data_gen()))
+        self._filename: str = X
+        self._n_features: int = len(next(self._data_gen()))
         # parse mean, std and corr
         return self._welford_correlation()
 
-    def _data_gen(self, comments=(&#39;#&#39;, &#39;@&#39;)):
-        &#34;&#34;&#34;Generator for looping over file.&#34;&#34;&#34;
+    @beartype
+    def _data_gen(
+        self, comments: str = (&#39;#&#39;, &#39;@&#39;),
+    ) -&gt; Generator[np.ndarray, None, None]:
+        &#34;&#34;&#34;Return all non comment lines as generator.&#34;&#34;&#34;
         with open(self._filename) as file_obj:
             for line in file_obj:
                 if line.startswith(comments):
                     continue
                 yield np.array(line.split()).astype(self._dtype)
 
-    def _welford_correlation(self):
+    @beartype
+    def _welford_correlation(self) -&gt; np.ndarray:
         &#34;&#34;&#34;Calculate the correlation via online Welford algorithm.
 
         Welford algorithm, generalized to correlation. Taken from:
@@ -300,15 +373,15 @@ class Similarity:  # noqa: WPS214
         Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
         &#34;&#34;&#34;
-        n = 0
-        mean = np.zeros(self._n_features, dtype=self._dtype)
-        corr = np.zeros(  # noqa: WPS317
+        n: int = 0
+        mean: np.ndarray = np.zeros(self._n_features, dtype=self._dtype)
+        corr: np.ndarray = np.zeros(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
         )
 
         for x in self._data_gen():
             n += 1
-            dx = x - mean
+            dx: np.ndarray = x - mean
             mean = mean + dx / n
             corr = corr + dx.reshape(-1, 1) * (
                 x - mean
@@ -323,15 +396,17 @@ class Similarity:  # noqa: WPS214
             std.reshape(-1, 1) * std.reshape(1, -1)
         )
 
-    def _check_input_with_params(self, X):
+    @beartype
+    def _check_input_with_params(self, X: Union[str, np.ndarray]) -&gt; None:
         # check if is string
         is_file = isinstance(X, str)
         if is_file and not self._online:
             raise TypeError(
-                &#39;Filename input is supported only with online=True&#39;
+                &#39;Filename input is supported only with online=True&#39;,
             )
 
         is_array = isinstance(X, np.ndarray)
+        error_msg = None
         error_dim1 = (
             &#39;Reshape your data either using array.reshape(-1, 1) if your data &#39;
             &#39;has a single feature or array.reshape(1, -1) if it contains a &#39;
@@ -339,22 +414,25 @@ class Similarity:  # noqa: WPS214
         )
         if is_array:
             if X.ndim == 1:
-                raise ValueError(error_dim1)
+                error_msg = error_dim1
             elif X.ndim &gt; 2:
-                raise ValueError(
+                error_msg = (
                     f&#39;Found array with dim {X.ndim} but dim=2 expected.&#39;
                 )
 
         if not is_file and not is_array:
             if self._online:
-                raise TypeError(
+                error_msg = (
                     &#39;Input needs to be of type &#34;str&#34; (filename), but &#39;
                     f&#39;&#34;{type(X)}&#34; given&#39;,
                 )
-            raise TypeError(
+            error_msg = (
                 &#39;Input needs to be of type &#34;ndarray&#34;, but &#39;
                 f&#39;&#34;{type(X)}&#34; given&#39;,
-            )</code></pre>
+            )
+
+        if error_msg:
+            raise ValueError(error_msg)</code></pre>
 </details>
 </section>
 <section>
@@ -371,15 +449,16 @@ class Similarity:  # noqa: WPS214
 <span>(</span><span>*, metric='correlation', online=False, normalize_method=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Class for calculating similarity measure.</p>
+<div class="desc"><p>Class for calculating the similarity measure.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>metric</code></strong> :&ensp;<code>str</code>, default=<code>'correlation'</code></dt>
 <dd>
-<p>the correlation metric to use for the distance matrix.</p>
+<p>the correlation metric to use for the feature distance matrix.</p>
 <ul>
-<li>'correlation' will use absolute value of the Pearson correlation</li>
-<li>'NMI' will use mutual information normalized by joined entropy</li>
+<li>'correlation' will use the absolute value of the Pearson correlation</li>
+<li>'NMI' will use the mutual information normalized by joined entropy</li>
+<li>'GY' use Gel'fand and Yaglom normalization<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
 <li>'JSD' will use the Jensen-Shannon divergence between the joint
 probability distribution and the product of the marginal probability
 distributions to calculate their dissimilarity</li>
@@ -387,12 +466,12 @@ distributions to calculate their dissimilarity</li>
 <p>Note: 'NMI' is supported only with online=False</p>
 </dd>
 <dt><strong><code>online</code></strong> :&ensp;<code>bool</code>, default=<code>False</code></dt>
-<dd>If True the input of fit X needs to be a file name and the correlation
+<dd>If True, the input of fit X needs to be a file name and the correlation
 is calculated on the fly. Otherwise, an array is assumed as input X.</dd>
 <dt><strong><code>normalize_method</code></strong> :&ensp;<code>str</code>, default=<code>'arithmetic'</code></dt>
 <dd>
 <p>Only required for metric 'NMI'. Determines the normalization factor
-for the mutual information in decreasing order:</p>
+for the mutual information:</p>
 <ul>
 <li>'joint' is the joint entropy</li>
 <li>'max' is the maximum of the individual entropies</li>
@@ -410,7 +489,7 @@ entropies</li>
 scales from [0, 1].</dd>
 </dl>
 <h2 id="examples">Examples</h2>
-<pre><code class="language-python-repl">&gt;&gt;&gt; import cfs
+<pre><code class="language-python">&gt;&gt;&gt; import cfs
 &gt;&gt;&gt; x = np.linspace(0, np.pi, 1000)
 &gt;&gt;&gt; data = np.array([np.cos(x), np.sin(x)]).T
 &gt;&gt;&gt; sim = cfs.Similarity()
@@ -425,31 +504,44 @@ array([[1.        , 0.91666054],
 \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}</span><script type="math/tex; mode=display">\rho_{X,Y} =
 \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}</script></span>
 where for the online algorithm the Welford algorithm taken from Donald E.
-Knuth were used [1][Knuth98].</p>
-<p>[Knuth98]: Welford algorithm, generalized to correlation. Taken from:
-Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
-Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.</p>
+Knuth were used <sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
 <p>The Jensen-Shannon divergence is defined as
 <span><span class="MathJax_Preview">D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
-+ \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)</span><script type="math/tex; mode=display">D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
-+ \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)</script></span>,
++ \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)\;,</span><script type="math/tex; mode=display">D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
++ \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)\;,</script></span>
 where <span><span class="MathJax_Preview">M = \frac{1}{2} [p(x,y) + p(x)p(y)]</span><script type="math/tex">M = \frac{1}{2} [p(x,y) + p(x)p(y)]</script></span> is an averaged probability
 distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script type="math/tex">D_{\text{KL}}</script></span> denotes the Kullback-Leibler divergence.</p>
-<p>Initialize Similarity class.</p></div>
+<p>Initialize Similarity class.</p>
+<div class="footnote">
+<hr>
+<ol>
+<li id="fn:1">
+<p>Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
+information about a random function contained in another such function".
+American Mathematical Society Translations, series 2, 12, pp. 199–246.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Welford algorithm, generalized to correlation. Taken from:
+Donald E. Knuth (1998). "The Art of Computer Programming", volume 2:
+Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Similarity:  # noqa: WPS214
-    r&#34;&#34;&#34;Class for calculating similarity measure.
+    r&#34;&#34;&#34;Class for calculating the similarity measure.
 
     Parameters
     ----------
     metric : str, default=&#39;correlation&#39;
-        the correlation metric to use for the distance matrix.
+        the correlation metric to use for the feature distance matrix.
 
-        - &#39;correlation&#39; will use absolute value of the Pearson correlation
-        - &#39;NMI&#39; will use mutual information normalized by joined entropy
+        - &#39;correlation&#39; will use the absolute value of the Pearson correlation
+        - &#39;NMI&#39; will use the mutual information normalized by joined entropy
+        - &#39;GY&#39; use Gel&#39;fand and Yaglom normalization[^1]
         - &#39;JSD&#39; will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
@@ -457,12 +549,12 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
         Note: &#39;NMI&#39; is supported only with online=False
 
     online : bool, default=False
-        If True the input of fit X needs to be a file name and the correlation
+        If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
     normalize_method : str, default=&#39;arithmetic&#39;
         Only required for metric &#39;NMI&#39;. Determines the normalization factor
-        for the mutual information in decreasing order:
+        for the mutual information:
 
         - &#39;joint&#39; is the joint entropy
         - &#39;max&#39; is the maximum of the individual entropies
@@ -494,50 +586,65 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
     $$\rho_{X,Y} =
     \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
     where for the online algorithm the Welford algorithm taken from Donald E.
-    Knuth were used [1][Knuth98].
+    Knuth were used [^2].
 
-    [Knuth98]: Welford algorithm, generalized to correlation. Taken from:
-    Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
-    Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
+    [^1]: Gel&#39;fand, I.M. and Yaglom, A.M. (1957). &#34;Calculation of amount of
+        information about a random function contained in another such function&#34;.
+        American Mathematical Society Translations, series 2, 12, pp. 199–246.
+
+    [^2]: Welford algorithm, generalized to correlation. Taken from:
+        Donald E. Knuth (1998). &#34;The Art of Computer Programming&#34;, volume 2:
+        Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
     The Jensen-Shannon divergence is defined as
     $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
-    + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)$$,
+    + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)\;,$$
     where \(M = \frac{1}{2} [p(x,y) + p(x)p(y)]\) is an averaged probability
     distribution and \(D_{\text{KL}}\) denotes the Kullback-Leibler divergence.
 
     &#34;&#34;&#34;
 
-    _dtype = np.float128
-    _default_normalize_method = &#39;arithmetic&#39;
-    _available_metrics = (&#39;correlation&#39;, &#39;NMI&#39;, &#39;JSD&#39;)
+    _dtype: np.dtype = np.float128
+    _default_normalize_method: str = &#39;arithmetic&#39;
+    _available_metrics: Tuple[str, ...] = (&#39;correlation&#39;, &#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;)
+    _available_norms: Tuple[str, ...] = (
+        &#39;joint&#39;, &#39;geometric&#39;, &#39;arithmetic&#39;, &#39;min&#39;, &#39;max&#39;,
+    )
 
+    @beartype
     def __init__(
         self,
         *,
-        metric=&#39;correlation&#39;,
-        online=False,
-        normalize_method=None,
+        metric: str = &#39;correlation&#39;,
+        online: bool = False,
+        normalize_method: Optional[str] = None,
     ):
         &#34;&#34;&#34;Initialize Similarity class.&#34;&#34;&#34;
         if metric not in self._available_metrics:
-            metrics = &#39;, &#39;.join([f&#39;&#34;{m}&#34;&#39; for m in self._available_modes])
+            metrics = &#39;, &#39;.join([f&#39;&#34;{m}&#34;&#39; for m in self._available_metrics])
             raise NotImplementedError(
-                f&#39;Metric {metric} is not implemented, use one of [{metrics}]&#39;
+                f&#39;Metric {metric} is not implemented, use one of [{metrics}]&#39;,
             )
 
-        self._metric = metric
-        self._online = online
+        self._metric: str = metric
+        self._online: bool = online
         if self._metric == &#39;NMI&#39;:
             if normalize_method is None:
                 normalize_method = self._default_normalize_method
-            self._normalize_method = normalize_method
+            if normalize_method not in self._available_norms:
+                norms = &#39;, &#39;.join([f&#39;&#34;{n}&#34;&#39; for n in self._available_norms])
+                raise NotImplementedError(
+                    f&#39;Normalization method {normalize_method} is not &#39;
+                    f&#39;implemented, use one of [{norms}]&#39;,
+                )
+            self._normalize_method: str = normalize_method
         elif normalize_method is not None:
             raise NotImplementedError(
                 &#39;Normalize methods are only supported with metric=&#34;NMI&#34;&#39;,
             )
 
-    def fit(self, X, y=None):
+    @beartype
+    def fit(self, X: np.ndarray, y=None) -&gt; None:
         &#34;&#34;&#34;Compute the correlation/nmi distance matrix.
 
         Parameters
@@ -552,6 +659,9 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
         self._reset()
         self._check_input_with_params(X)
 
+        corr: np.ndarray
+        matrix_: np.ndarray
+
         # parse data
         if self._online:
             if self._metric == &#39;correlation&#39;:
@@ -559,40 +669,49 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
                 matrix_ = np.abs(corr)
             else:
                 raise ValueError(
-                    &#39;Mode online=True is only implemented for correlation.&#39;
+                    &#39;Mode online=True is only implemented for correlation.&#39;,
                 )
         else:
+            n_features: int
+            n_samples: int
             n_samples, n_features = X.shape
-            self._n_samples = n_samples
-            self._n_features = n_features
 
-            X = _standard_scaler(X)
+            self._n_samples: int = n_samples
+            self._n_features: int = n_features
+
+            X: np.ndarray = _standard_scaler(X)
             if self._metric == &#39;correlation&#39;:
                 corr = _correlation(X)
                 matrix_ = np.abs(corr)
-            elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;}:
+            elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;}:
                 matrix_ = self._nonlinear_correlation(X)
             else:
                 raise NotImplementedError(
                     f&#39;Metric {self._metric} is not implemented&#39;,
                 )
 
-        self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)
+        self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
-    def _reset(self):
+    @beartype
+    def _reset(self) -&gt; None:
         &#34;&#34;&#34;Reset internal data-dependent state of correlation.&#34;&#34;&#34;
-        if hasattr(self, &#39;_is_file&#39;):  # noqa: WPS421
-            del self._is_file  # noqa: WPS420
+        if hasattr(self, &#39;_filename&#39;):  # noqa: WPS421
+            del self._filename  # noqa: WPS420
+        if hasattr(self, &#39;matrix_&#39;):  # noqa: WPS421
             del self.matrix_  # noqa: WPS420
 
-    def _nonlinear_correlation(self, X):
-        &#34;&#34;&#34;Returns the nonlinear correlation.&#34;&#34;&#34;
+    @beartype
+    def _nonlinear_correlation(self, X: np.ndarray) -&gt; np.ndarray:
+        &#34;&#34;&#34;Return the nonlinear correlation.&#34;&#34;&#34;
+        calc_nl_corr: Callable
         if self._metric == &#39;NMI&#39;:
             calc_nl_corr = self._nmi
+        elif self._metric == &#39;GY&#39;:
+            calc_nl_corr = self._gy
         else:
             calc_nl_corr = self._jsd
 
-        nl_corr = np.empty(  # noqa: WPS317
+        nl_corr: np.ndarray = np.empty(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
         )
         for idx_i in range(self._n_features):
@@ -600,33 +719,64 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
             nl_corr[idx_i, idx_i] = 1
             for idx_j in range(idx_i + 1, self._n_features):
                 xj = X[:, idx_j]
-                nl_corr_ij = calc_nl_corr(*_estimate_density(xi, xj))
+                nl_corr_ij = calc_nl_corr(*_estimate_densities(xi, xj))
                 nl_corr[idx_i, idx_j] = nl_corr_ij
                 nl_corr[idx_j, idx_i] = nl_corr_ij
 
         return nl_corr
 
-    def _nmi(self, pij, pipj, pi, pj):
-        &#34;&#34;&#34;Returns the Jensen-Shannon based dissimilarity&#34;&#34;&#34;
-        mutual_info = _kullback(pij, pipj)
-        normalization = self._normalization(pi, pj, pij)
+    @beartype
+    def _gy(
+        self,
+        pij: np.ndarray,
+        pipj: np.ndarray,
+        pi: np.ndarray,
+        pj: np.ndarray,
+    ) -&gt; float:
+        &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
+        mutual_info: float = _kullback(pij, pipj)
+        return -0.5 * np.sqrt(
+            1 - np.exp(-2 * mutual_info),
+        )
+
+    @beartype
+    def _nmi(
+        self,
+        pij: np.ndarray,
+        pipj: np.ndarray,
+        pi: np.ndarray,
+        pj: np.ndarray,
+    ) -&gt; float:
+        &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
+        mutual_info: float = _kullback(pij, pipj)
+        normalization: float = self._normalization(pi, pj, pij)
         return mutual_info / normalization
 
-    def _jsd(self, pij, pipj, pi, pj):
-        &#34;&#34;&#34;Returns the Jensen-Shannon based dissimilarity&#34;&#34;&#34;
+    @beartype
+    def _jsd(
+        self,
+        pij: np.ndarray,
+        pipj: np.ndarray,
+        pi: np.ndarray,
+        pj: np.ndarray,
+    ) -&gt; float:
+        &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
         return jensenshannon(
             pij.flatten(),
             pipj.flatten(),
             base=2,
         )
 
-    def _normalization(self, pi, pj, pij):
-        &#34;&#34;&#34;Calculates the normalization factor for the MI matrix.&#34;&#34;&#34;
-        method = self._normalize_method
+    @beartype
+    def _normalization(
+        self, pi: np.ndarray, pj: np.ndarray, pij: np.ndarray,
+    ) -&gt; float:
+        &#34;&#34;&#34;Calculate the normalization factor for the MI matrix.&#34;&#34;&#34;
+        method: str = self._normalize_method
         if method == &#39;joint&#39;:
             return _entropy(pij)
 
-        func = {
+        func: Callable = {
             &#39;geometric&#39;: lambda arr: np.sqrt(np.prod(arr)),
             &#39;arithmetic&#39;: np.mean,
             &#39;min&#39;: np.min,
@@ -634,22 +784,27 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
         }[method]
         return func([_entropy(pi), _entropy(pj)])
 
-    def _online_correlation(self, X):
+    @beartype
+    def _online_correlation(self, X: str) -&gt; np.ndarray:
         &#34;&#34;&#34;Calculate correlation on the fly.&#34;&#34;&#34;
-        self._filename = X
-        self._n_features = len(next(self._data_gen()))
+        self._filename: str = X
+        self._n_features: int = len(next(self._data_gen()))
         # parse mean, std and corr
         return self._welford_correlation()
 
-    def _data_gen(self, comments=(&#39;#&#39;, &#39;@&#39;)):
-        &#34;&#34;&#34;Generator for looping over file.&#34;&#34;&#34;
+    @beartype
+    def _data_gen(
+        self, comments: str = (&#39;#&#39;, &#39;@&#39;),
+    ) -&gt; Generator[np.ndarray, None, None]:
+        &#34;&#34;&#34;Return all non comment lines as generator.&#34;&#34;&#34;
         with open(self._filename) as file_obj:
             for line in file_obj:
                 if line.startswith(comments):
                     continue
                 yield np.array(line.split()).astype(self._dtype)
 
-    def _welford_correlation(self):
+    @beartype
+    def _welford_correlation(self) -&gt; np.ndarray:
         &#34;&#34;&#34;Calculate the correlation via online Welford algorithm.
 
         Welford algorithm, generalized to correlation. Taken from:
@@ -657,15 +812,15 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
         Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
         &#34;&#34;&#34;
-        n = 0
-        mean = np.zeros(self._n_features, dtype=self._dtype)
-        corr = np.zeros(  # noqa: WPS317
+        n: int = 0
+        mean: np.ndarray = np.zeros(self._n_features, dtype=self._dtype)
+        corr: np.ndarray = np.zeros(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
         )
 
         for x in self._data_gen():
             n += 1
-            dx = x - mean
+            dx: np.ndarray = x - mean
             mean = mean + dx / n
             corr = corr + dx.reshape(-1, 1) * (
                 x - mean
@@ -680,15 +835,17 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
             std.reshape(-1, 1) * std.reshape(1, -1)
         )
 
-    def _check_input_with_params(self, X):
+    @beartype
+    def _check_input_with_params(self, X: Union[str, np.ndarray]) -&gt; None:
         # check if is string
         is_file = isinstance(X, str)
         if is_file and not self._online:
             raise TypeError(
-                &#39;Filename input is supported only with online=True&#39;
+                &#39;Filename input is supported only with online=True&#39;,
             )
 
         is_array = isinstance(X, np.ndarray)
+        error_msg = None
         error_dim1 = (
             &#39;Reshape your data either using array.reshape(-1, 1) if your data &#39;
             &#39;has a single feature or array.reshape(1, -1) if it contains a &#39;
@@ -696,22 +853,25 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
         )
         if is_array:
             if X.ndim == 1:
-                raise ValueError(error_dim1)
+                error_msg = error_dim1
             elif X.ndim &gt; 2:
-                raise ValueError(
+                error_msg = (
                     f&#39;Found array with dim {X.ndim} but dim=2 expected.&#39;
                 )
 
         if not is_file and not is_array:
             if self._online:
-                raise TypeError(
+                error_msg = (
                     &#39;Input needs to be of type &#34;str&#34; (filename), but &#39;
                     f&#39;&#34;{type(X)}&#34; given&#39;,
                 )
-            raise TypeError(
+            error_msg = (
                 &#39;Input needs to be of type &#34;ndarray&#34;, but &#39;
                 f&#39;&#34;{type(X)}&#34; given&#39;,
-            )</code></pre>
+            )
+
+        if error_msg:
+            raise ValueError(error_msg)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -731,7 +891,8 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fit(self, X, y=None):
+<pre><code class="python">@beartype
+def fit(self, X: np.ndarray, y=None) -&gt; None:
     &#34;&#34;&#34;Compute the correlation/nmi distance matrix.
 
     Parameters
@@ -746,6 +907,9 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
     self._reset()
     self._check_input_with_params(X)
 
+    corr: np.ndarray
+    matrix_: np.ndarray
+
     # parse data
     if self._online:
         if self._metric == &#39;correlation&#39;:
@@ -753,25 +917,28 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
             matrix_ = np.abs(corr)
         else:
             raise ValueError(
-                &#39;Mode online=True is only implemented for correlation.&#39;
+                &#39;Mode online=True is only implemented for correlation.&#39;,
             )
     else:
+        n_features: int
+        n_samples: int
         n_samples, n_features = X.shape
-        self._n_samples = n_samples
-        self._n_features = n_features
 
-        X = _standard_scaler(X)
+        self._n_samples: int = n_samples
+        self._n_features: int = n_features
+
+        X: np.ndarray = _standard_scaler(X)
         if self._metric == &#39;correlation&#39;:
             corr = _correlation(X)
             matrix_ = np.abs(corr)
-        elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;}:
+        elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;}:
             matrix_ = self._nonlinear_correlation(X)
         else:
             raise NotImplementedError(
                 f&#39;Metric {self._metric} is not implemented&#39;,
             )
 
-    self.matrix_ = np.clip(matrix_, a_min=0, a_max=1)</code></pre>
+    self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)</code></pre>
 </details>
 </dd>
 </dl>
@@ -817,7 +984,7 @@ CFS
 </svg>
 </a>
 <style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>
