@@ -263,7 +263,7 @@ class Similarity:  # noqa: WPS214
     ) -> float:
         """Return the Jensen-Shannon based dissimilarity."""
         mutual_info: float = _kullback(pij, pipj)
-        return -0.5 * np.sqrt(
+        return np.sqrt(
             1 - np.exp(-2 * mutual_info),
         )
 
