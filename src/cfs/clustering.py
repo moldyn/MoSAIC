@@ -6,14 +6,20 @@ Copyright (c) 2021, Daniel Nagel, Georg Diez
 All rights reserved.
 
 """
+from typing import Any, Dict, Optional
+
 import igraph as ig
 import leidenalg as la
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
+from beartype import beartype
 from scipy.sparse import csgraph
+from sklearn.neighbors import NearestNeighbors
 
 
-def _coarse_clustermatrix(clusters, mat):
+@beartype
+def _coarse_clustermatrix(
+    clusters: np.ndarray, mat: np.ndarray,
+) -> np.ndarray:
     """Construct a coarse cluster matrix by averaging over all clusters."""
     if len(clusters) == len(mat):
         return np.copy(mat)
@@ -45,7 +51,10 @@ def _cuthill_mckee_sorting(coarsemat):
     )
 
 
-def _sort_clusters(clusters, mat):
+@beartype
+def _sort_clusters(
+    clusters: np.ndarray, mat: np.ndarray,
+) -> np.ndarray:
     """Sort clusters globally by the reverse Cuthill-McKee algorithm and
     internally by the largest average values within cluster."""
     clusters_permuted = clusters[
@@ -136,16 +145,17 @@ class Clustering:
 
     _available_modes = ('CPM', 'modularity')
 
+    @beartype
     def __init__(
         self,
         *,
-        mode='CPM',
-        weighted=True,
-        neighbors=None,
-        resolution_parameter=None,
-        iterations=None,
-    ):
-        """Initializes Clustering class."""
+        mode: str = 'CPM',
+        weighted: bool = True,
+        neighbors: int = None,
+        resolution_parameter: float = None,
+        iterations: int = None,
+    ) -> None:
+        """Initialize Clustering class."""
         if mode not in self._available_modes:
             modes = ', '.join([f'"{m}"' for m in self._available_modes])
             raise NotImplementedError(
@@ -160,10 +170,11 @@ class Clustering:
 
         if self._mode == 'CPM' and not self._weighted:
             raise NotImplementedError(
-                'mode="CPM" does not support an unweighted=True.'
+                'mode="CPM" does not support an unweighted=True.',
             )
 
-    def fit(self, matrix, y=None):
+    @beartype
+    def fit(self, matrix: np.ndarray, y: Optional[np.ndarray] = None) -> None:
         """Clusters the correlation matrix by Leiden clustering on a graph.
 
         Parameters
@@ -199,8 +210,9 @@ class Clustering:
         self.ticks_ = np.cumsum([len(cluster) for cluster in self.clusters_])
         self.resolution_param_ = self._resolution_parameter
 
-    def _construct_knn_mat(self, matrix):
-        """Constructs the knn matrix."""
+    @beartype
+    def _construct_knn_mat(self, matrix: np.ndarray) -> np.ndarray:
+        """Construct the knn matrix."""
         if self._neighbors is None:
             n_features = len(matrix)
             self._neighbors = np.floor(np.sqrt(n_features)).astype(int)
@@ -208,7 +220,7 @@ class Clustering:
         elif self._neighbors > len(matrix):
             raise ValueError(
                 'The number of nearest neighbors must be smaller than the '
-                'number of features.'
+                'number of features.',
             )
         neigh = NearestNeighbors(
             n_neighbors=self._neighbors,
@@ -221,8 +233,9 @@ class Clustering:
             return 1 - dist_mat
         return neigh.kneighbors_graph(mode='connectivity').toarray()
 
-    def _setup_leiden_kwargs(self, graph):
-        """Sets up the parameters for the Leiden clustering"""
+    @beartype
+    def _setup_leiden_kwargs(self, graph) -> Dict[str, Any]:
+        """Set up the parameters for the Leiden clustering."""
         kwargs_leiden = {}
         if self._iterations is None:
             kwargs_leiden['n_iterations'] = -1
@@ -240,7 +253,8 @@ class Clustering:
 
         return kwargs_leiden
 
-    def _clustering_leiden(self, graph):
+    @beartype
+    def _clustering_leiden(self, graph: ig.Graph) -> np.ndarray:
         """Perform the Leiden clustering on the graph."""
         clusters = la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
