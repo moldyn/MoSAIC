@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Class for estimating correlation matrix.
+"""Class for estimating correlation matrices.
 
 MIT License
 Copyright (c) 2021, Daniel Nagel, Georg Diez
@@ -117,7 +117,8 @@ class Similarity:  # noqa: WPS214
     Knuth were used [^2].
 
     [^1]: Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
-        information about a random function contained in another such function".
+        information about a random function contained in another such
+        function".
         American Mathematical Society Translations, series 2, 12, pp. 199–246.
 
     [^2]: Welford algorithm, generalized to correlation. Taken from:
