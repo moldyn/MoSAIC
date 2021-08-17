@@ -69,7 +69,7 @@ class Similarity:  # noqa: WPS214
 
         - 'correlation' will use the absolute value of the Pearson correlation
         - 'NMI' will use the mutual information normalized by joined entropy
-        - 'GY' use Gel'fand and Yaglom normalization[^1]
+        - 'GY' uses Gel'fand and Yaglom normalization[^1]
         - 'JSD' will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
