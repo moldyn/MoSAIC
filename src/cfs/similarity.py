@@ -69,7 +69,7 @@ class Similarity:  # noqa: WPS214
 
         - 'correlation' will use the absolute value of the Pearson correlation
         - 'NMI' will use the mutual information normalized by joined entropy
-        - 'GY' use Gel'fand and Yaglom normalization[1][GY1957]
+        - 'GY' use Gel'fand and Yaglom normalization[^1]
         - 'JSD' will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
@@ -114,19 +114,19 @@ class Similarity:  # noqa: WPS214
     $$\rho_{X,Y} =
     \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
     where for the online algorithm the Welford algorithm taken from Donald E.
-    Knuth were used [2][Knuth98].
+    Knuth were used [^2].
 
-    [GY1957]: Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
-    information about a random function contained in another such function".
-    American Mathematical Society Translations, series 2, 12, pp. 199–246.
+    [^1]: Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
+        information about a random function contained in another such function".
+        American Mathematical Society Translations, series 2, 12, pp. 199–246.
 
-    [Knuth98]: Welford algorithm, generalized to correlation. Taken from:
-    Donald E. Knuth (1998). "The Art of Computer Programming", volume 2:
-    Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
+    [^2]: Welford algorithm, generalized to correlation. Taken from:
+        Donald E. Knuth (1998). "The Art of Computer Programming", volume 2:
+        Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
     The Jensen-Shannon divergence is defined as
     $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
-    + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)$$,
+    + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)\;,$$
     where \(M = \frac{1}{2} [p(x,y) + p(x)p(y)]\) is an averaged probability
     distribution and \(D_{\text{KL}}\) denotes the Kullback-Leibler divergence.
 
