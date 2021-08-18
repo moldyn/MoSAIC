@@ -6,51 +6,84 @@ Copyright (c) 2021, Daniel Nagel, Georg Diez
 All rights reserved.
 
 """
-from typing import Callable, Generator, Optional, Tuple, Union
+from typing import Callable, Generator, List, Optional, Tuple, Union
 
 import numpy as np
 from beartype import beartype
+from beartype.vale import Is
 from scipy.spatial.distance import jensenshannon
 from sklearn import preprocessing
+from typing_extensions import Annotated
+
+FloatNDArray = Annotated[
+    np.ndarray, Is[lambda arr: np.issubdtype(arr.dtype, np.floating)],
+]
+ArrayLikeFloat = Union[List[float], FloatNDArray]
+Float1DArray = Annotated[
+    FloatNDArray, Is[lambda arr: arr.ndim == 1],
+]
+Float2DArray = Annotated[
+    FloatNDArray, Is[lambda arr: arr.ndim == 2],
+]
+FloatMax2DArray = Annotated[
+    FloatNDArray, Is[lambda arr: 1 <= arr.ndim <= 2],
+]
+MetricString = Annotated[
+    str, Is[lambda string: string in {'correlation', 'NMI', 'JSD', 'GY'}],
+]
+NormString = Annotated[
+    str,
+    Is[lambda string: string in {
+        'joint', 'geometric', 'arithmetic', 'min', 'max',
+    }],
+]
+PositiveInt = Annotated[int, Is[lambda val: val > 0]]
 
 
 @beartype
-def _entropy(p: np.ndarray) -> float:
+def _entropy(p: ArrayLikeFloat) -> float:
     """Calculate entropy of density p."""
     return -1 * np.sum(p * np.ma.log(p))
 
 
 @beartype
-def _kullback(p: np.ndarray, q: np.ndarray) -> float:
+def _kullback(p: ArrayLikeFloat, q: ArrayLikeFloat) -> float:
+    if len(p) != len(q):
+        raise ValueError(
+            f'Arrays p, q need to be of same length, but {len(p):.0f} vs '
+            f'{len(q):.0f}.',
+        )
     """Calculate Kullback-Leibler divergence of density p, q."""
     return np.sum(
         p * np.ma.log(np.ma.divide(p, q)),
     )
 
 
-def _standard_scaler(X):
+@beartype
+def _standard_scaler(X: Float2DArray) -> Float2DArray:
     """Make data mean-free and std=1."""
     scaler = preprocessing.StandardScaler().fit(X)
     return scaler.transform(X)
 
 
 @beartype
+# Tuple[Float2DArray, Float2DArray, Float1DArray, Float1DArray] noqa: E800
 def _estimate_densities(
-    x: np.ndarray, y: np.ndarray, bins: int = 100,
+    x: Float1DArray, y: Float1DArray, bins: PositiveInt = 100,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Calculate two dimensional probability densities."""
     hist, _, _ = np.histogram2d(x, y, bins, density=True)
     # transpose since numpy considers axis 0 as y and axis 1 as x
-    pij = hist.T / np.sum(hist)
-    pi = np.sum(pij, axis=1)
-    pj = np.sum(pij, axis=0)
-    pipj = pi[:, np.newaxis] * pj[np.newaxis, :]
+    pxy = hist.T / np.sum(hist)
+    px = np.sum(pxy, axis=1)
+    py = np.sum(pxy, axis=0)
+    pxpy = px[:, np.newaxis] * py[np.newaxis, :]
 
-    return pij, pipj, pi, pj
+    return pxy, pxpy, px, py
 
 
 @beartype
-def _correlation(X: np.ndarray) -> np.ndarray:
+def _correlation(X: Float2DArray) -> Float2DArray:
     """Return the correlation of input.
 
     Each feature (column) of X need to be mean-free with standard deviation 1.
@@ -101,12 +134,13 @@ class Similarity:  # noqa: WPS214
     --------
     >>> import cfs
     >>> x = np.linspace(0, np.pi, 1000)
-    >>> data = np.array([np.cos(x), np.sin(x)]).T
+    >>> data = np.array([np.cos(x), np.cos(x + np.pi / 6)]).T
     >>> sim = cfs.Similarity()
     >>> sim.fit(data)
     >>> sim.matrix_
-    array([[1.        , 0.91666054],
-           [0.91666054, 1.        ]])
+    array([[1.       , 0.9697832],
+           [0.9697832, 1.       ]])
+
 
     Notes
     -----
@@ -133,47 +167,35 @@ class Similarity:  # noqa: WPS214
 
     """
 
-    _dtype: np.dtype = np.float128
+    _dtype: np.dtype = np.float64
     _default_normalize_method: str = 'arithmetic'
-    _available_metrics: Tuple[str, ...] = ('correlation', 'NMI', 'JSD', 'GY')
-    _available_norms: Tuple[str, ...] = (
-        'joint', 'geometric', 'arithmetic', 'min', 'max',
-    )
 
     @beartype
     def __init__(
         self,
         *,
-        metric: str = 'correlation',
+        metric: MetricString = 'correlation',
         online: bool = False,
-        normalize_method: Optional[str] = None,
+        normalize_method: Optional[NormString] = None,
     ):
         """Initialize Similarity class."""
-        if metric not in self._available_metrics:
-            metrics = ', '.join([f'"{m}"' for m in self._available_metrics])
-            raise NotImplementedError(
-                f'Metric {metric} is not implemented, use one of [{metrics}]',
-            )
-
-        self._metric: str = metric
+        self._metric: MetricString = metric
         self._online: bool = online
         if self._metric == 'NMI':
             if normalize_method is None:
                 normalize_method = self._default_normalize_method
-            if normalize_method not in self._available_norms:
-                norms = ', '.join([f'"{n}"' for n in self._available_norms])
-                raise NotImplementedError(
-                    f'Normalization method {normalize_method} is not '
-                    f'implemented, use one of [{norms}]',
-                )
-            self._normalize_method: str = normalize_method
+            self._normalize_method: NormString = normalize_method
         elif normalize_method is not None:
             raise NotImplementedError(
                 'Normalize methods are only supported with metric="NMI"',
             )
 
     @beartype
-    def fit(self, X: np.ndarray, y=None) -> None:
+    def fit(
+        self,
+        X: Union[FloatMax2DArray, str],
+        y: Optional[ArrayLikeFloat] = None,
+    ) -> None:
         """Compute the correlation/nmi distance matrix.
 
         Parameters
@@ -212,12 +234,8 @@ class Similarity:  # noqa: WPS214
             if self._metric == 'correlation':
                 corr = _correlation(X)
                 matrix_ = np.abs(corr)
-            elif self._metric in {'NMI', 'JSD', 'GY'}:
+            else:  # 'NMI', 'JSD', 'GY
                 matrix_ = self._nonlinear_correlation(X)
-            else:
-                raise NotImplementedError(
-                    f'Metric {self._metric} is not implemented',
-                )
 
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
@@ -230,7 +248,7 @@ class Similarity:  # noqa: WPS214
             del self.matrix_  # noqa: WPS420
 
     @beartype
-    def _nonlinear_correlation(self, X: np.ndarray) -> np.ndarray:
+    def _nonlinear_correlation(self, X: Float2DArray) -> np.ndarray:
         """Return the nonlinear correlation."""
         calc_nl_corr: Callable
         if self._metric == 'NMI':
@@ -257,10 +275,10 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _gy(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: Float2DArray,
+        pipj: Float2DArray,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -> float:
         """Return the Jensen-Shannon based dissimilarity."""
         mutual_info: float = _kullback(pij, pipj)
@@ -271,10 +289,10 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _nmi(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: Float2DArray,
+        pipj: Float2DArray,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -> float:
         """Return the Jensen-Shannon based dissimilarity."""
         mutual_info: float = _kullback(pij, pipj)
@@ -284,10 +302,10 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _jsd(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: Float2DArray,
+        pipj: Float2DArray,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -> float:
         """Return the Jensen-Shannon based dissimilarity."""
         return jensenshannon(
@@ -314,7 +332,7 @@ class Similarity:  # noqa: WPS214
         return func([_entropy(pi), _entropy(pj)])
 
     @beartype
-    def _online_correlation(self, X: str) -> np.ndarray:
+    def _online_correlation(self, X: str) -> Float2DArray:
         """Calculate correlation on the fly."""
         self._filename: str = X
         self._n_features: int = len(next(self._data_gen()))
@@ -323,8 +341,8 @@ class Similarity:  # noqa: WPS214
 
     @beartype
     def _data_gen(
-        self, comments: str = ('#', '@'),
-    ) -> Generator[np.ndarray, None, None]:
+        self, comments: Union[str, Tuple[str, ...]] = ('#', '@'),
+    ) -> Generator[Float1DArray, None, None]:
         """Return all non comment lines as generator."""
         with open(self._filename) as file_obj:
             for line in file_obj:
@@ -333,7 +351,7 @@ class Similarity:  # noqa: WPS214
                 yield np.array(line.split()).astype(self._dtype)
 
     @beartype
-    def _welford_correlation(self) -> np.ndarray:
+    def _welford_correlation(self) -> Float2DArray:
         """Calculate the correlation via online Welford algorithm.
 
         Welford algorithm, generalized to correlation. Taken from:
@@ -365,39 +383,16 @@ class Similarity:  # noqa: WPS214
         )
 
     @beartype
-    def _check_input_with_params(self, X: Union[str, np.ndarray]) -> None:
+    def _check_input_with_params(self, X: Union[str, FloatMax2DArray]) -> None:
         # check if is string
-        is_file = isinstance(X, str)
-        if is_file and not self._online:
-            raise TypeError(
-                'Filename input is supported only with online=True',
-            )
-
-        is_array = isinstance(X, np.ndarray)
-        error_msg = None
-        error_dim1 = (
-            'Reshape your data either using array.reshape(-1, 1) if your data '
-            'has a single feature or array.reshape(1, -1) if it contains a '
-            'single sample.'
-        )
-        if is_array:
-            if X.ndim == 1:
-                error_msg = error_dim1
-            elif X.ndim > 2:
-                error_msg = (
-                    f'Found array with dim {X.ndim} but dim=2 expected.'
+        if isinstance(X, str):
+            if not self._online:
+                raise TypeError(
+                    'Filename input is supported only with online=True',
                 )
-
-        if not is_file and not is_array:
-            if self._online:
-                error_msg = (
-                    'Input needs to be of type "str" (filename), but '
-                    f'"{type(X)}" given',
-                )
-            error_msg = (
-                'Input needs to be of type "ndarray", but '
-                f'"{type(X)}" given',
+        elif X.ndim == 1:
+            raise ValueError(
+                'Reshape your data either using array.reshape(-1, 1) if your '
+                'data has a single feature or array.reshape(1, -1) if it '
+                'contains a single sample.',
             )
-
-        if error_msg:
-            raise ValueError(error_msg)
