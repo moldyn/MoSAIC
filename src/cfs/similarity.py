@@ -113,7 +113,7 @@ class Similarity:  # noqa: WPS214
         If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
-    normalize_method : str, default='arithmetic'
+    normalize_method : str, default='geometric'
         Only required for metric 'NMI'. Determines the normalization factor
         for the mutual information:
 
@@ -168,7 +168,7 @@ class Similarity:  # noqa: WPS214
     """
 
     _dtype: np.dtype = np.float64
-    _default_normalize_method: str = 'arithmetic'
+    _default_normalize_method: str = 'geometric'
 
     @beartype
     def __init__(
