@@ -77,7 +77,7 @@ def _sort_clusters(
 
     # sort inside each cluster
     for cluster_idx, cluster in enumerate(clusters_permuted):
-        clusters[cluster_idx] = np.array(cluster)[
+        clusters_permuted[cluster_idx] = np.array(cluster)[
             np.argsort(
                 np.nanmean(mat[np.ix_(cluster, cluster)], axis=1),
             )[::-1]
