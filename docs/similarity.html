@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
 <title>cfs.similarity API documentation</title>
-<meta name="description" content="Class for estimating correlation matrix …" />
+<meta name="description" content="Class for estimating correlation matrices …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href='https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css' rel='stylesheet'>
@@ -23,7 +23,7 @@
 <h1 class="title">Module <code>cfs.similarity</code></h1>
 </header>
 <section id="section-intro">
-<p>Class for estimating correlation matrix.</p>
+<p>Class for estimating correlation matrices.</p>
 <p>MIT License
 Copyright (c) 2021, Daniel Nagel, Georg Diez
 All rights reserved.</p>
@@ -32,13 +32,16 @@ All rights reserved.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python"># -*- coding: utf-8 -*-
-&#34;&#34;&#34;Class for estimating correlation matrix.
+&#34;&#34;&#34;Class for estimating correlation matrices.
 
 MIT License
 Copyright (c) 2021, Daniel Nagel, Georg Diez
 All rights reserved.
 
 &#34;&#34;&#34;
+__all__ = [&#39;Similarity&#39;]  # noqa: WPS410
+
+from functools import singledispatchmethod
 from typing import Callable, Generator, Optional, Tuple, Union
 
 import numpy as np
@@ -46,44 +49,62 @@ from beartype import beartype
 from scipy.spatial.distance import jensenshannon
 from sklearn import preprocessing
 
+from cfs.typing import (
+    ArrayLikeFloat,
+    Float1DArray,
+    Float2DArray,
+    FloatMatrix,
+    FloatMax2DArray,
+    MetricString,
+    NormString,
+    PositiveInt,
+)
+
 
 @beartype
-def _entropy(p: np.ndarray) -&gt; float:
+def _entropy(p: ArrayLikeFloat) -&gt; float:
     &#34;&#34;&#34;Calculate entropy of density p.&#34;&#34;&#34;
     return -1 * np.sum(p * np.ma.log(p))
 
 
 @beartype
-def _kullback(p: np.ndarray, q: np.ndarray) -&gt; float:
+def _kullback(p: ArrayLikeFloat, q: ArrayLikeFloat) -&gt; float:
+    if len(p) != len(q):
+        raise ValueError(
+            f&#39;Arrays p, q need to be of same length, but {len(p):.0f} vs &#39;
+            f&#39;{len(q):.0f}.&#39;,
+        )
     &#34;&#34;&#34;Calculate Kullback-Leibler divergence of density p, q.&#34;&#34;&#34;
     return np.sum(
         p * np.ma.log(np.ma.divide(p, q)),
     )
 
 
-def _standard_scaler(X):
+@beartype
+def _standard_scaler(X: Float2DArray) -&gt; Float2DArray:
     &#34;&#34;&#34;Make data mean-free and std=1.&#34;&#34;&#34;
     scaler = preprocessing.StandardScaler().fit(X)
     return scaler.transform(X)
 
 
 @beartype
+# Tuple[FloatMatrix, FloatMatrix, Float1DArray, Float1DArray] noqa: E800
 def _estimate_densities(
-    x: np.ndarray, y: np.ndarray, bins: int = 100,
+    x: Float1DArray, y: Float1DArray, bins: PositiveInt = 100,
 ) -&gt; Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     &#34;&#34;&#34;Calculate two dimensional probability densities.&#34;&#34;&#34;
     hist, _, _ = np.histogram2d(x, y, bins, density=True)
     # transpose since numpy considers axis 0 as y and axis 1 as x
-    pij = hist.T / np.sum(hist)
-    pi = np.sum(pij, axis=1)
-    pj = np.sum(pij, axis=0)
-    pipj = pi[:, np.newaxis] * pj[np.newaxis, :]
+    pxy = hist.T / np.sum(hist)
+    px = np.sum(pxy, axis=1)
+    py = np.sum(pxy, axis=0)
+    pxpy = px[:, np.newaxis] * py[np.newaxis, :]
 
-    return pij, pipj, pi, pj
+    return pxy, pxpy, px, py
 
 
 @beartype
-def _correlation(X: np.ndarray) -&gt; np.ndarray:
+def _correlation(X: Float2DArray) -&gt; FloatMatrix:
     &#34;&#34;&#34;Return the correlation of input.
 
     Each feature (column) of X need to be mean-free with standard deviation 1.
@@ -102,7 +123,7 @@ class Similarity:  # noqa: WPS214
 
         - &#39;correlation&#39; will use the absolute value of the Pearson correlation
         - &#39;NMI&#39; will use the mutual information normalized by joined entropy
-        - &#39;GY&#39; use Gel&#39;fand and Yaglom normalization[^1]
+        - &#39;GY&#39; uses Gel&#39;fand and Yaglom normalization[^1]
         - &#39;JSD&#39; will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
@@ -113,7 +134,7 @@ class Similarity:  # noqa: WPS214
         If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
-    normalize_method : str, default=&#39;arithmetic&#39;
+    normalize_method : str, default=&#39;geometric&#39;
         Only required for metric &#39;NMI&#39;. Determines the normalization factor
         for the mutual information:
 
@@ -134,12 +155,13 @@ class Similarity:  # noqa: WPS214
     --------
     &gt;&gt;&gt; import cfs
     &gt;&gt;&gt; x = np.linspace(0, np.pi, 1000)
-    &gt;&gt;&gt; data = np.array([np.cos(x), np.sin(x)]).T
+    &gt;&gt;&gt; data = np.array([np.cos(x), np.cos(x + np.pi / 6)]).T
     &gt;&gt;&gt; sim = cfs.Similarity()
     &gt;&gt;&gt; sim.fit(data)
     &gt;&gt;&gt; sim.matrix_
-    array([[1.        , 0.91666054],
-           [0.91666054, 1.        ]])
+    array([[1.       , 0.9697832],
+           [0.9697832, 1.       ]])
+
 
     Notes
     -----
@@ -150,7 +172,8 @@ class Similarity:  # noqa: WPS214
     Knuth were used [^2].
 
     [^1]: Gel&#39;fand, I.M. and Yaglom, A.M. (1957). &#34;Calculation of amount of
-        information about a random function contained in another such function&#34;.
+        information about a random function contained in another such
+        function&#34;.
         American Mathematical Society Translations, series 2, 12, pp. 199–246.
 
     [^2]: Welford algorithm, generalized to correlation. Taken from:
@@ -165,47 +188,36 @@ class Similarity:  # noqa: WPS214
 
     &#34;&#34;&#34;
 
-    _dtype: np.dtype = np.float128
-    _default_normalize_method: str = &#39;arithmetic&#39;
-    _available_metrics: Tuple[str, ...] = (&#39;correlation&#39;, &#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;)
-    _available_norms: Tuple[str, ...] = (
-        &#39;joint&#39;, &#39;geometric&#39;, &#39;arithmetic&#39;, &#39;min&#39;, &#39;max&#39;,
-    )
+    _dtype: np.dtype = np.float64
+    _default_normalize_method: str = &#39;geometric&#39;
 
     @beartype
     def __init__(
         self,
         *,
-        metric: str = &#39;correlation&#39;,
+        metric: MetricString = &#39;correlation&#39;,
         online: bool = False,
-        normalize_method: Optional[str] = None,
+        normalize_method: Optional[NormString] = None,
     ):
         &#34;&#34;&#34;Initialize Similarity class.&#34;&#34;&#34;
-        if metric not in self._available_metrics:
-            metrics = &#39;, &#39;.join([f&#39;&#34;{m}&#34;&#39; for m in self._available_metrics])
-            raise NotImplementedError(
-                f&#39;Metric {metric} is not implemented, use one of [{metrics}]&#39;,
-            )
-
-        self._metric: str = metric
+        self._metric: MetricString = metric
         self._online: bool = online
         if self._metric == &#39;NMI&#39;:
             if normalize_method is None:
                 normalize_method = self._default_normalize_method
-            if normalize_method not in self._available_norms:
-                norms = &#39;, &#39;.join([f&#39;&#34;{n}&#34;&#39; for n in self._available_norms])
-                raise NotImplementedError(
-                    f&#39;Normalization method {normalize_method} is not &#39;
-                    f&#39;implemented, use one of [{norms}]&#39;,
-                )
-            self._normalize_method: str = normalize_method
+            self._normalize_method: NormString = normalize_method
         elif normalize_method is not None:
             raise NotImplementedError(
                 &#39;Normalize methods are only supported with metric=&#34;NMI&#34;&#39;,
             )
 
+    @singledispatchmethod
     @beartype
-    def fit(self, X: np.ndarray, y=None) -&gt; None:
+    def fit(
+        self,
+        X: Union[FloatMax2DArray, str],
+        y: Optional[ArrayLikeFloat] = None,
+    ) -&gt; None:
         &#34;&#34;&#34;Compute the correlation/nmi distance matrix.
 
         Parameters
@@ -217,39 +229,57 @@ class Similarity:  # noqa: WPS214
             Not used, present for scikit API consistency by convention.
 
         &#34;&#34;&#34;
+        raise NotImplementedError(&#39;Fatal error, this should never be reached.&#39;)
+
+    @fit.register
+    def _(self, X: np.ndarray, y=None) -&gt; None:
+        &#34;&#34;&#34;Dispatched for online=False with matrix input.&#34;&#34;&#34;
         self._reset()
-        self._check_input_with_params(X)
 
         corr: np.ndarray
         matrix_: np.ndarray
-
         # parse data
         if self._online:
-            if self._metric == &#39;correlation&#39;:
-                corr = self._online_correlation(X)
-                matrix_ = np.abs(corr)
-            else:
-                raise ValueError(
-                    &#39;Mode online=True is only implemented for correlation.&#39;,
-                )
+            raise TypeError(&#39;Using online=True requires X:str&#39;)
+        if X.ndim == 1:
+            raise ValueError(
+                &#39;Reshape your data either using array.reshape(-1, 1) if your &#39;
+                &#39;data has a single feature or array.reshape(1, -1) if it &#39;
+                &#39;contains a single sample.&#39;,
+            )
+        n_features: int
+        n_samples: int
+        n_samples, n_features = X.shape
+
+        self._n_samples: int = n_samples
+        self._n_features: int = n_features
+
+        X: np.ndarray = _standard_scaler(X)
+        if self._metric == &#39;correlation&#39;:
+            corr = _correlation(X)
+            matrix_ = np.abs(corr)
+        else:  # &#39;NMI&#39;, &#39;JSD&#39;, &#39;GY
+            matrix_ = self._nonlinear_correlation(X)
+        self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
+
+    @fit.register
+    def _(self, X: str, y=None) -&gt; None:
+        &#34;&#34;&#34;Dispatched for online=True with string.&#34;&#34;&#34;
+        self._reset()
+
+        corr: np.ndarray
+        matrix_: np.ndarray
+        # parse data
+        if not self._online:
+            raise ValueError(&#39;Mode online=False reuqires X:np.ndarray.&#39;)
+
+        if self._metric == &#39;correlation&#39;:
+            corr = self._online_correlation(X)
+            matrix_ = np.abs(corr)
         else:
-            n_features: int
-            n_samples: int
-            n_samples, n_features = X.shape
-
-            self._n_samples: int = n_samples
-            self._n_features: int = n_features
-
-            X: np.ndarray = _standard_scaler(X)
-            if self._metric == &#39;correlation&#39;:
-                corr = _correlation(X)
-                matrix_ = np.abs(corr)
-            elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;}:
-                matrix_ = self._nonlinear_correlation(X)
-            else:
-                raise NotImplementedError(
-                    f&#39;Metric {self._metric} is not implemented&#39;,
-                )
+            raise ValueError(
+                &#39;Mode online=True is only implemented for correlation.&#39;,
+            )
 
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
@@ -262,7 +292,7 @@ class Similarity:  # noqa: WPS214
             del self.matrix_  # noqa: WPS420
 
     @beartype
-    def _nonlinear_correlation(self, X: np.ndarray) -&gt; np.ndarray:
+    def _nonlinear_correlation(self, X: Float2DArray) -&gt; FloatMatrix:
         &#34;&#34;&#34;Return the nonlinear correlation.&#34;&#34;&#34;
         calc_nl_corr: Callable
         if self._metric == &#39;NMI&#39;:
@@ -289,24 +319,24 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _gy(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: FloatMatrix,
+        pipj: FloatMatrix,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -&gt; float:
         &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
         mutual_info: float = _kullback(pij, pipj)
-        return -0.5 * np.sqrt(
+        return np.sqrt(
             1 - np.exp(-2 * mutual_info),
         )
 
     @beartype
     def _nmi(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: FloatMatrix,
+        pipj: FloatMatrix,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -&gt; float:
         &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
         mutual_info: float = _kullback(pij, pipj)
@@ -316,10 +346,10 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _jsd(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: FloatMatrix,
+        pipj: FloatMatrix,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -&gt; float:
         &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
         return jensenshannon(
@@ -346,7 +376,7 @@ class Similarity:  # noqa: WPS214
         return func([_entropy(pi), _entropy(pj)])
 
     @beartype
-    def _online_correlation(self, X: str) -&gt; np.ndarray:
+    def _online_correlation(self, X: str) -&gt; FloatMatrix:
         &#34;&#34;&#34;Calculate correlation on the fly.&#34;&#34;&#34;
         self._filename: str = X
         self._n_features: int = len(next(self._data_gen()))
@@ -355,8 +385,8 @@ class Similarity:  # noqa: WPS214
 
     @beartype
     def _data_gen(
-        self, comments: str = (&#39;#&#39;, &#39;@&#39;),
-    ) -&gt; Generator[np.ndarray, None, None]:
+        self, comments: Union[str, Tuple[str, ...]] = (&#39;#&#39;, &#39;@&#39;),
+    ) -&gt; Generator[Float1DArray, None, None]:
         &#34;&#34;&#34;Return all non comment lines as generator.&#34;&#34;&#34;
         with open(self._filename) as file_obj:
             for line in file_obj:
@@ -365,7 +395,7 @@ class Similarity:  # noqa: WPS214
                 yield np.array(line.split()).astype(self._dtype)
 
     @beartype
-    def _welford_correlation(self) -&gt; np.ndarray:
+    def _welford_correlation(self) -&gt; FloatMatrix:
         &#34;&#34;&#34;Calculate the correlation via online Welford algorithm.
 
         Welford algorithm, generalized to correlation. Taken from:
@@ -394,45 +424,7 @@ class Similarity:  # noqa: WPS214
         std = np.sqrt(np.diag(corr) / (n - 1))
         return corr / (n - 1) / (
             std.reshape(-1, 1) * std.reshape(1, -1)
-        )
-
-    @beartype
-    def _check_input_with_params(self, X: Union[str, np.ndarray]) -&gt; None:
-        # check if is string
-        is_file = isinstance(X, str)
-        if is_file and not self._online:
-            raise TypeError(
-                &#39;Filename input is supported only with online=True&#39;,
-            )
-
-        is_array = isinstance(X, np.ndarray)
-        error_msg = None
-        error_dim1 = (
-            &#39;Reshape your data either using array.reshape(-1, 1) if your data &#39;
-            &#39;has a single feature or array.reshape(1, -1) if it contains a &#39;
-            &#39;single sample.&#39;
-        )
-        if is_array:
-            if X.ndim == 1:
-                error_msg = error_dim1
-            elif X.ndim &gt; 2:
-                error_msg = (
-                    f&#39;Found array with dim {X.ndim} but dim=2 expected.&#39;
-                )
-
-        if not is_file and not is_array:
-            if self._online:
-                error_msg = (
-                    &#39;Input needs to be of type &#34;str&#34; (filename), but &#39;
-                    f&#39;&#34;{type(X)}&#34; given&#39;,
-                )
-            error_msg = (
-                &#39;Input needs to be of type &#34;ndarray&#34;, but &#39;
-                f&#39;&#34;{type(X)}&#34; given&#39;,
-            )
-
-        if error_msg:
-            raise ValueError(error_msg)</code></pre>
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -458,7 +450,7 @@ class Similarity:  # noqa: WPS214
 <ul>
 <li>'correlation' will use the absolute value of the Pearson correlation</li>
 <li>'NMI' will use the mutual information normalized by joined entropy</li>
-<li>'GY' use Gel'fand and Yaglom normalization<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
+<li>'GY' uses Gel'fand and Yaglom normalization<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
 <li>'JSD' will use the Jensen-Shannon divergence between the joint
 probability distribution and the product of the marginal probability
 distributions to calculate their dissimilarity</li>
@@ -468,7 +460,7 @@ distributions to calculate their dissimilarity</li>
 <dt><strong><code>online</code></strong> :&ensp;<code>bool</code>, default=<code>False</code></dt>
 <dd>If True, the input of fit X needs to be a file name and the correlation
 is calculated on the fly. Otherwise, an array is assumed as input X.</dd>
-<dt><strong><code>normalize_method</code></strong> :&ensp;<code>str</code>, default=<code>'arithmetic'</code></dt>
+<dt><strong><code>normalize_method</code></strong> :&ensp;<code>str</code>, default=<code>'geometric'</code></dt>
 <dd>
 <p>Only required for metric 'NMI'. Determines the normalization factor
 for the mutual information:</p>
@@ -491,12 +483,12 @@ scales from [0, 1].</dd>
 <h2 id="examples">Examples</h2>
 <pre><code class="language-python">&gt;&gt;&gt; import cfs
 &gt;&gt;&gt; x = np.linspace(0, np.pi, 1000)
-&gt;&gt;&gt; data = np.array([np.cos(x), np.sin(x)]).T
+&gt;&gt;&gt; data = np.array([np.cos(x), np.cos(x + np.pi / 6)]).T
 &gt;&gt;&gt; sim = cfs.Similarity()
 &gt;&gt;&gt; sim.fit(data)
 &gt;&gt;&gt; sim.matrix_
-array([[1.        , 0.91666054],
-       [0.91666054, 1.        ]])
+array([[1.       , 0.9697832],
+       [0.9697832, 1.       ]])
 </code></pre>
 <h2 id="notes">Notes</h2>
 <p>The correlation is defined as
@@ -517,7 +509,8 @@ distribution and <span><span class="MathJax_Preview">D_{\text{KL}}</span><script
 <ol>
 <li id="fn:1">
 <p>Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
-information about a random function contained in another such function".
+information about a random function contained in another such
+function".
 American Mathematical Society Translations, series 2, 12, pp. 199–246.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
 </li>
 <li id="fn:2">
@@ -541,7 +534,7 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
 
         - &#39;correlation&#39; will use the absolute value of the Pearson correlation
         - &#39;NMI&#39; will use the mutual information normalized by joined entropy
-        - &#39;GY&#39; use Gel&#39;fand and Yaglom normalization[^1]
+        - &#39;GY&#39; uses Gel&#39;fand and Yaglom normalization[^1]
         - &#39;JSD&#39; will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
@@ -552,7 +545,7 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
         If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
-    normalize_method : str, default=&#39;arithmetic&#39;
+    normalize_method : str, default=&#39;geometric&#39;
         Only required for metric &#39;NMI&#39;. Determines the normalization factor
         for the mutual information:
 
@@ -573,12 +566,13 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
     --------
     &gt;&gt;&gt; import cfs
     &gt;&gt;&gt; x = np.linspace(0, np.pi, 1000)
-    &gt;&gt;&gt; data = np.array([np.cos(x), np.sin(x)]).T
+    &gt;&gt;&gt; data = np.array([np.cos(x), np.cos(x + np.pi / 6)]).T
     &gt;&gt;&gt; sim = cfs.Similarity()
     &gt;&gt;&gt; sim.fit(data)
     &gt;&gt;&gt; sim.matrix_
-    array([[1.        , 0.91666054],
-           [0.91666054, 1.        ]])
+    array([[1.       , 0.9697832],
+           [0.9697832, 1.       ]])
+
 
     Notes
     -----
@@ -589,7 +583,8 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
     Knuth were used [^2].
 
     [^1]: Gel&#39;fand, I.M. and Yaglom, A.M. (1957). &#34;Calculation of amount of
-        information about a random function contained in another such function&#34;.
+        information about a random function contained in another such
+        function&#34;.
         American Mathematical Society Translations, series 2, 12, pp. 199–246.
 
     [^2]: Welford algorithm, generalized to correlation. Taken from:
@@ -604,47 +599,36 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
 
     &#34;&#34;&#34;
 
-    _dtype: np.dtype = np.float128
-    _default_normalize_method: str = &#39;arithmetic&#39;
-    _available_metrics: Tuple[str, ...] = (&#39;correlation&#39;, &#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;)
-    _available_norms: Tuple[str, ...] = (
-        &#39;joint&#39;, &#39;geometric&#39;, &#39;arithmetic&#39;, &#39;min&#39;, &#39;max&#39;,
-    )
+    _dtype: np.dtype = np.float64
+    _default_normalize_method: str = &#39;geometric&#39;
 
     @beartype
     def __init__(
         self,
         *,
-        metric: str = &#39;correlation&#39;,
+        metric: MetricString = &#39;correlation&#39;,
         online: bool = False,
-        normalize_method: Optional[str] = None,
+        normalize_method: Optional[NormString] = None,
     ):
         &#34;&#34;&#34;Initialize Similarity class.&#34;&#34;&#34;
-        if metric not in self._available_metrics:
-            metrics = &#39;, &#39;.join([f&#39;&#34;{m}&#34;&#39; for m in self._available_metrics])
-            raise NotImplementedError(
-                f&#39;Metric {metric} is not implemented, use one of [{metrics}]&#39;,
-            )
-
-        self._metric: str = metric
+        self._metric: MetricString = metric
         self._online: bool = online
         if self._metric == &#39;NMI&#39;:
             if normalize_method is None:
                 normalize_method = self._default_normalize_method
-            if normalize_method not in self._available_norms:
-                norms = &#39;, &#39;.join([f&#39;&#34;{n}&#34;&#39; for n in self._available_norms])
-                raise NotImplementedError(
-                    f&#39;Normalization method {normalize_method} is not &#39;
-                    f&#39;implemented, use one of [{norms}]&#39;,
-                )
-            self._normalize_method: str = normalize_method
+            self._normalize_method: NormString = normalize_method
         elif normalize_method is not None:
             raise NotImplementedError(
                 &#39;Normalize methods are only supported with metric=&#34;NMI&#34;&#39;,
             )
 
+    @singledispatchmethod
     @beartype
-    def fit(self, X: np.ndarray, y=None) -&gt; None:
+    def fit(
+        self,
+        X: Union[FloatMax2DArray, str],
+        y: Optional[ArrayLikeFloat] = None,
+    ) -&gt; None:
         &#34;&#34;&#34;Compute the correlation/nmi distance matrix.
 
         Parameters
@@ -656,39 +640,57 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
             Not used, present for scikit API consistency by convention.
 
         &#34;&#34;&#34;
+        raise NotImplementedError(&#39;Fatal error, this should never be reached.&#39;)
+
+    @fit.register
+    def _(self, X: np.ndarray, y=None) -&gt; None:
+        &#34;&#34;&#34;Dispatched for online=False with matrix input.&#34;&#34;&#34;
         self._reset()
-        self._check_input_with_params(X)
 
         corr: np.ndarray
         matrix_: np.ndarray
-
         # parse data
         if self._online:
-            if self._metric == &#39;correlation&#39;:
-                corr = self._online_correlation(X)
-                matrix_ = np.abs(corr)
-            else:
-                raise ValueError(
-                    &#39;Mode online=True is only implemented for correlation.&#39;,
-                )
+            raise TypeError(&#39;Using online=True requires X:str&#39;)
+        if X.ndim == 1:
+            raise ValueError(
+                &#39;Reshape your data either using array.reshape(-1, 1) if your &#39;
+                &#39;data has a single feature or array.reshape(1, -1) if it &#39;
+                &#39;contains a single sample.&#39;,
+            )
+        n_features: int
+        n_samples: int
+        n_samples, n_features = X.shape
+
+        self._n_samples: int = n_samples
+        self._n_features: int = n_features
+
+        X: np.ndarray = _standard_scaler(X)
+        if self._metric == &#39;correlation&#39;:
+            corr = _correlation(X)
+            matrix_ = np.abs(corr)
+        else:  # &#39;NMI&#39;, &#39;JSD&#39;, &#39;GY
+            matrix_ = self._nonlinear_correlation(X)
+        self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
+
+    @fit.register
+    def _(self, X: str, y=None) -&gt; None:
+        &#34;&#34;&#34;Dispatched for online=True with string.&#34;&#34;&#34;
+        self._reset()
+
+        corr: np.ndarray
+        matrix_: np.ndarray
+        # parse data
+        if not self._online:
+            raise ValueError(&#39;Mode online=False reuqires X:np.ndarray.&#39;)
+
+        if self._metric == &#39;correlation&#39;:
+            corr = self._online_correlation(X)
+            matrix_ = np.abs(corr)
         else:
-            n_features: int
-            n_samples: int
-            n_samples, n_features = X.shape
-
-            self._n_samples: int = n_samples
-            self._n_features: int = n_features
-
-            X: np.ndarray = _standard_scaler(X)
-            if self._metric == &#39;correlation&#39;:
-                corr = _correlation(X)
-                matrix_ = np.abs(corr)
-            elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;}:
-                matrix_ = self._nonlinear_correlation(X)
-            else:
-                raise NotImplementedError(
-                    f&#39;Metric {self._metric} is not implemented&#39;,
-                )
+            raise ValueError(
+                &#39;Mode online=True is only implemented for correlation.&#39;,
+            )
 
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
@@ -701,7 +703,7 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
             del self.matrix_  # noqa: WPS420
 
     @beartype
-    def _nonlinear_correlation(self, X: np.ndarray) -&gt; np.ndarray:
+    def _nonlinear_correlation(self, X: Float2DArray) -&gt; FloatMatrix:
         &#34;&#34;&#34;Return the nonlinear correlation.&#34;&#34;&#34;
         calc_nl_corr: Callable
         if self._metric == &#39;NMI&#39;:
@@ -728,24 +730,24 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
     @beartype
     def _gy(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: FloatMatrix,
+        pipj: FloatMatrix,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -&gt; float:
         &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
         mutual_info: float = _kullback(pij, pipj)
-        return -0.5 * np.sqrt(
+        return np.sqrt(
             1 - np.exp(-2 * mutual_info),
         )
 
     @beartype
     def _nmi(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: FloatMatrix,
+        pipj: FloatMatrix,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -&gt; float:
         &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
         mutual_info: float = _kullback(pij, pipj)
@@ -755,10 +757,10 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
     @beartype
     def _jsd(
         self,
-        pij: np.ndarray,
-        pipj: np.ndarray,
-        pi: np.ndarray,
-        pj: np.ndarray,
+        pij: FloatMatrix,
+        pipj: FloatMatrix,
+        pi: Float1DArray,
+        pj: Float1DArray,
     ) -&gt; float:
         &#34;&#34;&#34;Return the Jensen-Shannon based dissimilarity.&#34;&#34;&#34;
         return jensenshannon(
@@ -785,7 +787,7 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
         return func([_entropy(pi), _entropy(pj)])
 
     @beartype
-    def _online_correlation(self, X: str) -&gt; np.ndarray:
+    def _online_correlation(self, X: str) -&gt; FloatMatrix:
         &#34;&#34;&#34;Calculate correlation on the fly.&#34;&#34;&#34;
         self._filename: str = X
         self._n_features: int = len(next(self._data_gen()))
@@ -794,8 +796,8 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
 
     @beartype
     def _data_gen(
-        self, comments: str = (&#39;#&#39;, &#39;@&#39;),
-    ) -&gt; Generator[np.ndarray, None, None]:
+        self, comments: Union[str, Tuple[str, ...]] = (&#39;#&#39;, &#39;@&#39;),
+    ) -&gt; Generator[Float1DArray, None, None]:
         &#34;&#34;&#34;Return all non comment lines as generator.&#34;&#34;&#34;
         with open(self._filename) as file_obj:
             for line in file_obj:
@@ -804,7 +806,7 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
                 yield np.array(line.split()).astype(self._dtype)
 
     @beartype
-    def _welford_correlation(self) -&gt; np.ndarray:
+    def _welford_correlation(self) -&gt; FloatMatrix:
         &#34;&#34;&#34;Calculate the correlation via online Welford algorithm.
 
         Welford algorithm, generalized to correlation. Taken from:
@@ -833,45 +835,7 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
         std = np.sqrt(np.diag(corr) / (n - 1))
         return corr / (n - 1) / (
             std.reshape(-1, 1) * std.reshape(1, -1)
-        )
-
-    @beartype
-    def _check_input_with_params(self, X: Union[str, np.ndarray]) -&gt; None:
-        # check if is string
-        is_file = isinstance(X, str)
-        if is_file and not self._online:
-            raise TypeError(
-                &#39;Filename input is supported only with online=True&#39;,
-            )
-
-        is_array = isinstance(X, np.ndarray)
-        error_msg = None
-        error_dim1 = (
-            &#39;Reshape your data either using array.reshape(-1, 1) if your data &#39;
-            &#39;has a single feature or array.reshape(1, -1) if it contains a &#39;
-            &#39;single sample.&#39;
-        )
-        if is_array:
-            if X.ndim == 1:
-                error_msg = error_dim1
-            elif X.ndim &gt; 2:
-                error_msg = (
-                    f&#39;Found array with dim {X.ndim} but dim=2 expected.&#39;
-                )
-
-        if not is_file and not is_array:
-            if self._online:
-                error_msg = (
-                    &#39;Input needs to be of type &#34;str&#34; (filename), but &#39;
-                    f&#39;&#34;{type(X)}&#34; given&#39;,
-                )
-            error_msg = (
-                &#39;Input needs to be of type &#34;ndarray&#34;, but &#39;
-                f&#39;&#34;{type(X)}&#34; given&#39;,
-            )
-
-        if error_msg:
-            raise ValueError(error_msg)</code></pre>
+        )</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -891,8 +855,13 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">@beartype
-def fit(self, X: np.ndarray, y=None) -&gt; None:
+<pre><code class="python">@singledispatchmethod
+@beartype
+def fit(
+    self,
+    X: Union[FloatMax2DArray, str],
+    y: Optional[ArrayLikeFloat] = None,
+) -&gt; None:
     &#34;&#34;&#34;Compute the correlation/nmi distance matrix.
 
     Parameters
@@ -904,41 +873,7 @@ def fit(self, X: np.ndarray, y=None) -&gt; None:
         Not used, present for scikit API consistency by convention.
 
     &#34;&#34;&#34;
-    self._reset()
-    self._check_input_with_params(X)
-
-    corr: np.ndarray
-    matrix_: np.ndarray
-
-    # parse data
-    if self._online:
-        if self._metric == &#39;correlation&#39;:
-            corr = self._online_correlation(X)
-            matrix_ = np.abs(corr)
-        else:
-            raise ValueError(
-                &#39;Mode online=True is only implemented for correlation.&#39;,
-            )
-    else:
-        n_features: int
-        n_samples: int
-        n_samples, n_features = X.shape
-
-        self._n_samples: int = n_samples
-        self._n_features: int = n_features
-
-        X: np.ndarray = _standard_scaler(X)
-        if self._metric == &#39;correlation&#39;:
-            corr = _correlation(X)
-            matrix_ = np.abs(corr)
-        elif self._metric in {&#39;NMI&#39;, &#39;JSD&#39;, &#39;GY&#39;}:
-            matrix_ = self._nonlinear_correlation(X)
-        else:
-            raise NotImplementedError(
-                f&#39;Metric {self._metric} is not implemented&#39;,
-            )
-
-    self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)</code></pre>
+    raise NotImplementedError(&#39;Fatal error, this should never be reached.&#39;)</code></pre>
 </details>
 </dd>
 </dl>
