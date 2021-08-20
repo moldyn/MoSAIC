@@ -296,4 +296,6 @@ class Clustering:
         clusters = la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
         )
-        return np.array(list(clusters), dtype=object)
+        cluster_list = np.empty(len(clusters), dtype=object)
+        cluster_list[:] = clusters
+        return clusters

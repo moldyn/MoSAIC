@@ -68,3 +68,6 @@ FloatMax2DArray = _Annotated[
 Object1DArray = _Annotated[
     ObjectNDArray, _Is[lambda arr: arr.ndim == 1],
 ]
+ObjectMax2DArray = _Annotated[
+    ObjectNDArray, _Is[lambda arr: 1 <= arr.ndim <= 2],
+]

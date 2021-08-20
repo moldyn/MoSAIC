@@ -261,13 +261,11 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _nonlinear_correlation(self, X: Float2DArray) -> FloatMatrix:
         """Return the nonlinear correlation."""
-        calc_nl_corr: Callable
-        if self._metric == 'NMI':
-            calc_nl_corr = self._nmi
-        elif self._metric == 'GY':
-            calc_nl_corr = self._gy
-        else:
-            calc_nl_corr = self._jsd
+        calc_nl_corr: Callable = {
+            'NMI': self._nmi,
+            'GY': self._gy,
+            'JSD': self._jsd,
+        }[self._metric]
 
         nl_corr: np.ndarray = np.empty(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
