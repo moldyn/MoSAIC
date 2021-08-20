@@ -48,20 +48,16 @@ def _sort_coarse_clustermatrix(coarsemat: FloatMatrix) -> Index1DArray:
     """Return indices which sort clusters to minimize off-diagonal values."""
     nclusters = len(coarsemat)
     clusters = np.empty(nclusters, dtype=object)
-    clusters[:] = [[i] for i in range(nclusters)]
+    clusters[:] = [[i] for i in range(nclusters)]  # noqa: WPS362
 
-    #while len(clusters) >= 2:
     for _ in range(nclusters - 1):
         cmat = _coarse_clustermatrix(clusters, coarsemat)
         # find largest of diagonal value
         cmat[np.diag_indices_from(cmat)] = np.nan
         x_idxs, y_idxs = np.where(cmat == np.nanmax(cmat))
 
-        print(f'{cmat} -> {x_idxs[0]}+{y_idxs[0]}')
-
         clusters[x_idxs[0]].extend(clusters[y_idxs[0]])
         clusters = np.delete(clusters, y_idxs[0])
-        print(f'clusters: {clusters}')
 
     return np.asarray(clusters[0], dtype=int)
 
@@ -234,7 +230,7 @@ class Clustering:
             list(mat.astype(np.float64)), loops=False,
         )
 
-        clusters = self._clustering_leiden(graph)
+        clusters: Object1DArray = self._clustering_leiden(graph)
         self.clusters_: Object1DArray = _sort_clusters(clusters, X)
 
         self.permutation_: Index1DArray = np.hstack(self.clusters_)
@@ -261,7 +257,6 @@ class Clustering:
         neigh = NearestNeighbors(
             n_neighbors=self._neighbors,
             metric='precomputed',
-            include_self=True,
         )
         neigh.fit(1 - matrix)
         if self._weighted:
@@ -301,4 +296,4 @@ class Clustering:
         # create an empty list, adding the values in the second step
         cluster_list = np.empty(len(clusters), dtype=object)
         cluster_list[:] = clusters  # noqa: WPS362
-        return clusters
+        return cluster_list
