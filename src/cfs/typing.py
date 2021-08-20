@@ -48,7 +48,7 @@ ObjectNDArray = _Annotated[
 ]
 ArrayLikeFloat = _Union[_List[float], FloatNDArray]
 Index1DArray = _Annotated[
-    FloatNDArray, _Is[
+    IntNDArray, _Is[
         lambda arr: arr.ndim == 1 and _np.all(arr >= 0)
     ],
 ]

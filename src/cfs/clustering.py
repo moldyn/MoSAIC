@@ -44,24 +44,26 @@ def _coarse_clustermatrix(
 
 
 @beartype
-def _cuthill_mckee_sorting(coarsemat: FloatMatrix) -> Index1DArray:
+def _sort_coarse_clustermatrix(coarsemat: FloatMatrix) -> Index1DArray:
     """Return indices which sort clusters to minimize off-diagonal values."""
     nclusters = len(coarsemat)
-    if nclusters > 1:
-        scale_factor = int(np.ceil(np.sqrt(nclusters)))
-        cutoff = nclusters**2 - scale_factor * nclusters
-    else:
-        raise ValueError(
-            'Only one cluster was found. Try different parameters',
-        )
-    coarsemat[
-        coarsemat < np.sort(coarsemat, axis=None)[cutoff]
-    ] = np.nan
-    rCMcKee = csgraph.csgraph_from_dense(coarsemat)
-    return csgraph.reverse_cuthill_mckee(
-        rCMcKee,
-        symmetric_mode=True,
-    )
+    clusters = np.empty(nclusters, dtype=object)
+    clusters[:] = [[i] for i in range(nclusters)]
+
+    #while len(clusters) >= 2:
+    for _ in range(nclusters - 1):
+        cmat = _coarse_clustermatrix(clusters, coarsemat)
+        # find largest of diagonal value
+        cmat[np.diag_indices_from(cmat)] = np.nan
+        x_idxs, y_idxs = np.where(cmat == np.nanmax(cmat))
+
+        print(f'{cmat} -> {x_idxs[0]}+{y_idxs[0]}')
+
+        clusters[x_idxs[0]].extend(clusters[y_idxs[0]])
+        clusters = np.delete(clusters, y_idxs[0])
+        print(f'clusters: {clusters}')
+
+    return np.asarray(clusters[0], dtype=int)
 
 
 @beartype
@@ -70,23 +72,21 @@ def _sort_clusters(
 ) -> Object1DArray:
     """Sort clusters globally by the reverse Cuthill-McKee algorithm and
     internally by the largest average values within cluster."""
+    # sort the order of the cluster
     clusters_permuted = clusters[
-        _cuthill_mckee_sorting(
+        _sort_coarse_clustermatrix(
             _coarse_clustermatrix(clusters, mat),
         )
     ]
 
-    return np.array(
-        [
-            np.array(cluster)[
-                np.argsort(
-                    np.nanmean(mat[np.ix_(cluster, cluster)], axis=1),
-                )[::-1]
-            ]
-            for cluster in clusters_permuted
-        ],
-        dtype=object,
-    )
+    # sort inside each cluster
+    for cluster_idx, cluster in enumerate(clusters_permuted):
+        clusters[cluster_idx] = np.array(cluster)[
+            np.argsort(
+                np.nanmean(mat[np.ix_(cluster, cluster)], axis=1),
+            )[::-1]
+        ].tolist()
+    return clusters_permuted
 
 
 class Clustering:
@@ -296,6 +296,9 @@ class Clustering:
         clusters = la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
         )
+        # In case of clusters of same length, numpy casted it as a 2D array.
+        # To ensure that the result is an numpy array of list, we need to
+        # create an empty list, adding the values in the second step
         cluster_list = np.empty(len(clusters), dtype=object)
-        cluster_list[:] = clusters
+        cluster_list[:] = clusters  # noqa: WPS362
         return clusters
