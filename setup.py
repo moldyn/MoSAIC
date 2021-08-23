@@ -5,8 +5,8 @@ import sys
 import setuptools
 
 # check for python version
-if sys.version_info < (3, 6):
-    raise SystemExit('Python 3.6+ is required!')
+if sys.version_info < (3, 8):
+    raise SystemExit('Python 3.8+ is required!')
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -31,21 +31,20 @@ setuptools.setup(
     classifiers=[
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),
     include_package_data=True,
+    python_requires='==3.8',
     install_requires=[
-        'numpy',
+        'numpy>=1.21.0',
         'pandas',
-        'beartype',
+        'beartype>=0.8.1',
         'scipy',
         'scikit-learn',
-        'leidenalg',
+        'leidenalg>=0.8.0',
         'umap-learn',
     ],
 )

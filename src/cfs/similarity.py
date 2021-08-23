@@ -55,10 +55,9 @@ def _standard_scaler(X: Float2DArray) -> Float2DArray:
 
 
 @beartype
-# Tuple[FloatMatrix, FloatMatrix, Float1DArray, Float1DArray] noqa: E800
 def _estimate_densities(
     x: Float1DArray, y: Float1DArray, bins: PositiveInt = 100,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> Tuple[FloatMatrix, FloatMatrix, Float1DArray, Float1DArray]:
     """Calculate two dimensional probability densities."""
     hist, _, _ = np.histogram2d(x, y, bins, density=True)
     # transpose since numpy considers axis 0 as y and axis 1 as x
