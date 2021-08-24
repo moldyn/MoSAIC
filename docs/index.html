@@ -70,10 +70,11 @@
 </summary>
 <pre><code class="python"># -*- coding: utf-8 -*-
 &#34;&#34;&#34;.. include:: ../../README.md&#34;&#34;&#34;
-__all__ = [&#39;Clustering&#39;, &#39;Similarity&#39;]
+__all__ = [&#39;Clustering&#39;, &#39;Similarity&#39;, &#39;UMAPSimilarity&#39;]
 
 from .clustering import Clustering
 from .similarity import Similarity
+from .umap_similarity import UMAPSimilarity
 
 
 __version__ = &#39;0.1.0&#39;</code></pre>
@@ -90,13 +91,9 @@ __version__ = &#39;0.1.0&#39;</code></pre>
 <dd>
 <div class="desc"><p>Class for estimating correlation matrices …</p></div>
 </dd>
-<dt><code class="name"><a title="cfs.tools" href="tools.html">cfs.tools</a></code></dt>
+<dt><code class="name"><a title="cfs.umap_similarity" href="umap_similarity.html">cfs.umap_similarity</a></code></dt>
 <dd>
-<div class="desc"><p>Set of helpful functions …</p></div>
-</dd>
-<dt><code class="name"><a title="cfs.typing" href="typing.html">cfs.typing</a></code></dt>
-<dd>
-<div class="desc"><p>Class for defining typing …</p></div>
+<div class="desc"><p>Class for embedding correlation matrix with UMAP …</p></div>
 </dd>
 </dl>
 </section>
@@ -109,7 +106,7 @@ __version__ = &#39;0.1.0&#39;</code></pre>
 <dl>
 <dt id="cfs.Clustering"><code class="flex name class">
 <span>class <span class="ident">Clustering</span></span>
-<span>(</span><span>*, mode='CPM', weighted=True, neighbors=None, resolution_parameter=None, iterations=None)</span>
+<span>(</span><span>*, mode='CPM', weighted=True, n_neighbors=None, resolution_parameter=None, iterations=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Class for clustering a correlation matrix.</p>
@@ -126,7 +123,7 @@ is constructed using the adjacency matrix.</dd>
 <dt><strong><code>iterations</code></strong> :&ensp;<code>int</code>, default=<code>None,</code></dt>
 <dd>Number of iterations to run the Leiden algorithm. None means that the
 algorithm runs until no further improvement is achieved.</dd>
-<dt><strong><code>neighbors</code></strong> :&ensp;<code>int</code>, default=<code>None,</code></dt>
+<dt><strong><code>n_neighbors</code></strong> :&ensp;<code>int</code>, default=<code>None,</code></dt>
 <dd>This parameter specifies if the whole matrix is used, or an knn-graph.
 The default depends on the <code>mode</code>
 - 'CPM': <code>None</code> uses full graph, and
@@ -137,7 +134,7 @@ be set to the median value of the matrix.</dd>
 </dl>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>clusters_</code></strong> :&ensp;<code>list</code> of <code>ndarrays</code></dt>
+<dt><strong><code>clusters_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_clusters)</code></dt>
 <dd>The result of the clustering process. A list of arrays, each
 containing all indices (features) for each cluster.</dd>
 <dt><strong><code>matrix_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_features, n_features)</code></dt>
@@ -147,9 +144,9 @@ containing all indices (features) for each cluster.</dd>
 <dt><strong><code>permutation_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_features)</code></dt>
 <dd>Permutation of the input features (corresponds to flattened
 <code>clusters_</code>).</dd>
-<dt><strong><code>nneighbors_</code></strong> :&ensp;<code>int</code></dt>
-<dd>Only for mode 'modularity'. Indicates the number of nearest neighbors
-used for constructin the knn-graph.</dd>
+<dt><strong><code>n_neighbors_</code></strong> :&ensp;<code>int</code></dt>
+<dd>Only avaiable when using knn graph. Indicates the number of nearest
+neighbors used for constructin the knn-graph.</dd>
 <dt><strong><code>resolution_param_</code></strong> :&ensp;<code>float</code></dt>
 <dd>Only for mode 'CPM'. Indicates the resolution parameter used for the
 CPM based Leiden clustering.</dd>
@@ -190,7 +187,7 @@ array([[1. , 0.9, 0.1],
         Number of iterations to run the Leiden algorithm. None means that the
         algorithm runs until no further improvement is achieved.
 
-    neighbors: int, default=None,
+    n_neighbors: int, default=None,
         This parameter specifies if the whole matrix is used, or an knn-graph.
         The default depends on the `mode`
         - &#39;CPM&#39;: `None` uses full graph, and
@@ -202,7 +199,7 @@ array([[1. , 0.9, 0.1],
 
     Attributes
     ----------
-    clusters_ : list of ndarrays
+    clusters_ : ndarray of shape (n_clusters)
         The result of the clustering process. A list of arrays, each
         containing all indices (features) for each cluster.
 
@@ -216,9 +213,9 @@ array([[1. , 0.9, 0.1],
         Permutation of the input features (corresponds to flattened
         `clusters_`).
 
-    nneighbors_ : int
-        Only for mode &#39;modularity&#39;. Indicates the number of nearest neighbors
-        used for constructin the knn-graph.
+    n_neighbors_ : int
+        Only avaiable when using knn graph. Indicates the number of nearest
+        neighbors used for constructin the knn-graph.
 
     resolution_param_ : float
         Only for mode &#39;CPM&#39;. Indicates the resolution parameter used for the
@@ -245,14 +242,14 @@ array([[1. , 0.9, 0.1],
         *,
         mode: ClusteringModeString = &#39;CPM&#39;,
         weighted: bool = True,
-        neighbors: Optional[PositiveInt] = None,
+        n_neighbors: Optional[PositiveInt] = None,
         resolution_parameter: Optional[NumInRange0to1] = None,
         iterations: Optional[PositiveInt] = None,
     ) -&gt; None:
         &#34;&#34;&#34;Initialize Clustering class.&#34;&#34;&#34;
         self._mode: ClusteringModeString = mode
         self._weighted: bool = weighted
-        self._neighbors: Optional[PositiveInt] = neighbors
+        self._neighbors: Optional[PositiveInt] = n_neighbors
 
         self._iterations: int
         if iterations is None:
@@ -316,7 +313,7 @@ array([[1. , 0.9, 0.1],
             list(mat.astype(np.float64)), loops=False,
         )
 
-        clusters = self._clustering_leiden(graph)
+        clusters: Object1DArray = self._clustering_leiden(graph)
         self.clusters_: Object1DArray = _sort_clusters(clusters, X)
 
         self.permutation_: Index1DArray = np.hstack(self.clusters_)
@@ -338,12 +335,11 @@ array([[1. , 0.9, 0.1],
                 &#39;The number of nearest neighbors must be smaller than the &#39;
                 &#39;number of features.&#39;,
             )
-        self.nneighbors_: PositiveInt = self._neighbors
+        self.n_neighbors_: PositiveInt = self._neighbors
 
         neigh = NearestNeighbors(
             n_neighbors=self._neighbors,
             metric=&#39;precomputed&#39;,
-            include_self=True,
         )
         neigh.fit(1 - matrix)
         if self._weighted:
@@ -378,7 +374,12 @@ array([[1. , 0.9, 0.1],
         clusters = la.find_partition(
             graph, **self._setup_leiden_kwargs(graph),
         )
-        return np.array(list(clusters), dtype=object)</code></pre>
+        # In case of clusters of same length, numpy casted it as a 2D array.
+        # To ensure that the result is an numpy array of list, we need to
+        # create an empty list, adding the values in the second step
+        cluster_list = np.empty(len(clusters), dtype=object)
+        cluster_list[:] = clusters  # noqa: WPS362
+        return cluster_list</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -442,7 +443,7 @@ def fit(self, X: FloatMatrix, y: Optional[np.ndarray] = None) -&gt; None:
         list(mat.astype(np.float64)), loops=False,
     )
 
-    clusters = self._clustering_leiden(graph)
+    clusters: Object1DArray = self._clustering_leiden(graph)
     self.clusters_: Object1DArray = _sort_clusters(clusters, X)
 
     self.permutation_: Index1DArray = np.hstack(self.clusters_)
@@ -725,13 +726,11 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
     @beartype
     def _nonlinear_correlation(self, X: Float2DArray) -&gt; FloatMatrix:
         &#34;&#34;&#34;Return the nonlinear correlation.&#34;&#34;&#34;
-        calc_nl_corr: Callable
-        if self._metric == &#39;NMI&#39;:
-            calc_nl_corr = self._nmi
-        elif self._metric == &#39;GY&#39;:
-            calc_nl_corr = self._gy
-        else:
-            calc_nl_corr = self._jsd
+        calc_nl_corr: Callable = {
+            &#39;NMI&#39;: self._nmi,
+            &#39;GY&#39;: self._gy,
+            &#39;JSD&#39;: self._jsd,
+        }[self._metric]
 
         nl_corr: np.ndarray = np.empty(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
@@ -898,6 +897,160 @@ def fit(
 </dd>
 </dl>
 </dd>
+<dt id="cfs.UMAPSimilarity"><code class="flex name class">
+<span>class <span class="ident">UMAPSimilarity</span></span>
+<span>(</span><span>*, densmap=True, n_neighbors=10, n_components=2)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class for embedding similarity matrix with UMAP.</p>
+<p>For more details on the parameters check the UMAP documentation.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>densmap</code></strong> :&ensp;<code>bool</code>, default=<code>True</code></dt>
+<dd>If True the density-augmented objective of densMAP is used for
+optimization. There the local densities are encouraged to be correlated
+with those in the original space.</dd>
+<dt><strong><code>n_neighbors</code></strong> :&ensp;<code>int</code>, default=<code>10</code></dt>
+<dd>Size of nearest neighbors used for manifold estimation in UMAP.</dd>
+<dt><strong><code>n_components</code></strong> :&ensp;<code>int</code>, default=<code>2</code></dt>
+<dd>Dimensionality of the local embedding.</dd>
+</dl>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>matrix_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_features, n_features)</code></dt>
+<dd>Normalized pairwise distance matrix of the UMAP embedding.</dd>
+<dt><strong><code>embedding_</code></strong> :&ensp;<code>ndarray</code> of <code>shape (n_features, n_components)</code></dt>
+<dd>Coordinates of features in UMAP embedding.</dd>
+</dl>
+<p>Initialize UMAPSimilarity class.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UMAPSimilarity:  # noqa: WPS214
+    r&#34;&#34;&#34;Class for embedding similarity matrix with UMAP.
+
+    For more details on the parameters check the UMAP documentation.
+
+    Parameters
+    ----------
+    densmap : bool, default=True
+        If True the density-augmented objective of densMAP is used for
+        optimization. There the local densities are encouraged to be correlated
+        with those in the original space.
+
+    n_neighbors: int, default=10
+        Size of nearest neighbors used for manifold estimation in UMAP.
+
+    n_components: int, default=2
+        Dimensionality of the local embedding.
+
+    Attributes
+    ----------
+    matrix_ : ndarray of shape (n_features, n_features)
+        Normalized pairwise distance matrix of the UMAP embedding.
+
+    embedding_ : ndarray of shape (n_features, n_components)
+        Coordinates of features in UMAP embedding.
+
+    &#34;&#34;&#34;
+
+    _default_n_neighbors: PositiveInt = 10
+    _default_n_components: PositiveInt = 2
+
+    @beartype
+    def __init__(
+        self,
+        *,
+        densmap: bool = True,
+        n_neighbors: PositiveInt = _default_n_neighbors,
+        n_components: PositiveInt = _default_n_components,
+    ):
+        &#34;&#34;&#34;Initialize UMAPSimilarity class.&#34;&#34;&#34;
+        self._densmap: bool = densmap
+        self._n_neighbors: PositiveInt = n_neighbors
+        self._n_components: PositiveInt = n_components
+
+    @beartype
+    def fit(
+        self,
+        X: Float2DArray,
+        y: Optional[ArrayLikeFloat] = None,
+    ) -&gt; None:
+        &#34;&#34;&#34;Fit similarity matrix into UMAP embedding.&#34;&#34;&#34;
+        self._reset()
+
+        # parse data
+        self._n_features: int = X.shape[0]
+
+        reducer = umap.UMAP(
+            n_neighbors=self._n_neighbors,
+            densmap=self._densmap,
+            n_components=self._n_components,
+        )
+
+        # run UMAP with dissimalirty matrix
+        embedding: np.ndarray = reducer.fit_transform(1 - X)
+        matrix_: np.ndarray = self._calc_distance_matrix(embedding)
+
+        self.embedding_: np.ndarray = embedding
+        self.matrix_: np.ndarray = 1 - matrix_ / np.nanmax(matrix_)
+
+    @beartype
+    def _reset(self) -&gt; None:
+        &#34;&#34;&#34;Reset internal data-dependent state of correlation.&#34;&#34;&#34;
+        if hasattr(self, &#39;matrix_&#39;):  # noqa: WPS421
+            del self.matrix_  # noqa: WPS420
+
+    @beartype
+    def _calc_distance_matrix(self, embedding: Float2DArray) -&gt; FloatMatrix:
+        &#34;&#34;&#34;Calculate the euclidean distance matrix.&#34;&#34;&#34;
+        return np.sqrt(
+            np.sum(
+                (embedding[:, np.newaxis, :] - embedding[np.newaxis, :, :])**2,
+                axis=-1,
+            ),
+        )</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="cfs.UMAPSimilarity.fit"><code class="name flex">
+<span>def <span class="ident">fit</span></span>(<span>self, X, y=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fit similarity matrix into UMAP embedding.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@beartype
+def fit(
+    self,
+    X: Float2DArray,
+    y: Optional[ArrayLikeFloat] = None,
+) -&gt; None:
+    &#34;&#34;&#34;Fit similarity matrix into UMAP embedding.&#34;&#34;&#34;
+    self._reset()
+
+    # parse data
+    self._n_features: int = X.shape[0]
+
+    reducer = umap.UMAP(
+        n_neighbors=self._n_neighbors,
+        densmap=self._densmap,
+        n_components=self._n_components,
+    )
+
+    # run UMAP with dissimalirty matrix
+    embedding: np.ndarray = reducer.fit_transform(1 - X)
+    matrix_: np.ndarray = self._calc_distance_matrix(embedding)
+
+    self.embedding_: np.ndarray = embedding
+    self.matrix_: np.ndarray = 1 - matrix_ / np.nanmax(matrix_)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 </dl>
 </section>
 </article>
@@ -923,8 +1076,7 @@ CFS
 <ul>
 <li><code><a title="cfs.clustering" href="clustering.html">cfs.clustering</a></code></li>
 <li><code><a title="cfs.similarity" href="similarity.html">cfs.similarity</a></code></li>
-<li><code><a title="cfs.tools" href="tools.html">cfs.tools</a></code></li>
-<li><code><a title="cfs.typing" href="typing.html">cfs.typing</a></code></li>
+<li><code><a title="cfs.umap_similarity" href="umap_similarity.html">cfs.umap_similarity</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -939,6 +1091,12 @@ CFS
 <h4><code><a title="cfs.Similarity" href="#cfs.Similarity">Similarity</a></code></h4>
 <ul class="">
 <li><code><a title="cfs.Similarity.fit" href="#cfs.Similarity.fit">fit</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="cfs.UMAPSimilarity" href="#cfs.UMAPSimilarity">UMAPSimilarity</a></code></h4>
+<ul class="">
+<li><code><a title="cfs.UMAPSimilarity.fit" href="#cfs.UMAPSimilarity.fit">fit</a></code></li>
 </ul>
 </li>
 </ul>

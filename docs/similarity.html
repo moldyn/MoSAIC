@@ -49,7 +49,7 @@ from beartype import beartype
 from scipy.spatial.distance import jensenshannon
 from sklearn import preprocessing
 
-from cfs.typing import (
+from cfs._typing import (  # noqa: WPS436
     ArrayLikeFloat,
     Float1DArray,
     Float2DArray,
@@ -88,10 +88,9 @@ def _standard_scaler(X: Float2DArray) -&gt; Float2DArray:
 
 
 @beartype
-# Tuple[FloatMatrix, FloatMatrix, Float1DArray, Float1DArray] noqa: E800
 def _estimate_densities(
     x: Float1DArray, y: Float1DArray, bins: PositiveInt = 100,
-) -&gt; Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -&gt; Tuple[FloatMatrix, FloatMatrix, Float1DArray, Float1DArray]:
     &#34;&#34;&#34;Calculate two dimensional probability densities.&#34;&#34;&#34;
     hist, _, _ = np.histogram2d(x, y, bins, density=True)
     # transpose since numpy considers axis 0 as y and axis 1 as x
@@ -294,13 +293,11 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _nonlinear_correlation(self, X: Float2DArray) -&gt; FloatMatrix:
         &#34;&#34;&#34;Return the nonlinear correlation.&#34;&#34;&#34;
-        calc_nl_corr: Callable
-        if self._metric == &#39;NMI&#39;:
-            calc_nl_corr = self._nmi
-        elif self._metric == &#39;GY&#39;:
-            calc_nl_corr = self._gy
-        else:
-            calc_nl_corr = self._jsd
+        calc_nl_corr: Callable = {
+            &#39;NMI&#39;: self._nmi,
+            &#39;GY&#39;: self._gy,
+            &#39;JSD&#39;: self._jsd,
+        }[self._metric]
 
         nl_corr: np.ndarray = np.empty(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
@@ -705,13 +702,11 @@ Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.&#160;<a clas
     @beartype
     def _nonlinear_correlation(self, X: Float2DArray) -&gt; FloatMatrix:
         &#34;&#34;&#34;Return the nonlinear correlation.&#34;&#34;&#34;
-        calc_nl_corr: Callable
-        if self._metric == &#39;NMI&#39;:
-            calc_nl_corr = self._nmi
-        elif self._metric == &#39;GY&#39;:
-            calc_nl_corr = self._gy
-        else:
-            calc_nl_corr = self._jsd
+        calc_nl_corr: Callable = {
+            &#39;NMI&#39;: self._nmi,
+            &#39;GY&#39;: self._gy,
+            &#39;JSD&#39;: self._jsd,
+        }[self._metric]
 
         nl_corr: np.ndarray = np.empty(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,

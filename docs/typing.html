@@ -83,7 +83,7 @@ ObjectNDArray = _Annotated[
 ]
 ArrayLikeFloat = _Union[_List[float], FloatNDArray]
 Index1DArray = _Annotated[
-    FloatNDArray, _Is[
+    IntNDArray, _Is[
         lambda arr: arr.ndim == 1 and _np.all(arr &gt;= 0)
     ],
 ]
@@ -102,6 +102,9 @@ FloatMax2DArray = _Annotated[
 ]
 Object1DArray = _Annotated[
     ObjectNDArray, _Is[lambda arr: arr.ndim == 1],
+]
+ObjectMax2DArray = _Annotated[
+    ObjectNDArray, _Is[lambda arr: 1 &lt;= arr.ndim &lt;= 2],
 ]</code></pre>
 </details>
 </section>

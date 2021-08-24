@@ -39,40 +39,29 @@ Copyright (c) 2021, Daniel Nagel
 All rights reserved.
 
 &#34;&#34;&#34;
-import numba
-import numpy as np
+import datetime
+import getpass
+import platform
 
-def dummy_func(x, y, bins=250):
-    &#34;&#34;&#34;Shift integer array (data) from old to new values.
 
-    &gt; **CAUTION:**
-    &gt; The values of `val_old`, `val_new` and `data` needs to be integers.
-
-    The basic function is based on Ashwini_Chaudhary solution:
-    https://stackoverflow.com/a/29408060
-
-    Parameters
-    ----------
-    array : StateTraj or ndarray or list or list of ndarrays
-        1D data or a list of data.
-
-    val_old : ndarray or list
-        Values in data which should be replaced. All values needs to be within
-        the range of `[data.min(), data.max()]`
-
-    val_new : ndarray or list
-        Values which will be used instead of old ones.
-
-    dtype : data-type, optional
-        The desired data-type. Needs to be of type unsigned integer.
+def get_runtime_user_information():
+    r&#34;&#34;&#34;Get user runtime information.
 
     Returns
     -------
-    array : ndarray
-        Shifted data in same shape as input.
+    RUI : dict
+        Holding username in &#39;user&#39;, pc name in &#39;pc&#39;, date of execution &#39;date&#39;.
 
     &#34;&#34;&#34;
-    pass</code></pre>
+    # get time without microseconds
+    date = datetime.datetime.now()
+    date = date.isoformat(sep=&#39; &#39;, timespec=&#39;seconds&#39;)
+
+    return {
+        &#39;user&#39;: getpass.getuser(),
+        &#39;pc&#39;: platform.node(),
+        &#39;date&#39;: date,
+    }</code></pre>
 </details>
 </section>
 <section>
@@ -82,69 +71,38 @@ def dummy_func(x, y, bins=250):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="cfs.tools.dummy_func"><code class="name flex">
-<span>def <span class="ident">dummy_func</span></span>(<span>x, y, bins=250)</span>
+<dt id="cfs.tools.get_runtime_user_information"><code class="name flex">
+<span>def <span class="ident">get_runtime_user_information</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Shift integer array (data) from old to new values.</p>
-<blockquote>
-<p><strong>CAUTION:</strong>
-The values of <code>val_old</code>, <code>val_new</code> and <code>data</code> needs to be integers.</p>
-</blockquote>
-<p>The basic function is based on Ashwini_Chaudhary solution:
-<a href="https://stackoverflow.com/a/29408060">https://stackoverflow.com/a/29408060</a></p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>array</code></strong> :&ensp;<code>StateTraj</code> or <code>ndarray</code> or <code>list</code> or <code>list</code> of <code>ndarrays</code></dt>
-<dd>1D data or a list of data.</dd>
-<dt><strong><code>val_old</code></strong> :&ensp;<code>ndarray</code> or <code>list</code></dt>
-<dd>Values in data which should be replaced. All values needs to be within
-the range of <code>[data.min(), data.max()]</code></dd>
-<dt><strong><code>val_new</code></strong> :&ensp;<code>ndarray</code> or <code>list</code></dt>
-<dd>Values which will be used instead of old ones.</dd>
-<dt><strong><code>dtype</code></strong> :&ensp;<code>data-type</code>, optional</dt>
-<dd>The desired data-type. Needs to be of type unsigned integer.</dd>
-</dl>
+<div class="desc"><p>Get user runtime information.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><strong><code>array</code></strong> :&ensp;<code>ndarray</code></dt>
-<dd>Shifted data in same shape as input.</dd>
+<dt><strong><code>RUI</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Holding username in 'user', pc name in 'pc', date of execution 'date'.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def dummy_func(x, y, bins=250):
-    &#34;&#34;&#34;Shift integer array (data) from old to new values.
-
-    &gt; **CAUTION:**
-    &gt; The values of `val_old`, `val_new` and `data` needs to be integers.
-
-    The basic function is based on Ashwini_Chaudhary solution:
-    https://stackoverflow.com/a/29408060
-
-    Parameters
-    ----------
-    array : StateTraj or ndarray or list or list of ndarrays
-        1D data or a list of data.
-
-    val_old : ndarray or list
-        Values in data which should be replaced. All values needs to be within
-        the range of `[data.min(), data.max()]`
-
-    val_new : ndarray or list
-        Values which will be used instead of old ones.
-
-    dtype : data-type, optional
-        The desired data-type. Needs to be of type unsigned integer.
+<pre><code class="python">def get_runtime_user_information():
+    r&#34;&#34;&#34;Get user runtime information.
 
     Returns
     -------
-    array : ndarray
-        Shifted data in same shape as input.
+    RUI : dict
+        Holding username in &#39;user&#39;, pc name in &#39;pc&#39;, date of execution &#39;date&#39;.
 
     &#34;&#34;&#34;
-    pass</code></pre>
+    # get time without microseconds
+    date = datetime.datetime.now()
+    date = date.isoformat(sep=&#39; &#39;, timespec=&#39;seconds&#39;)
+
+    return {
+        &#39;user&#39;: getpass.getuser(),
+        &#39;pc&#39;: platform.node(),
+        &#39;date&#39;: date,
+    }</code></pre>
 </details>
 </dd>
 </dl>
@@ -170,7 +128,7 @@ CFS
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="cfs.tools.dummy_func" href="#cfs.tools.dummy_func">dummy_func</a></code></li>
+<li><code><a title="cfs.tools.get_runtime_user_information" href="#cfs.tools.get_runtime_user_information">get_runtime_user_information</a></code></li>
 </ul>
 </li>
 </ul>
