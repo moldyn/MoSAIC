@@ -14,7 +14,6 @@ import igraph as ig
 import leidenalg as la
 import numpy as np
 from beartype import beartype
-from scipy.sparse import csgraph
 from sklearn.neighbors import NearestNeighbors
 
 from cfs.typing import (
@@ -104,7 +103,7 @@ class Clustering:
         Number of iterations to run the Leiden algorithm. None means that the
         algorithm runs until no further improvement is achieved.
 
-    neighbors: int, default=None,
+    n_neighbors: int, default=None,
         This parameter specifies if the whole matrix is used, or an knn-graph.
         The default depends on the `mode`
         - 'CPM': `None` uses full graph, and
@@ -116,7 +115,7 @@ class Clustering:
 
     Attributes
     ----------
-    clusters_ : list of ndarrays
+    clusters_ : ndarray of shape (n_clusters)
         The result of the clustering process. A list of arrays, each
         containing all indices (features) for each cluster.
 
@@ -130,9 +129,9 @@ class Clustering:
         Permutation of the input features (corresponds to flattened
         `clusters_`).
 
-    nneighbors_ : int
-        Only for mode 'modularity'. Indicates the number of nearest neighbors
-        used for constructin the knn-graph.
+    n_neighbors_ : int
+        Only avaiable when using knn graph. Indicates the number of nearest
+        neighbors used for constructin the knn-graph.
 
     resolution_param_ : float
         Only for mode 'CPM'. Indicates the resolution parameter used for the
@@ -159,14 +158,14 @@ class Clustering:
         *,
         mode: ClusteringModeString = 'CPM',
         weighted: bool = True,
-        neighbors: Optional[PositiveInt] = None,
+        n_neighbors: Optional[PositiveInt] = None,
         resolution_parameter: Optional[NumInRange0to1] = None,
         iterations: Optional[PositiveInt] = None,
     ) -> None:
         """Initialize Clustering class."""
         self._mode: ClusteringModeString = mode
         self._weighted: bool = weighted
-        self._neighbors: Optional[PositiveInt] = neighbors
+        self._neighbors: Optional[PositiveInt] = n_neighbors
 
         self._iterations: int
         if iterations is None:
@@ -252,7 +251,7 @@ class Clustering:
                 'The number of nearest neighbors must be smaller than the '
                 'number of features.',
             )
-        self.nneighbors_: PositiveInt = self._neighbors
+        self.n_neighbors_: PositiveInt = self._neighbors
 
         neigh = NearestNeighbors(
             n_neighbors=self._neighbors,
