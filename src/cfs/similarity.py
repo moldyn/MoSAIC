@@ -16,7 +16,7 @@ from beartype import beartype
 from scipy.spatial.distance import jensenshannon
 from sklearn import preprocessing
 
-from cfs.typing import (
+from cfs._typing import (  # noqa: WPS436
     ArrayLikeFloat,
     Float1DArray,
     Float2DArray,

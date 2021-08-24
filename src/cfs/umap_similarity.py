@@ -14,7 +14,7 @@ import numpy as np
 import umap
 from beartype import beartype
 
-from cfs.typing import (
+from cfs._typing import (  # noqa:WPS436
     ArrayLikeFloat,
     Float2DArray,
     FloatMatrix,
@@ -50,16 +50,16 @@ class UMAPSimilarity:  # noqa: WPS214
 
     """
 
-    default_n_neighbors: PositiveInt = 10
-    default_n_components: PositiveInt = 2
+    _default_n_neighbors: PositiveInt = 10
+    _default_n_components: PositiveInt = 2
 
     @beartype
     def __init__(
         self,
         *,
         densmap: bool = True,
-        n_neighbors: PositiveInt = default_n_neighbors,
-        n_components: PositiveInt = default_n_components,
+        n_neighbors: PositiveInt = _default_n_neighbors,
+        n_components: PositiveInt = _default_n_components,
     ):
         """Initialize UMAPSimilarity class."""
         self._densmap: bool = densmap

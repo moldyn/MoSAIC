@@ -16,7 +16,7 @@ import numpy as np
 from beartype import beartype
 from sklearn.neighbors import NearestNeighbors
 
-from cfs.typing import (
+from cfs._typing import (  # noqa: WPS436
     ClusteringModeString,
     Float2DArray,
     FloatMatrix,

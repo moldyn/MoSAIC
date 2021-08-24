@@ -46,5 +46,6 @@ setuptools.setup(
         'scikit-learn',
         'leidenalg>=0.8.0',
         'umap-learn',
+        'click>=7.0.0',
     ],
 )
