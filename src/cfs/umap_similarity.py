@@ -50,13 +50,16 @@ class UMAPSimilarity:  # noqa: WPS214
 
     """
 
+    default_n_neighbors: PositiveInt = 10
+    default_n_components: PositiveInt = 2
+
     @beartype
     def __init__(
         self,
         *,
         densmap: bool = True,
-        n_neighbors: PositiveInt = 10,
-        n_components: PositiveInt = 2,
+        n_neighbors: PositiveInt = default_n_neighbors,
+        n_components: PositiveInt = default_n_components,
     ):
         """Initialize UMAPSimilarity class."""
         self._densmap: bool = densmap
