@@ -14,7 +14,11 @@ from typing import Union as _Union
 
 import numpy as _np
 from beartype.vale import Is as _Is
-from typing_extensions import Annotated as _Annotated
+
+try:  # python <= 3.8
+    from typing import Annotated as _Annotated
+except ImportError:
+    from typing_extensions import Annotated as _Annotated
 
 # String (enum-type) datatypes
 MetricString = _Annotated[
