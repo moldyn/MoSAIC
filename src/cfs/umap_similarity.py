@@ -34,8 +34,9 @@ class UMAPSimilarity:  # noqa: WPS214
         optimization. There the local densities are encouraged to be correlated
         with those in the original space.
 
-    n_neighbors: int, default=10
+    n_neighbors: int, default=None
         Size of nearest neighbors used for manifold estimation in UMAP.
+        If `None` uses square root of the number of features.
 
     n_components: int, default=2
         Dimensionality of the local embedding.
@@ -48,9 +49,11 @@ class UMAPSimilarity:  # noqa: WPS214
     embedding_ : ndarray of shape (n_features, n_components)
         Coordinates of features in UMAP embedding.
 
+    n_neighbors_ : int
+        Number of used neighbors.
+
     """
 
-    _default_n_neighbors: PositiveInt = 10
     _default_n_components: PositiveInt = 2
 
     @beartype
@@ -58,12 +61,12 @@ class UMAPSimilarity:  # noqa: WPS214
         self,
         *,
         densmap: bool = True,
-        n_neighbors: PositiveInt = _default_n_neighbors,
+        n_neighbors: Optional[PositiveInt] = None,
         n_components: PositiveInt = _default_n_components,
     ):
         """Initialize UMAPSimilarity class."""
         self._densmap: bool = densmap
-        self._n_neighbors: PositiveInt = n_neighbors
+        self._n_neighbors: Optional[PositiveInt] = n_neighbors
         self._n_components: PositiveInt = n_components
 
     @beartype
@@ -77,6 +80,16 @@ class UMAPSimilarity:  # noqa: WPS214
 
         # parse data
         self._n_features: int = X.shape[0]
+
+        # parse n_neighbors
+        if self._n_neighbors is None:
+            self._n_neighbors = np.ceil(np.sqrt(self._n_features)).astype(int)
+        elif self._n_neighbors >= len(X):
+            raise ValueError(
+                'The number of nearest neighbors must be smaller than the '
+                'number of features.',
+            )
+        self.n_neighbors_: PositiveInt = self._n_neighbors
 
         reducer = umap.UMAP(
             n_neighbors=self._n_neighbors,

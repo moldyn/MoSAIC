@@ -85,7 +85,7 @@ def _sort_clusters(
 
 
 class Clustering:
-    """Class for clustering a correlation matrix.
+    r"""Class for clustering a correlation matrix.
 
     Parameters
     ----------
@@ -111,7 +111,8 @@ class Clustering:
 
     resolution_parameter : float, default=None,
         Only required for mode 'CPM'. If None, the resolution parameter will
-        be set to the median value of the matrix.
+        be set to the third quartile of `X` for `n_neighbors=None` and else
+        to the mean value of the knn graph.
 
     Attributes
     ----------
@@ -214,10 +215,13 @@ class Clustering:
 
         if self._mode == 'CPM':
             if self._resolution_parameter is None:
-                third_quartile = 0.75
-                self._resolution_parameter = np.nanquantile(
-                    mat, third_quartile,
-                )
+                if self._neighbors is None:
+                    third_quartile = 0.75
+                    self._resolution_parameter = np.nanquantile(
+                        mat, third_quartile,
+                    )
+                else:
+                    self._resolution_parameter = np.nanmean(mat)
 
             self.resolution_param_: Optional[NumInRange0to1] = (
                 self._resolution_parameter
@@ -245,7 +249,7 @@ class Clustering:
         """Construct the knn matrix."""
         if self._neighbors is None:
             n_features = len(matrix)
-            self._neighbors = np.floor(np.sqrt(n_features)).astype(int)
+            self._neighbors = np.ceil(np.sqrt(n_features)).astype(int)
         elif self._neighbors > len(matrix):
             raise ValueError(
                 'The number of nearest neighbors must be smaller than the '

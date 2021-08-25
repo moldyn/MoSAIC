@@ -87,29 +87,29 @@ class Similarity:  # noqa: WPS214
     metric : str, default='correlation'
         the correlation metric to use for the feature distance matrix.
 
-        - 'correlation' will use the absolute value of the Pearson correlation
-        - 'NMI' will use the mutual information normalized by joined entropy
-        - 'GY' uses Gel'fand and Yaglom normalization[^1]
-        - 'JSD' will use the Jensen-Shannon divergence between the joint
+        - `'correlation'` will use the absolute value of the Pearson correlation
+        - `'NMI'` will use the mutual information normalized by joined entropy
+        - `'GY'` uses Gel'fand and Yaglom normalization[^1]
+        - `'JSD'` will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
 
-        Note: 'NMI' is supported only with online=False
+        Note: `'NMI'` is supported only with online=False
 
     online : bool, default=False
         If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
     normalize_method : str, default='geometric'
-        Only required for metric 'NMI'. Determines the normalization factor
+        Only required for metric `'NMI'`. Determines the normalization factor
         for the mutual information:
 
-        - 'joint' is the joint entropy
-        - 'max' is the maximum of the individual entropies
-        - 'arithmetic' is the mean of the individual entropies
-        - 'geometric' is the square root of the product of the individual
+        - `'joint'` is the joint entropy
+        - `'max'`is the maximum of the individual entropies
+        - `'arithmetic'` is the mean of the individual entropies
+        - `'geometric'` is the square root of the product of the individual
           entropies
-        - 'min' is the minimum of the individual entropies
+        - `'min'` is the minimum of the individual entropies
 
     Attributes
     ----------

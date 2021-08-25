@@ -217,10 +217,11 @@ def clustering(mode, input_file, verbose):
 )
 @click.option(
     '--n-neighbors',
-    default=cfs.UMAPSimilarity._default_n_neighbors,  # noqa: WPS437
-    show_default=True,
     type=click.IntRange(min=2),
-    help='Number of nearest neighbors used for estimating manifold.',
+    help=(
+        'Number of nearest neighbors used for estimating manifold. '
+        'If None, the sqrt of no. of features is used.'
+    ),
 )
 @click.option(
     '--densmap/--umap',
