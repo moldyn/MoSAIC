@@ -33,7 +33,6 @@ def X1():
 
 def X1_result(str):
     """Correlated coordinates results."""
-    x = np.linspace(0, np.pi, 1000)
     return {
         'correlation': 0.9697832,
         'GY': 0.99960494,

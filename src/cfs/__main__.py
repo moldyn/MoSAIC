@@ -20,6 +20,14 @@ NORMALIZES = ['joint', 'geometric', 'arithmetic', 'min', 'max']
 METRICS = ['correlation', 'NMI', 'JSD', 'GY']
 MODES = ['CPM', 'modularity']
 
+HELP_STR = f"""MoSAIC motion v{cfs.__version__}
+
+\b
+Molecular systems automated identification of collective motion, is
+a correlation based feature selection framework for MD data.
+Copyright (c) 2021, Georg Diez and Daniel Nagel
+"""
+
 
 def get_rui(submod):
     """Get the runetime user information, to store as comment."""
@@ -41,14 +49,7 @@ def get_rui(submod):
     ).format(**rui)
 
 
-@click.group(help=f"""MoSAIC motion v{cfs.__version__}
-
-\b
-Molecular systems automated identification of collective motion, is
-a correlation based feature selection framework for MD data.
-Copyright (c) 2021, Georg Diez and Daniel Nagel
-""",
-)
+@click.group(help=HELP_STR)
 def main():
     """Empty group to show on help available submodules."""
     pass

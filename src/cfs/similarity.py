@@ -87,7 +87,8 @@ class Similarity:  # noqa: WPS214
     metric : str, default='correlation'
         the correlation metric to use for the feature distance matrix.
 
-        - `'correlation'` will use the absolute value of the Pearson correlation
+        - `'correlation'` will use the absolute value of the Pearson
+          correlation
         - `'NMI'` will use the mutual information normalized by joined entropy
         - `'GY'` uses Gel'fand and Yaglom normalization[^1]
         - `'JSD'` will use the Jensen-Shannon divergence between the joint
