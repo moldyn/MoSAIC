@@ -118,7 +118,7 @@ def _sort_clusters(
 
 
 class Clustering:
-    &#34;&#34;&#34;Class for clustering a correlation matrix.
+    r&#34;&#34;&#34;Class for clustering a correlation matrix.
 
     Parameters
     ----------
@@ -144,7 +144,8 @@ class Clustering:
 
     resolution_parameter : float, default=None,
         Only required for mode &#39;CPM&#39;. If None, the resolution parameter will
-        be set to the median value of the matrix.
+        be set to the third quartile of `X` for `n_neighbors=None` and else
+        to the mean value of the knn graph.
 
     Attributes
     ----------
@@ -247,10 +248,13 @@ class Clustering:
 
         if self._mode == &#39;CPM&#39;:
             if self._resolution_parameter is None:
-                third_quartile = 0.75
-                self._resolution_parameter = np.nanquantile(
-                    mat, third_quartile,
-                )
+                if self._neighbors is None:
+                    third_quartile = 0.75
+                    self._resolution_parameter = np.nanquantile(
+                        mat, third_quartile,
+                    )
+                else:
+                    self._resolution_parameter = np.nanmean(mat)
 
             self.resolution_param_: Optional[NumInRange0to1] = (
                 self._resolution_parameter
@@ -278,7 +282,7 @@ class Clustering:
         &#34;&#34;&#34;Construct the knn matrix.&#34;&#34;&#34;
         if self._neighbors is None:
             n_features = len(matrix)
-            self._neighbors = np.floor(np.sqrt(n_features)).astype(int)
+            self._neighbors = np.ceil(np.sqrt(n_features)).astype(int)
         elif self._neighbors &gt; len(matrix):
             raise ValueError(
                 &#39;The number of nearest neighbors must be smaller than the &#39;
@@ -366,7 +370,8 @@ The default depends on the <code>mode</code>
 - 'modularity': <code>None</code> uses square root of the number of features.</dd>
 <dt><strong><code>resolution_parameter</code></strong> :&ensp;<code>float</code>, default=<code>None,</code></dt>
 <dd>Only required for mode 'CPM'. If None, the resolution parameter will
-be set to the median value of the matrix.</dd>
+be set to the third quartile of <code>X</code> for <code>n_neighbors=None</code> and else
+to the mean value of the knn graph.</dd>
 </dl>
 <h2 id="attributes">Attributes</h2>
 <dl>
@@ -405,7 +410,7 @@ array([[1. , 0.9, 0.1],
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Clustering:
-    &#34;&#34;&#34;Class for clustering a correlation matrix.
+    r&#34;&#34;&#34;Class for clustering a correlation matrix.
 
     Parameters
     ----------
@@ -431,7 +436,8 @@ array([[1. , 0.9, 0.1],
 
     resolution_parameter : float, default=None,
         Only required for mode &#39;CPM&#39;. If None, the resolution parameter will
-        be set to the median value of the matrix.
+        be set to the third quartile of `X` for `n_neighbors=None` and else
+        to the mean value of the knn graph.
 
     Attributes
     ----------
@@ -534,10 +540,13 @@ array([[1. , 0.9, 0.1],
 
         if self._mode == &#39;CPM&#39;:
             if self._resolution_parameter is None:
-                third_quartile = 0.75
-                self._resolution_parameter = np.nanquantile(
-                    mat, third_quartile,
-                )
+                if self._neighbors is None:
+                    third_quartile = 0.75
+                    self._resolution_parameter = np.nanquantile(
+                        mat, third_quartile,
+                    )
+                else:
+                    self._resolution_parameter = np.nanmean(mat)
 
             self.resolution_param_: Optional[NumInRange0to1] = (
                 self._resolution_parameter
@@ -565,7 +574,7 @@ array([[1. , 0.9, 0.1],
         &#34;&#34;&#34;Construct the knn matrix.&#34;&#34;&#34;
         if self._neighbors is None:
             n_features = len(matrix)
-            self._neighbors = np.floor(np.sqrt(n_features)).astype(int)
+            self._neighbors = np.ceil(np.sqrt(n_features)).astype(int)
         elif self._neighbors &gt; len(matrix):
             raise ValueError(
                 &#39;The number of nearest neighbors must be smaller than the &#39;
@@ -664,10 +673,13 @@ def fit(self, X: FloatMatrix, y: Optional[np.ndarray] = None) -&gt; None:
 
     if self._mode == &#39;CPM&#39;:
         if self._resolution_parameter is None:
-            third_quartile = 0.75
-            self._resolution_parameter = np.nanquantile(
-                mat, third_quartile,
-            )
+            if self._neighbors is None:
+                third_quartile = 0.75
+                self._resolution_parameter = np.nanquantile(
+                    mat, third_quartile,
+                )
+            else:
+                self._resolution_parameter = np.nanmean(mat)
 
         self.resolution_param_: Optional[NumInRange0to1] = (
             self._resolution_parameter
@@ -726,7 +738,7 @@ CFS
 </nav>
 </main>
 <footer id="footer">
-<a href="https://gitlab.com/moldyn/feature_selection" class="github-corner" aria-label="View source on GitHub">
+<a href="https://github.com/moldyn/feature_selection" class="github-corner" aria-label="View source on GitHub">
 <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#4d4f53; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
 <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
 <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
