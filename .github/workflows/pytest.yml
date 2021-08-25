@@ -30,6 +30,7 @@ jobs:
         pip install -q scikit-learn
         pip install -q click
         pip install -q scipy
+        pip install -q typing_extensions
         pip install -q -e .
     - name: Lint with flake8
       run: |
