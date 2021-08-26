@@ -1,17 +1,29 @@
-#!/usr/bin/env python
-# coding: utf-8
+# -*- coding: utf-8 -*-
+"""Script for generating toy model.
+
+Taken from: Ravindra et al., "Automatic mutual information noise ommission
+(AMINO): generating order paramters for molecular systems", Mol. Syst. Des.
+Eng., 2020, 5, 339-348.
+
+MIT License
+Copyright (c) 2021, Daniel Nagel
+All rights reserved.
+
+"""
 import numpy as np
 
 NSAMPLES = 100000
 
 
 def gen_two(samples):
+    """Generate two state model coordinate."""
     return (
         1 - np.random.uniform(size=samples)**4
     ) * np.random.choice([-1, 1], size=samples)
 
 
 def gen_three(samples):
+    """Generate three state model coordinate."""
     traj = np.random.uniform(size=samples)**4 / 2
 
     rand_selection = np.random.choice([True, False], size=samples)
@@ -23,10 +35,12 @@ def gen_three(samples):
 
 
 def noise(samples, width=0.1):
+    """Generate noise coordinate."""
     return np.random.uniform(-0.5 * width, 0.5 * width, size=samples)
 
-       
+
 def make_amino_ops():
+    """Generate AMINO toy model coordinates."""
     ops = np.empty((NSAMPLES, 120))
     idx = 0
     for ndubs, gen in (
@@ -60,6 +74,7 @@ def make_amino_ops():
 
 if __name__ == '__main__':
     # fix random seed to make dataset reproducible
-    np.random.seed(42)
+    magic_number = 42
+    np.random.seed(magic_number)
 
     make_amino_ops()
