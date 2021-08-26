@@ -294,7 +294,7 @@ def clustering(
         fmt='%s',
         submodule='clustering',
         header=(
-            f'In ith row are the indices listed (zero-indexed) corresponding '
+            'In ith row are the indices listed (zero-indexed) corresponding '
             'to cluster i.'
         ),
     )

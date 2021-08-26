@@ -32,9 +32,44 @@
 Correlation based feature selection of Molecular Dynamics simulations
 
 ## Features
-...
+- Simple CI
+
+## Installation
+
+```python
+python3 -m pip install --upgrade feature_selection
+```
+or for the latest dev version
+```python
+python3 -m pip install git+https://github.com/moldyn/feature_selection.git
+```
 
 ## Usage
+### CI
+The module brings a rich CI. Each module and submodule contains a rich help.
+```bash
+# creating correlation matrix
+$ python -m cfs similarity -i input_file -o output_similarity -metric correlation -v
+
+CFS SIMILARITY
+~~~ Initialize similarity class
+~~~ Load file input_file
+~~~ Fit input
+~~~ Store similarity matrix in output_similarity
+
+# clustering with CPM and default resolution parameter
+# the latter needs to be fine-tuned to each matrix
+$ python -m cfs clustering -i output_similarity -o output_clustering -v
+
+CFS CLUSTERING
+~~~ Initialize clustering class
+~~~ Load file output_similarity
+~~~ Fit input
+~~~ Store output
+~~~ Plot matrix
+```
+
+### Inside Python script
 ```python
 import cfs
 
@@ -56,14 +91,4 @@ clust.fit(sim.matrix_)
 clusters = clust.clusters_
 clusterd_X = clust.matrix_
 ...
-```
-
-## Installation
-
-```python
-python3 -m pip install --upgrade feature_selection
-```
-or for the latest dev version
-```python
-python3 -m pip install git+https://github.com/moldyn/feature_selection.git
 ```
