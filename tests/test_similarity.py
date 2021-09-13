@@ -180,5 +180,5 @@ def test_Similarity(metric, kwargs, X, result, error):
         )
     else:
         with pytest.raises(error):
-            sim = cfs.Similarity(metric, **kwargs)
+            sim = cfs.Similarity(metric=metric, **kwargs)
             sim.fit(X)
