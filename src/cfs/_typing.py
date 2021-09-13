@@ -22,16 +22,16 @@ except ImportError:
 
 # String (enum-type) datatypes
 MetricString = _Annotated[
-    str, _Is[lambda string: string in {'correlation', 'NMI', 'JSD', 'GY'}],
+    str, _Is[lambda val: val in {'correlation', 'NMI', 'JSD', 'GY'}],
 ]
 NormString = _Annotated[
     str,
-    _Is[lambda string: string in {
+    _Is[lambda val: val in {
         'joint', 'geometric', 'arithmetic', 'min', 'max',
     }],
 ]
 ClusteringModeString = _Annotated[
-    str, _Is[lambda string: string in {'CPM', 'modularity'}],
+    str, _Is[lambda val: val in {'CPM', 'modularity'}],
 ]
 
 # scalar datatypes
