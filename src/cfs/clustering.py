@@ -255,7 +255,7 @@ class Clustering:
         if self._neighbors is None:
             n_features = len(matrix)
             self._neighbors = np.ceil(np.sqrt(n_features)).astype(int)
-        elif self._neighbors > len(matrix):
+        elif self._neighbors >= len(matrix):
             raise ValueError(
                 'The number of nearest neighbors must be smaller than the '
                 'number of features.',
