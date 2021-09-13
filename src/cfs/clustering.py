@@ -65,8 +65,12 @@ def _sort_coarse_clustermatrix(coarsemat: FloatMatrix) -> Index1DArray:
 def _sort_clusters(
     clusters: Object1DArray, mat: FloatMatrix,
 ) -> Object1DArray:
-    """Sort clusters globally by the reverse Cuthill-McKee algorithm and
-    internally by the largest average values within cluster."""
+    """Sort clusters globally and internally.
+
+    Both are sorted by the largest average values within/between cluster,
+    respectively.
+
+    """
     # sort the order of the cluster
     clusters_permuted = clusters[
         _sort_coarse_clustermatrix(
@@ -99,11 +103,11 @@ class Clustering:
         If True, the underlying graph has weighted edges. Otherwise, the graph
         is constructed using the adjacency matrix.
 
-    iterations : int, default=None,
+    n_iterations : int, default=None,
         Number of iterations to run the Leiden algorithm. None means that the
         algorithm runs until no further improvement is achieved.
 
-    n_neighbors: int, default=None,
+    n_neighbors : int, default=None,
         This parameter specifies if the whole matrix is used, or an knn-graph.
         The default depends on the `mode`
         - 'CPM': `None` uses full graph, and
@@ -113,6 +117,10 @@ class Clustering:
         Only required for mode 'CPM'. If None, the resolution parameter will
         be set to the third quartile of `X` for `n_neighbors=None` and else
         to the mean value of the knn graph.
+
+    seed : int, default=None,
+        Use an integer to make the randomness of Leidenalg deterministic. By
+        default uses a random seed if nothing is specified.
 
     Attributes
     ----------
@@ -161,18 +169,15 @@ class Clustering:
         weighted: bool = True,
         n_neighbors: Optional[PositiveInt] = None,
         resolution_parameter: Optional[NumInRange0to1] = None,
-        iterations: Optional[PositiveInt] = None,
+        n_iterations: Optional[PositiveInt] = None,
+        seed: Optional[int] = None,
     ) -> None:
         """Initialize Clustering class."""
         self._mode: ClusteringModeString = mode
         self._weighted: bool = weighted
         self._neighbors: Optional[PositiveInt] = n_neighbors
-
-        self._iterations: int
-        if iterations is None:
-            self._iterations = -1
-        else:
-            self._iterations = iterations
+        self._seed: Optional[int] = seed
+        self._iterations: Optional[int] = n_iterations
 
         if mode == 'CPM':
             self._resolution_parameter: Optional[NumInRange0to1] = (
@@ -285,6 +290,8 @@ class Clustering:
             ] = la.ModularityVertexPartition
         if self._weighted:
             kwargs_leiden['weights'] = graph.es['weight']
+
+        kwargs_leiden['seed'] = self._seed
 
         return kwargs_leiden
 
