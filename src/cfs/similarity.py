@@ -29,6 +29,22 @@ from cfs._typing import (  # noqa: WPS436
 
 
 @beartype
+def _freedman_diaconis_rule(x: Float1DArray) -> int:
+    """Use Freedman Diaconis rule to estimate number of bins.
+
+    Freedman, David and Diaconis, Persi (1981):
+    "On the histogram as a density estimator: L2 theory"
+    Probability Theory and Related Fields. 57 (4), 453–476
+
+    """
+    iqr = np.subtract(*np.percentile(x, [75, 25]))
+    binwidth = 2 * iqr / np.cbrt(len(x))
+    return int(
+        np.ceil(np.ptp(x) / binwidth)
+    )
+
+
+@beartype
 def _entropy(p: ArrayLikeFloat) -> float:
     """Calculate entropy of density p."""
     return -1 * np.sum(p * np.ma.log(p))
@@ -56,9 +72,14 @@ def _standard_scaler(X: Float2DArray) -> Float2DArray:
 
 @beartype
 def _estimate_densities(
-    x: Float1DArray, y: Float1DArray, bins: PositiveInt = 100,
+    x: Float1DArray, y: Float1DArray, bins: Optional[PositiveInt] = None,
 ) -> Tuple[FloatMatrix, FloatMatrix, Float1DArray, Float1DArray]:
     """Calculate two dimensional probability densities."""
+    if bins is None:
+        bins = [
+            _freedman_diaconis_rule(x),
+            _freedman_diaconis_rule(y),
+        ]
     hist, _, _ = np.histogram2d(x, y, bins, density=True)
     # transpose since numpy considers axis 0 as y and axis 1 as x
     pxy = hist.T / np.sum(hist)
