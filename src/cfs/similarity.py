@@ -76,10 +76,10 @@ def _estimate_densities(
 ) -> Tuple[FloatMatrix, FloatMatrix, Float1DArray, Float1DArray]:
     """Calculate two dimensional probability densities."""
     if bins is None:
-        bins = [
+        bins = np.max([
             _freedman_diaconis_rule(x),
             _freedman_diaconis_rule(y),
-        ]
+        ])
     hist, _, _ = np.histogram2d(x, y, bins, density=True)
     # transpose since numpy considers axis 0 as y and axis 1 as x
     pxy = hist.T / np.sum(hist)
