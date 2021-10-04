@@ -1,4 +1,3 @@
-
 <div align="center">
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
@@ -10,7 +9,7 @@
     <a href="https://beartype.rtfd.io" alt="bear-ified" >
         <img src="https://raw.githubusercontent.com/beartype/beartype-assets/main/badge/bear-ified.svg" /></a>
   </p>
-
+  <p style="font-size:2em">MoSAIC Motion</p>
   <p>
     <a href="https://moldyn.github.io/feature_selection">Docs</a> •
     <a href="#features">Features</a> •
@@ -19,26 +18,83 @@
   </p>
 </div>
 
+# Molecular Systems Automated Identification of Collective Motion
+MoSAIC is a new algorithm for correlation analysis which auto-matically detects
+collective motion in MD simulation data, identifies uncorrelated features
+as noise and hence provides a detailed picture of the key coordinates driving a
+conformational change in a biomolecular system. It is based on a community
+detection algorithm which is used to bring a correlation matrix in a
+block-diagonal form.
 
-# feature_selection
-Correlation based feature selection of Molecular Dynamics simulations
+The method as published in:
+> G. Diez, D. Nagel, and G. Stock, *Molecular Systems Automated Identification
+> of Collective Motion (MoSAIC motion)*, in preparation
+We kindly ask you to cite these articles if you use this software package for
+published works.
 
 ## Features
-- Simple CI
+- Intuitive usage via [module](#module---inside-a-python-script) and via [CI](#ci---usage-directly-from-the-command-line)
+- Sklearn-style API for fast integration into a Python workflow
+- No magic, only single parameter
+- Extensive [documentation](https://moldyn.github.io/feature_selection) and
+  long discussion in publication
+
 
 ## Installation
-
-```python
+So far the package is only published to [PyPI](https://pypi.org). Soon, it will
+be added [conda-forge](https://conda-forge.org/), as well. For installing it to within a python environment simple call:
+```bash
 python3 -m pip install --upgrade feature_selection
 ```
 or for the latest dev version
-```python
+```bash
+# via ssh key
+python3 -m pip install git+ssh://git@github.com/moldyn/feature_selection.git
+# , or via password-based login
 python3 -m pip install git+https://github.com/moldyn/feature_selection.git
 ```
 
+### Shell Completion
+Using the `bash`, `zsh` or `fish` shell click provides an easy way to
+provide shell completion, checkout the
+[docs](https://click.palletsprojects.com/en/8.0.x/shell-completion).
+In the case of bash you need to add following line to your `~/.bashrc`
+```bash
+eval "$(_CFS_COMPLETE=bash_source cfs)"
+```
+
 ## Usage
-### CI
-The module brings a rich CI. Each module and submodule contains a rich help.
+In general one can call the module directly by its entry point `$ cfs`
+or by calling the module `$ python -m cfs`. The latter method is
+preferred to ensure using the desired python environment. For enabling
+the shell completion, the entry point needs to be used.
+
+### CI - Usage Directly from the Command Line
+The module brings a rich CI using [click](https://click.palletsprojects.com).
+Each module and submodule contains a detailed help. It can be called by
+```bash
+$ python -m cfs
+Usage: python -m cfs [OPTIONS] COMMAND [ARGS]...
+
+  MoSAIC motion v0.1.0
+
+  Molecular systems automated identification of collective motion, is
+  a correlation based feature selection framework for MD data.
+  Copyright (c) 2021, Georg Diez and Daniel Nagel
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  clustering  Clustering similarity matrix of coordinates.
+  similarity  Creating similarity matrix of coordinates.
+  umap        Embedd similarity matrix with UMAP.
+```
+For more details on the submodule one needs to specify one of the three
+commands.
+
+A simple workflow example for clustering the input file `input_file` using
+correlation and Leiden with CPM and the default resolution parameter:
 ```bash
 # creating correlation matrix
 $ python -m cfs similarity -i input_file -o output_similarity -metric correlation -v
@@ -60,8 +116,9 @@ CFS CLUSTERING
 ~~~ Store output
 ~~~ Plot matrix
 ```
+This will generate
 
-### Inside Python script
+### Module - Inside a Python Script
 ```python
 import cfs
 
