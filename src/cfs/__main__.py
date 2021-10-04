@@ -264,6 +264,7 @@ def clustering(
         comment='#',
         dtype=np.float16,
     ).values
+    X = np.abs(X)
     if verbose:
         click.echo('~~~ Fit input')
     clust.fit(X)
