@@ -50,6 +50,7 @@ or for the latest dev version
 ```bash
 # via ssh key
 python3 -m pip install git+ssh://git@github.com/moldyn/feature_selection.git
+
 # , or via password-based login
 python3 -m pip install git+https://github.com/moldyn/feature_selection.git
 ```
@@ -107,7 +108,7 @@ CFS SIMILARITY
 
 # clustering with CPM and default resolution parameter
 # the latter needs to be fine-tuned to each matrix
-$ python -m cfs clustering -i output_similarity -o output_clustering -v
+$ python -m cfs clustering -i output_similarity -o output_clustering --plot -v
 
 CFS CLUSTERING
 ~~~ Initialize clustering class
@@ -116,7 +117,10 @@ CFS CLUSTERING
 ~~~ Store output
 ~~~ Plot matrix
 ```
-This will generate
+This will generate the similarity matrix stored in `output_similarity`,
+the plotted result in `output_clustering.matrix.pdf`, the raw data of
+the matrix in `output_clustering.matrix` and a file containing in each
+row the indices of a cluster.
 
 ### Module - Inside a Python Script
 ```python
