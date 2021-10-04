@@ -38,6 +38,11 @@ setuptools.setup(
     packages=setuptools.find_packages(where='src'),
     include_package_data=True,
     python_requires='>=3.8',
+    entry_points={
+        'console_scripts': [
+            'cfs = src.cfs.__main__:main',
+        ],
+    },
     install_requires=[
         'numpy>=1.21.0',
         'pandas',
