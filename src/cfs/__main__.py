@@ -227,6 +227,16 @@ def similarity(
     help='Plotting matrix.',
 )
 @click.option(
+    '-n',
+    '--name',
+    'name_file',
+    type=click.Path(exists=True),
+    help=(
+        'Path to file containing names of each colum. '
+        'Needs to be of shape (n_features, ).'
+    ),
+)
+@click.option(
     '-v',
     '--verbose',
     is_flag=True,
@@ -239,6 +249,7 @@ def clustering(
     resolution_parameter,
     weighted,
     output_file,
+    name_file,
     plot,
     verbose,
 ):
@@ -299,6 +310,24 @@ def clustering(
             'to cluster i.'
         ),
     )
+    if name_file:
+        names = np.loadtxt(name_file, dtype=str)
+        clusters_string = np.array(
+            [
+                ' '.join([names[state] for state in cluster])
+                for cluster in clust.clusters_
+            ],
+            dtype=str,
+        )
+        savetxt(
+            f'{output_file}.cluster_names',
+            clusters_string,
+            fmt='%s',
+            submodule='clustering',
+            header=(
+                'In ith row are the names corresponding to cluster i.'
+            ),
+        )
 
     if plot:
         if verbose:
