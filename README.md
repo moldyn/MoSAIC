@@ -26,9 +26,10 @@ conformational change in a biomolecular system. It is based on a community
 detection algorithm which is used to bring a correlation matrix in a
 block-diagonal form.
 
-The method as published in:
+The method was published in:
 > G. Diez, D. Nagel, and G. Stock, *Molecular Systems Automated Identification
 > of Collective Motion (MoSAIC motion)*, in preparation
+
 We kindly ask you to cite these articles if you use this software package for
 published works.
 
