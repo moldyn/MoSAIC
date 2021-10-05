@@ -22,6 +22,17 @@ from cfs._typing import (  # noqa:WPS436
 )
 
 
+@beartype
+def _calc_distance_matrix(embedding: Float2DArray) -> FloatMatrix:
+    """Calculate the euclidean distance matrix from an embedding."""
+    return np.sqrt(
+        np.sum(
+            (embedding[:, np.newaxis, :] - embedding[np.newaxis, :, :])**2,
+            axis=-1,
+        ),
+    )
+
+
 class UMAPSimilarity:  # noqa: WPS214
     r"""Class for embedding similarity matrix with UMAP.
 
@@ -99,7 +110,7 @@ class UMAPSimilarity:  # noqa: WPS214
 
         # run UMAP with dissimalirty matrix
         embedding: np.ndarray = reducer.fit_transform(1 - X)
-        matrix_: np.ndarray = self._calc_distance_matrix(embedding)
+        matrix_: np.ndarray = _calc_distance_matrix(embedding)
 
         self.embedding_: np.ndarray = embedding
         self.matrix_: np.ndarray = 1 - matrix_ / np.nanmax(matrix_)
@@ -109,13 +120,3 @@ class UMAPSimilarity:  # noqa: WPS214
         """Reset internal data-dependent state of correlation."""
         if hasattr(self, 'matrix_'):  # noqa: WPS421
             del self.matrix_  # noqa: WPS420
-
-    @beartype
-    def _calc_distance_matrix(self, embedding: Float2DArray) -> FloatMatrix:
-        """Calculate the euclidean distance matrix."""
-        return np.sqrt(
-            np.sum(
-                (embedding[:, np.newaxis, :] - embedding[np.newaxis, :, :])**2,
-                axis=-1,
-            ),
-        )

@@ -30,15 +30,20 @@ from cfs._typing import (  # noqa: WPS436
 
 @beartype
 def _freedman_diaconis_rule(x: Float1DArray) -> int:
-    """Use Freedman Diaconis rule to estimate number of bins.
+    """Freedman Diaconis rule to estimate number of bins.
+
+    We replaced the prefactor 2 by 2.59 to asymptotically match Scott's normal
+    reference rule for a normal distribution. See
+    https://www.wikiwand.com/en/Freedman–Diaconis_rule
 
     Freedman, David and Diaconis, Persi (1981):
     "On the histogram as a density estimator: L2 theory"
     Probability Theory and Related Fields. 57 (4), 453–476
 
     """
+    scott_factor = 2.59
     iqr = np.subtract(*np.percentile(x, [75, 25]))
-    binwidth = 2 * iqr / np.cbrt(len(x))
+    binwidth = scott_factor * iqr / np.cbrt(len(x))
     return int(
         np.ceil(np.ptp(x) / binwidth)
     )
@@ -73,14 +78,14 @@ def _standard_scaler(X: Float2DArray) -> Float2DArray:
 @beartype
 def _estimate_densities(
     x: Float1DArray, y: Float1DArray, bins: Optional[PositiveInt] = None,
-) -> Tuple[FloatMatrix, FloatMatrix, Float1DArray, Float1DArray]:
+) -> Tuple[Float2DArray, Float2DArray, Float1DArray, Float1DArray]:
     """Calculate two dimensional probability densities."""
     if bins is None:
-        bins = np.max([
+        bins = [
             _freedman_diaconis_rule(x),
             _freedman_diaconis_rule(y),
-        ])
-    hist, _, _ = np.histogram2d(x, y, bins, density=True)
+        ]
+    hist, _, _ = np.histogram2d(x, y, bins=bins, density=True)
     # transpose since numpy considers axis 0 as y and axis 1 as x
     pxy = hist.T / np.sum(hist)
     px = np.sum(pxy, axis=1)
@@ -288,7 +293,7 @@ class Similarity:  # noqa: WPS214
             'JSD': self._jsd,
         }[self._metric]
 
-        nl_corr: np.ndarray = np.empty(  # noqa: WPS317
+        nl_corr: FloatMatrix = np.empty(  # noqa: WPS317
             (self._n_features, self._n_features), dtype=self._dtype,
         )
         for idx_i in range(self._n_features):
@@ -305,8 +310,8 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _gy(
         self,
-        pij: FloatMatrix,
-        pipj: FloatMatrix,
+        pij: Float2DArray,
+        pipj: Float2DArray,
         pi: Float1DArray,
         pj: Float1DArray,
     ) -> float:
@@ -319,8 +324,8 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _nmi(
         self,
-        pij: FloatMatrix,
-        pipj: FloatMatrix,
+        pij: Float2DArray,
+        pipj: Float2DArray,
         pi: Float1DArray,
         pj: Float1DArray,
     ) -> float:
@@ -332,8 +337,8 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _jsd(
         self,
-        pij: FloatMatrix,
-        pipj: FloatMatrix,
+        pij: Float2DArray,
+        pipj: Float2DArray,
         pi: Float1DArray,
         pj: Float1DArray,
     ) -> float:
