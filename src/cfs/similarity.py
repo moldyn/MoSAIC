@@ -44,8 +44,12 @@ def _freedman_diaconis_rule(x: Float1DArray) -> int:
     scott_factor = 2.59
     iqr = np.subtract(*np.percentile(x, [75, 25]))
     binwidth = scott_factor * iqr / np.cbrt(len(x))
+    ptp = np.min([
+        np.subtract(*np.percentile(x, [85, 0])),
+        np.subtract(*np.percentile(x, [100, 15])),
+    ])
     return int(
-        np.ceil(np.ptp(x) / binwidth)
+        np.ceil(ptp / binwidth),
     )
 
 
