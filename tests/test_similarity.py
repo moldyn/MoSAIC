@@ -31,18 +31,18 @@ def X1():
     ]).T
 
 
-def X1_result(str):
+def X1_result(mode):
     """Correlated coordinates results."""
     return {
         'correlation': 0.9697832,
-        'GY': 0.99960494,
-        'JSD': 0.93378449,
-        'NMI_joint': 0.70474596,
-        'NMI_max': 0.81167031,
-        'NMI_arithmetic': 0.82680467,
-        'NMI_geometric': 0.82694844,
-        'NMI_min': 0.84251415,
-    }[str]
+        'GY': 0.94966701,
+        'JSD': 0.67786609,
+        'NMI_joint': 0.54114067,
+        'NMI_max': 0.68108618,
+        'NMI_arithmetic': 0.70225993,
+        'NMI_geometric': 0.70259954,
+        'NMI_min': 0.72479243,
+    }[mode]
 
 
 @pytest.mark.parametrize('p, result, error', [
