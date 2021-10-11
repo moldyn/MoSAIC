@@ -21,16 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install -q --upgrade pip
-        # pip install -r requirements.txt
-        pip install -q numpy
-        pip install -q pandas
-        pip install -q beartype
-        pip install -q leidenalg
-        pip install -q umap-learn
-        pip install -q scikit-learn
-        pip install -q click
-        pip install -q scipy
-        pip install -q typing_extensions
+        pip install -r requirements.txt
         pip install -q -e .
     - name: Lint with flake8
       run: |
