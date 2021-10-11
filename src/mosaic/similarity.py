@@ -16,7 +16,7 @@ from beartype import beartype
 from scipy.spatial.distance import jensenshannon
 from sklearn import preprocessing
 
-from cfs._typing import (  # noqa: WPS436
+from mosaic._typing import (  # noqa: WPS436
     ArrayLikeFloat,
     Float1DArray,
     Float2DArray,
@@ -150,10 +150,10 @@ class Similarity:  # noqa: WPS214
 
     Examples
     --------
-    >>> import cfs
+    >>> import mosaic
     >>> x = np.linspace(0, np.pi, 1000)
     >>> data = np.array([np.cos(x), np.cos(x + np.pi / 6)]).T
-    >>> sim = cfs.Similarity()
+    >>> sim = mosaic.Similarity()
     >>> sim.fit(data)
     >>> sim.matrix_
     array([[1.       , 0.9697832],

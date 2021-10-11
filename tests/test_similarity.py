@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 from beartype.roar import BeartypeException
 
-import cfs
+import mosaic
 
 # Current directory
 HERE = os.path.dirname(__file__)
@@ -58,11 +58,11 @@ def X1_result(mode):
 def test__entropy(p, result, error):
     if not error:
         np.testing.assert_almost_equal(
-            cfs.similarity._entropy(p), result,
+            mosaic.similarity._entropy(p), result,
         )
     else:
         with pytest.raises(error):
-            cfs.similarity._entropy(p)
+            mosaic.similarity._entropy(p)
 
 
 @pytest.mark.parametrize('p, q, result, error', [
@@ -74,11 +74,11 @@ def test__entropy(p, result, error):
 def test__kullback(p, q, result, error):
     if not error:
         np.testing.assert_almost_equal(
-            cfs.similarity._kullback(p, q), result,
+            mosaic.similarity._kullback(p, q), result,
         )
     else:
         with pytest.raises(error):
-            cfs.similarity._kullback(p, q)
+            mosaic.similarity._kullback(p, q)
 
 
 @pytest.mark.parametrize('X, error', [
@@ -89,7 +89,7 @@ def test__kullback(p, q, result, error):
 ])
 def test__standard_scaler(X, error):
     if not error:
-        Xscaled = cfs.similarity._standard_scaler(X)
+        Xscaled = mosaic.similarity._standard_scaler(X)
         np.testing.assert_array_almost_equal(
             np.mean(Xscaled), np.zeros_like(Xscaled),
         )
@@ -98,7 +98,7 @@ def test__standard_scaler(X, error):
         )
     else:
         with pytest.raises(error):
-            cfs.similarity._standard_scaler(X)
+            mosaic.similarity._standard_scaler(X)
 
 
 @pytest.mark.parametrize('x, y, kwargs, error', [
@@ -112,7 +112,7 @@ def test__standard_scaler(X, error):
 ])
 def test__estimate_densities(x, y, kwargs, error):
     if not error:
-        densities = cfs.similarity._estimate_densities(x, y, **kwargs)
+        densities = mosaic.similarity._estimate_densities(x, y, **kwargs)
         _, _, px, py = densities
 
         # check normalization
@@ -120,7 +120,7 @@ def test__estimate_densities(x, y, kwargs, error):
             np.testing.assert_almost_equal(np.sum(p), 1)
     else:
         with pytest.raises(error):
-            cfs.similarity._estimate_densities(x, y, **kwargs)
+            mosaic.similarity._estimate_densities(x, y, **kwargs)
 
 
 @pytest.mark.parametrize('X, result, error', [
@@ -135,11 +135,11 @@ def test__estimate_densities(x, y, kwargs, error):
 def test__correlation(X, result, error):
     if not error:
         np.testing.assert_array_almost_equal(
-            cfs.similarity._correlation(X), result,
+            mosaic.similarity._correlation(X), result,
         )
     else:
         with pytest.raises(error):
-            cfs.similarity._correlation(X)
+            mosaic.similarity._correlation(X)
 
 
 @pytest.mark.parametrize('metric, kwargs, X, result, error', [
@@ -173,12 +173,12 @@ def test__correlation(X, result, error):
 ])
 def test_Similarity(metric, kwargs, X, result, error):
     if not error:
-        sim = cfs.Similarity(metric=metric, **kwargs)
+        sim = mosaic.Similarity(metric=metric, **kwargs)
         sim.fit(X)
         np.testing.assert_almost_equal(
             sim.matrix_[-1, 0], result,
         )
     else:
         with pytest.raises(error):
-            sim = cfs.Similarity(metric=metric, **kwargs)
+            sim = mosaic.Similarity(metric=metric, **kwargs)
             sim.fit(X)

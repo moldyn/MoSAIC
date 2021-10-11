@@ -9,7 +9,7 @@ All rights reserved.
 import numpy as np
 import pytest
 
-import cfs
+import mosaic
 
 
 def X1():
@@ -45,11 +45,11 @@ def test__coarse_clustermatrix(clusters, mat, result, error):
     cluster_list[:] = clusters
     if not error:
         np.testing.assert_array_almost_equal(
-            cfs.clustering._coarse_clustermatrix(cluster_list, mat), result,
+            mosaic.clustering._coarse_clustermatrix(cluster_list, mat), result,
         )
     else:
         with pytest.raises(error):
-            cfs.clustering._coarse_clustermatrix(cluster_list, mat),
+            mosaic.clustering._coarse_clustermatrix(cluster_list, mat),
 
 
 @pytest.mark.parametrize('mode, kwargs, X, Xresult, n_clusters, error', [
@@ -62,7 +62,7 @@ def test__coarse_clustermatrix(clusters, mat, result, error):
 ])
 def test_Similarity(mode, kwargs, X, Xresult, n_clusters, error):
     if not error:
-        clust = cfs.Clustering(mode=mode, **kwargs)
+        clust = mosaic.Clustering(mode=mode, **kwargs)
         clust.fit(X)
         np.testing.assert_array_almost_equal(
             clust.matrix_, Xresult,
@@ -72,5 +72,5 @@ def test_Similarity(mode, kwargs, X, Xresult, n_clusters, error):
         )
     else:
         with pytest.raises(error):
-            clust = cfs.Clustering(mode=mode, **kwargs)
+            clust = mosaic.Clustering(mode=mode, **kwargs)
             clust.fit(X)

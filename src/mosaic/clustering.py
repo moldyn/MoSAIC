@@ -16,7 +16,7 @@ import numpy as np
 from beartype import beartype
 from sklearn.neighbors import NearestNeighbors
 
-from cfs._typing import (  # noqa: WPS436
+from mosaic._typing import (  # noqa: WPS436
     ClusteringModeString,
     Float2DArray,
     FloatMatrix,
@@ -148,9 +148,9 @@ class Clustering:
 
     Examples
     --------
-    >>> import cfs
+    >>> import mosaic
     >>> mat = np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.0], [0.8, 0.1, 1.0]])
-    >>> clust = cfs.Clustering()
+    >>> clust = mosaic.Clustering()
     >>> clust.fit(mat)
     >>> clust.matrix_
     array([[1. , 0.9, 0.1],

@@ -16,7 +16,7 @@ README = (HERE / 'README.md').read_text()
 
 # This call to setup() does all the work
 setuptools.setup(
-    name='cfs',
+    name='moldyn-mosaic',
     version='0.1.0',
     description='Correlation based feature selection for MD data',
     long_description=README,
@@ -40,7 +40,7 @@ setuptools.setup(
     python_requires='>=3.8',
     entry_points={
         'console_scripts': [
-            'cfs = src.cfs.__main__:main',
+            'MoSAIC = src.mosaic.__main__:main',
         ],
     },
     install_requires=[

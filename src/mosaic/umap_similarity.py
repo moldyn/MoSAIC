@@ -14,7 +14,7 @@ import numpy as np
 import umap
 from beartype import beartype
 
-from cfs._typing import (  # noqa:WPS436
+from mosaic._typing import (  # noqa:WPS436
     ArrayLikeFloat,
     Float2DArray,
     FloatMatrix,
