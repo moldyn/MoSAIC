@@ -62,12 +62,12 @@ provide shell completion, checkout the
 [docs](https://click.palletsprojects.com/en/8.0.x/shell-completion).
 In the case of bash you need to add following line to your `~/.bashrc`
 ```bash
-eval "$(_CFS_COMPLETE=bash_source cfs)"
+eval "$(_MOSAIC_COMPLETE=bash_source MoSAIC)"
 ```
 
 ## Usage
-In general one can call the module directly by its entry point `$ cfs`
-or by calling the module `$ python -m cfs`. The latter method is
+In general one can call the module directly by its entry point `$ MoSAIC`
+or by calling the module `$ python -m mosaic`. The latter method is
 preferred to ensure using the desired python environment. For enabling
 the shell completion, the entry point needs to be used.
 
@@ -75,8 +75,8 @@ the shell completion, the entry point needs to be used.
 The module brings a rich CI using [click](https://click.palletsprojects.com).
 Each module and submodule contains a detailed help. It can be called by
 ```bash
-$ python -m cfs
-Usage: python -m cfs [OPTIONS] COMMAND [ARGS]...
+$ python -m mosaic
+Usage: python -m mosaic [OPTIONS] COMMAND [ARGS]...
 
   MoSAIC motion v0.1.0
 
@@ -99,9 +99,9 @@ A simple workflow example for clustering the input file `input_file` using
 correlation and Leiden with CPM and the default resolution parameter:
 ```bash
 # creating correlation matrix
-$ python -m cfs similarity -i input_file -o output_similarity -metric correlation -v
+$ python -m mosaic similarity -i input_file -o output_similarity -metric correlation -v
 
-CFS SIMILARITY
+MoSAIC SIMILARITY
 ~~~ Initialize similarity class
 ~~~ Load file input_file
 ~~~ Fit input
@@ -109,9 +109,9 @@ CFS SIMILARITY
 
 # clustering with CPM and default resolution parameter
 # the latter needs to be fine-tuned to each matrix
-$ python -m cfs clustering -i output_similarity -o output_clustering --plot -v
+$ python -m mosaic clustering -i output_similarity -o output_clustering --plot -v
 
-CFS CLUSTERING
+MoSAIC CLUSTERING
 ~~~ Initialize clustering class
 ~~~ Load file output_similarity
 ~~~ Fit input
@@ -125,19 +125,19 @@ row the indices of a cluster.
 
 ### Module - Inside a Python Script
 ```python
-import cfs
+import mosaic
 
 # Load file
 # X is np.ndarray of shape (n_samples, n_features)
 
-sim = cfs.Similarity(
+sim = mosaic.Similarity(
     metric='correlation',  # or 'NMI', 'GY', 'JSD'
 )
 sim.fit(X)
 
 
 # Cluster matrix
-clust = cfs.Clustering(
+clust = mosaic.Clustering(
     mode='CPM',  # or 'modularity
 )
 clust.fit(sim.matrix_)
