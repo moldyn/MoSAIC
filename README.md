@@ -18,7 +18,7 @@
   </p>
 </div>
 
-# Molecular Systems Automated Identification of Collective Motion
+# Molecular Systems Automated Identification of Cooperativity
 MoSAIC is a new algorithm for correlation analysis which auto-matically detects
 collective motion in MD simulation data, identifies uncorrelated features
 as noise and hence provides a detailed picture of the key coordinates driving a
