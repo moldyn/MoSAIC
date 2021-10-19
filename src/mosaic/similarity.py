@@ -15,6 +15,7 @@ import numpy as np
 from beartype import beartype
 from scipy.spatial.distance import jensenshannon
 from sklearn import preprocessing
+from sklearn.feature_selection import mutual_info_regression
 
 from mosaic._typing import (  # noqa: WPS436
     ArrayLikeFloat,
@@ -109,6 +110,28 @@ def _correlation(X: Float2DArray) -> FloatMatrix:
     return X.T / len(X) @ X
 
 
+@beartype
+def _knn_mutual_information(
+    X: Float2DArray,
+    nfeatures: PositiveInt,
+) -> FloatMatrix:
+    """Return the knn-estimated mutual information of input."""
+    mi_knn = np.empty((nfeatures, nfeatures))
+    for numf, feature in enumerate(X.T):
+        mi_knn[numf] = mutual_info_regression(
+            X, feature,
+        )
+    return mi_knn
+
+
+@beartype
+def _gy_transformation(matrix: FloatMatrix) -> FloatMatrix
+    """Perform the Gel'fand Yaglom transformation"""
+    return np.sqrt(
+        1 - np.exp(-2 * matrix),
+    )
+
+
 class Similarity:  # noqa: WPS214
     r"""Class for calculating the similarity measure.
 
@@ -141,6 +164,13 @@ class Similarity:  # noqa: WPS214
         - `'geometric'` is the square root of the product of the individual
           entropies
         - `'min'` is the minimum of the individual entropies
+
+    GY_knn : bool, default=False
+        Can only be set for metric GY. If True, the mutual information
+        is estimated reliably by a parameter free method based on entropy
+        estimation from k-nearest neighbors distances[^3].
+        It considerably increases the computational time and is thus
+        only advisable for relatively small data-sets.
 
     Attributes
     ----------
@@ -177,6 +207,9 @@ class Similarity:  # noqa: WPS214
         Donald E. Knuth (1998). "The Art of Computer Programming", volume 2:
         Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
+    [^3]: B.C. Ross, PLoS ONE 9(2) (2014), "Mutual Information between Discrete
+        and Continuous Data Sets"
+
     The Jensen-Shannon divergence is defined as
     $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
     + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)\;,$$
@@ -195,10 +228,12 @@ class Similarity:  # noqa: WPS214
         metric: MetricString = 'correlation',
         online: bool = False,
         normalize_method: Optional[NormString] = None,
+        GY_knn: bool = False,
     ):
         """Initialize Similarity class."""
         self._metric: MetricString = metric
         self._online: bool = online
+        self._knn_estimate: bool = GY_knn
         if self._metric == 'NMI':
             if normalize_method is None:
                 normalize_method = self._default_normalize_method
@@ -206,6 +241,13 @@ class Similarity:  # noqa: WPS214
         elif normalize_method is not None:
             raise NotImplementedError(
                 'Normalize methods are only supported with metric="NMI"',
+            )
+        elif self._metric != 'GY' and self._knn_estimate:
+            raise NotImplementedError(
+                (
+                    'The mutual information estimate based on k-nearest'
+                    'neighbors distances is only supported with metric="GY"'
+                )
             )
 
     @singledispatchmethod
@@ -255,7 +297,9 @@ class Similarity:  # noqa: WPS214
         if self._metric == 'correlation':
             corr = _correlation(X)
             matrix_ = np.abs(corr)
-        else:  # 'NMI', 'JSD', 'GY
+        elif self._metric == 'GY' and self._knn_estimate:
+            matrix_ = self._nonlinear_GY_knn(X)
+        else: # 'NMI', 'JSD', 'GY
             matrix_ = self._nonlinear_correlation(X)
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
@@ -312,6 +356,13 @@ class Similarity:  # noqa: WPS214
         return nl_corr
 
     @beartype
+    def _nonlinear_GY_knn(self, X: Float2DArray) -> FloatMatrix:
+        """Return the nonlinear correlation matrix based on Gel'fand-Yaglom
+        based on a reliable knn-estimate of the mutual information."""
+        nl_knn_corr = _knn_mutual_information(X, self._n_features)
+        return _gy_transformation(nl_knn_corr)
+
+    @beartype
     def _gy(
         self,
         pij: Float2DArray,
@@ -319,24 +370,9 @@ class Similarity:  # noqa: WPS214
         pi: Float1DArray,
         pj: Float1DArray,
     ) -> float:
-        """Return the Jensen-Shannon based dissimilarity."""
+        """Return the dissimilarity based on Gel'fand-Yaglom."""
         mutual_info: float = _kullback(pij, pipj)
-        return np.sqrt(
-            1 - np.exp(-2 * mutual_info),
-        )
-
-    @beartype
-    def _nmi(
-        self,
-        pij: Float2DArray,
-        pipj: Float2DArray,
-        pi: Float1DArray,
-        pj: Float1DArray,
-    ) -> float:
-        """Return the Jensen-Shannon based dissimilarity."""
-        mutual_info: float = _kullback(pij, pipj)
-        normalization: float = self._normalization(pi, pj, pij)
-        return mutual_info / normalization
+        return _gy_transformation(mutual_info)
 
     @beartype
     def _jsd(
@@ -352,6 +388,19 @@ class Similarity:  # noqa: WPS214
             pipj.flatten(),
             base=2,
         )
+
+    @beartype
+    def _nmi(
+        self,
+        pij: Float2DArray,
+        pipj: Float2DArray,
+        pi: Float1DArray,
+        pj: Float1DArray,
+    ) -> float:
+        """Return the Jensen-Shannon based dissimilarity."""
+        mutual_info: float = _kullback(pij, pipj)
+        normalization: float = self._normalization(pi, pj, pij)
+        return mutual_info / normalization
 
     @beartype
     def _normalization(
