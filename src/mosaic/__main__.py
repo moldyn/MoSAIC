@@ -130,13 +130,23 @@ def main():
     ),
 )
 @click.option(
+    '--GY_knn',
+    is_flag=True,
+    default=False,
+    help=(
+        'Uses a parameter free estimate for the Gelfand-Yaglom mutual'
+        'information based distance measure which yields more accurate'
+        'results, but is computationally more expensive.'
+    )
+)
+@click.option(
     '-v',
     '--verbose',
     is_flag=True,
     help='Activate verbose mode.',
 )
 def similarity(
-    metric, online, normalize_method, input_file, output_file, verbose,
+    metric, online, normalize_method, input_file, output_file, verbose, GY_knn,
 ):
     if verbose:
         click.echo('\nMoSAIC SIMILARITY\n~~~ Initialize similarity class')
@@ -144,6 +154,7 @@ def similarity(
         metric=metric,
         online=online,
         normalize_method=normalize_method,
+        GY_knn=GY_knn,
     )
     if online:
         if verbose:
