@@ -165,7 +165,7 @@ class Similarity:  # noqa: WPS214
           entropies
         - `'min'` is the minimum of the individual entropies
 
-    GY_knn : bool, default=False
+    knn_estimator : bool, default=False
         Can only be set for metric GY. If True, the mutual information
         is estimated reliably by a parameter free method based on entropy
         estimation from k-nearest neighbors distances[^3].
@@ -228,12 +228,12 @@ class Similarity:  # noqa: WPS214
         metric: MetricString = 'correlation',
         online: bool = False,
         normalize_method: Optional[NormString] = None,
-        GY_knn: bool = False,
+        knn_estimator: bool = False,
     ):
         """Initialize Similarity class."""
         self._metric: MetricString = metric
         self._online: bool = online
-        self._knn_estimate: bool = GY_knn
+        self._knn_estimate: bool = knn_estimator
         if self._metric == 'NMI':
             if normalize_method is None:
                 normalize_method = self._default_normalize_method

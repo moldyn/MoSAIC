@@ -130,7 +130,7 @@ def main():
     ),
 )
 @click.option(
-    '--GY_knn',
+    '--knn_estimator',
     is_flag=True,
     default=False,
     help=(
@@ -146,7 +146,13 @@ def main():
     help='Activate verbose mode.',
 )
 def similarity(
-    metric, online, normalize_method, input_file, output_file, verbose, GY_knn,
+    metric,
+    online,
+    normalize_method,
+    input_file,
+    output_file,
+    knn_estimator,
+    verbose,
 ):
     if verbose:
         click.echo('\nMoSAIC SIMILARITY\n~~~ Initialize similarity class')
@@ -154,7 +160,7 @@ def similarity(
         metric=metric,
         online=online,
         normalize_method=normalize_method,
-        GY_knn=GY_knn,
+        knn_estimator=knn_estimator,
     )
     if online:
         if verbose:
