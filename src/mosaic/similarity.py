@@ -242,7 +242,7 @@ class Similarity:  # noqa: WPS214
             raise NotImplementedError(
                 'Normalize methods are only supported with metric="NMI"',
             )
-        elif self._metric != 'GY' and self._knn_estimate:
+        if self._metric != 'GY' and self._knn_estimate:
             raise NotImplementedError(
                 (
                     'The mutual information estimate based on k-nearest'
