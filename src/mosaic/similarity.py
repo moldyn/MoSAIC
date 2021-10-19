@@ -125,7 +125,7 @@ def _knn_mutual_information(
 
 
 @beartype
-def _gy_transformation(matrix: FloatMatrix) -> FloatMatrix
+def _gy_transformation(matrix: FloatMatrix) -> FloatMatrix:
     """Perform the Gel'fand Yaglom transformation"""
     return np.sqrt(
         1 - np.exp(-2 * matrix),
