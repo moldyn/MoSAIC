@@ -299,7 +299,7 @@ class Similarity:  # noqa: WPS214
             matrix_ = np.abs(corr)
         elif self._metric == 'GY' and self._knn_estimate:
             matrix_ = self._nonlinear_GY_knn(X)
-        else: # 'NMI', 'JSD', 'GY
+        else:  # 'NMI', 'JSD', 'GY
             matrix_ = self._nonlinear_correlation(X)
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
