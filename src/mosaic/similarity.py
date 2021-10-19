@@ -124,14 +124,6 @@ def _knn_mutual_information(
     return mi_knn
 
 
-@beartype
-def _gy_transformation(matrix: FloatMatrix) -> FloatMatrix:
-    """Perform the Gel'fand Yaglom transformation"""
-    return np.sqrt(
-        1 - np.exp(-2 * matrix),
-    )
-
-
 class Similarity:  # noqa: WPS214
     r"""Class for calculating the similarity measure.
 
@@ -360,7 +352,9 @@ class Similarity:  # noqa: WPS214
         """Return the nonlinear correlation matrix based on Gel'fand-Yaglom
         based on a reliable knn-estimate of the mutual information."""
         nl_knn_corr = _knn_mutual_information(X, self._n_features)
-        return _gy_transformation(nl_knn_corr)
+        return np.sqrt(
+            1 - np.exp(-2 * nl_knn_corr),
+        )
 
     @beartype
     def _gy(
@@ -372,7 +366,9 @@ class Similarity:  # noqa: WPS214
     ) -> float:
         """Return the dissimilarity based on Gel'fand-Yaglom."""
         mutual_info: float = _kullback(pij, pipj)
-        return _gy_transformation(mutual_info)
+        return np.sqrt(
+            1 - np.exp(-2 * mutual_info),
+        )
 
     @beartype
     def _jsd(
