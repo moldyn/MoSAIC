@@ -66,6 +66,10 @@ FloatMatrix = _Annotated[
     Float2DArray,
     _Is[lambda arr: arr.shape[0] == arr.shape[1]],
 ]
+DistanceMatrix = _Annotated[
+    FloatMatrix,
+    _Is[lambda arr: _np.all(arr == arr.T) and _np.all(_np.diag(arr) == 1)],
+]
 FloatMax2DArray = _Annotated[
     FloatNDArray, _Is[lambda arr: 1 <= arr.ndim <= 2],
 ]
