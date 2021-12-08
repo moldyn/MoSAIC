@@ -13,11 +13,11 @@ import mosaic
 
 
 def X1():
-    return np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.0], [0.8, 0.1, 1.0]])
+    return np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.1], [0.9, 0.1, 1.0]])
 
 
 def X1_sorted():
-    return np.array([[1.0, 0.9, 0.1], [0.8, 1.0, 0.1], [0.1, 0.0, 1.0]])
+    return np.array([[1.0, 0.9, 0.1], [0.9, 1.0, 0.1], [0.1, 0.1, 1.0]])
 
 
 @pytest.mark.parametrize('clusters, mat, result, error', [
@@ -49,7 +49,7 @@ def test__coarse_clustermatrix(clusters, mat, result, error):
         )
     else:
         with pytest.raises(error):
-            mosaic.clustering._coarse_clustermatrix(cluster_list, mat),
+            mosaic.clustering._coarse_clustermatrix(cluster_list, mat)
 
 
 @pytest.mark.parametrize('mode, kwargs, X, Xresult, n_clusters, error', [
@@ -59,6 +59,16 @@ def test__coarse_clustermatrix(clusters, mat, result, error):
     ('CPM', {}, X1(), X1_sorted(), 2, None),
     ('CPM', {'resolution_parameter': 0.9}, X1(), X1_sorted(), 3, None),
     ('CPM', {'resolution_parameter': 0.05}, X1(), X1_sorted(), 1, None),
+    ('linkage', {'resolution_parameter': 0.9}, X1(), X1_sorted(), 3, None),
+    ('linkage', {'resolution_parameter': 0.05}, X1(), X1_sorted(), 1, None),
+    (
+        'linkage',
+        {'resolution_parameter': 0.05, 'n_neighbors': 3},
+        X1(),
+        None,
+        None,
+        NotImplementedError,
+    ),
 ])
 def test_Similarity(mode, kwargs, X, Xresult, n_clusters, error):
     if not error:
