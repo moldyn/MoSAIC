@@ -23,7 +23,7 @@ pplt.use_style(figsize=2, figratio=1, cmap='turbo')
 
 NORMALIZES = ['joint', 'geometric', 'arithmetic', 'min', 'max']
 METRICS = ['correlation', 'NMI', 'JSD', 'GY']
-MODES = ['CPM', 'modularity']
+MODES = ['CPM', 'modularity', 'linkage']
 
 HELP_STR = f"""MoSAIC motion v{mosaic.__version__}
 
