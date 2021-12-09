@@ -27,8 +27,10 @@ detection algorithm which is used to bring a correlation matrix in a
 block-diagonal form.
 
 The method was published in:
-> G. Diez, D. Nagel, and G. Stock, *Molecular Systems Automated Identification
-> of Collective Motion (MoSAIC motion)*, in preparation
+> G. Diez, D. Nagel, and G. Stock,
+> *Molecular Systems Automated Identification
+> of Collective Motion (MoSAIC motion)*,
+> in preparation
 
 We kindly ask you to cite these articles if you use this software package for
 published works.
