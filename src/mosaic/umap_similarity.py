@@ -8,6 +8,7 @@ All rights reserved.
 """
 __all__ = ['UMAPSimilarity']  # noqa: WPS410
 
+import warnings
 from typing import Optional
 
 import numpy as np
@@ -106,10 +107,16 @@ class UMAPSimilarity:  # noqa: WPS214
             n_neighbors=self._n_neighbors,
             densmap=self._densmap,
             n_components=self._n_components,
+            metric='precomputed',
         )
 
         # run UMAP with dissimalirty matrix
-        embedding: np.ndarray = reducer.fit_transform(1 - X)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                'ignore',
+                message='using precomputed metric',
+            )
+            embedding: np.ndarray = reducer.fit_transform(1 - X)
         matrix_: np.ndarray = _calc_distance_matrix(embedding)
 
         self.embedding_: np.ndarray = embedding
