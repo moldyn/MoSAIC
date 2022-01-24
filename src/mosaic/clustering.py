@@ -128,17 +128,20 @@ class Clustering:
 
     Attributes
     ----------
-    clusters_ : ndarray of shape (n_clusters)
+    clusters_ : ndarray of shape (n_clusters, )
         The result of the clustering process. A list of arrays, each
         containing all indices (features) for each cluster.
+
+    labels_ : ndarray of shape (n_features, )
+        Labels of each feature.
 
     matrix_ : ndarray of shape (n_features, n_features)
         Permuted matrix according to the found clusters.
 
-    ticks_ : ndarray of shape (n_clusters)
+    ticks_ : ndarray of shape (n_clusters, )
         Get cumulative indices where new cluster starts in `matrix_`.
 
-    permutation_ : ndarray of shape (n_features)
+    permutation_ : ndarray of shape (n_features, )
         Permutation of the input features (corresponds to flattened
         `clusters_`).
 
@@ -150,7 +153,7 @@ class Clustering:
         Only for mode 'CPM' and 'linkage'. Indicates the resolution parameter
         used for the CPM based Leiden clustering.
 
-    linkage_matrix_ : (n_clusters - 1, 4)
+    linkage_matrix_ : ndarray of shape (n_clusters - 1, 4)
         Only for mode 'linkage'. Holds hierarchicak clustering encoded as a
         linkage matrix, see
         [scipy:spatial.distance.linkage](https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html).
@@ -268,12 +271,17 @@ class Clustering:
         self.ticks_: Index1DArray = np.cumsum(
             [len(cluster) for cluster in self.clusters_],
         )
+        labels: Index1DArray = np.empty_like(self.permutation_)
+        for idx, cluster in enumerate(self.clusters_):
+            labels[cluster] = idx
+        self.labels_: Index1DArray = labels
 
     @beartype
     def _reset(self) -> None:
         """Reset internal data-dependent state of correlation."""
         if hasattr(self, 'clusters_'):  # noqa: WPS421
             del self.clusters_  # noqa: WPS420
+            del self.labels_  # noqa: WPS420
             del self.ticks_  # noqa: WPS420
             del self.permutation_  # noqa: WPS420
             del self.matrix_  # noqa: WPS420
