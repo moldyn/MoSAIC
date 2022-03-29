@@ -35,13 +35,13 @@ def X1_result(mode):
     """Correlated coordinates results."""
     return {
         'correlation': 0.9697832,
-        'GY': 0.94720053,
-        'JSD': 0.67019640,
-        'NMI_joint': 0.61734759,
-        'NMI_max': 0.74059696,
-        'NMI_arithmetic': 0.76340744,
-        'NMI_geometric': 0.76376980,
-        'NMI_min': 0.78766771,
+        'GY': 0.94966701,
+        'JSD': 0.67786610,
+        'NMI_joint': 0.54114068,
+        'NMI_max': 0.68108618,
+        'NMI_arithmetic': 0.70225994,
+        'NMI_geometric': 0.702599541,
+        'NMI_min': 0.72479244,
     }[mode]
 
 
