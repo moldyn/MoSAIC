@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/logo_large.png" />
+  <img src="docs/logo_large.png" style="width:410px"/>
   
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
