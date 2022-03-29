@@ -37,7 +37,7 @@ ClusteringModeString = Annotated[
 # scalar datatypes
 PositiveInt = Annotated[int, Is[lambda val: val > 0]]
 NumInRange0to1 = Annotated[
-    Union[np.floating, np.integer], Is[lambda val: 0 <= val <= 1],
+    Union[int, float, np.integer, np.floating], Is[lambda val: 0 <= val <= 1],
 ]
 
 # array datatypes
