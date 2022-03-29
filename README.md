@@ -1,17 +1,18 @@
 <div align="center">
+  <img src="docs/logo_large.png" style="width:410px"/>
+  
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
         <img src="https://img.shields.io/badge/style-wemake-000000.svg" /></a>
-    <a href="https://github.com/moldyn/feature_selection/blob/main/LICENSE" alt="License" >
-        <img src="https://img.shields.io/github/license/moldyn/feature_selection" /></a>
-    <a href="https://moldyn.github.io/feature_selection" alt="Docs" >
+    <a href="https://github.com/moldyn/MoSAIC/blob/main/LICENSE" alt="License" >
+        <img src="https://img.shields.io/github/license/moldyn/MoSAIC" /></a>
+    <a href="https://moldyn.github.io/MoSAIC" alt="Docs" >
         <img src="https://img.shields.io/badge/pdoc3-Documentation-brightgreen" /></a>
     <a href="https://beartype.rtfd.io" alt="bear-ified" >
         <img src="https://raw.githubusercontent.com/beartype/beartype-assets/main/badge/bear-ified.svg" /></a>
   </p>
-  <p style="font-size:2em">MoSAIC Motion</p>
   <p>
-    <a href="https://moldyn.github.io/feature_selection">Docs</a> •
+    <a href="https://moldyn.github.io/MoSAIC">Docs</a> •
     <a href="#features">Features</a> •
     <a href="#installation">Installation</a> •
     <a href="#usage">Usage</a>
@@ -28,8 +29,8 @@ block-diagonal form.
 
 The method was published in:
 > G. Diez, D. Nagel, and G. Stock,
-> *Molecular Systems Automated Identification
-> of Collective Motion (MoSAIC motion)*,
+> *Correlation-based feature selection to identify functional dynamcis
+> in proteins*,
 > in preparation
 
 We kindly ask you to cite these articles if you use this software package for
@@ -47,15 +48,15 @@ published works.
 So far the package is only published to [PyPI](https://pypi.org). Soon, it will
 be added [conda-forge](https://conda-forge.org/), as well. For installing it to within a python environment simple call:
 ```bash
-python3 -m pip install --upgrade feature_selection
+python3 -m pip install --upgrade moldyn-mosaic
 ```
 or for the latest dev version
 ```bash
 # via ssh key
-python3 -m pip install git+ssh://git@github.com/moldyn/feature_selection.git
+python3 -m pip install git+ssh://git@github.com/moldyn/MoSAIC.git
 
-# , or via password-based login
-python3 -m pip install git+https://github.com/moldyn/feature_selection.git
+# or via password-based login
+python3 -m pip install git+https://github.com/moldyn/MoSAIC.git
 ```
 
 ### Shell Completion
