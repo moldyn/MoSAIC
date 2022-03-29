@@ -1,4 +1,6 @@
 <div align="center">
+  <img src="docs/logo_large.png" />
+  
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
         <img src="https://img.shields.io/badge/style-wemake-000000.svg" /></a>
@@ -9,7 +11,6 @@
     <a href="https://beartype.rtfd.io" alt="bear-ified" >
         <img src="https://raw.githubusercontent.com/beartype/beartype-assets/main/badge/bear-ified.svg" /></a>
   </p>
-  <p style="font-size:2em">MoSAIC Motion</p>
   <p>
     <a href="https://moldyn.github.io/feature_selection">Docs</a> •
     <a href="#features">Features</a> •
@@ -28,8 +29,8 @@ block-diagonal form.
 
 The method was published in:
 > G. Diez, D. Nagel, and G. Stock,
-> *Molecular Systems Automated Identification
-> of Collective Motion (MoSAIC motion)*,
+> *Correlation-based feature selection to identify functional dynamcis
+> in proteins*,
 > in preparation
 
 We kindly ask you to cite these articles if you use this software package for
