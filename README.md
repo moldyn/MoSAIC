@@ -1,5 +1,6 @@
 <div align="center">
-  <img src="docs/logo_large.png" style="width:410px"/>
+  <img src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_dark.png#gh-dark-mode-only" />
+  <img src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_light.png#gh-light-mode-only" />
   
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
