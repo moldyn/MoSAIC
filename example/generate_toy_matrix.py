@@ -2,7 +2,7 @@
 """Script for generating toy model.
 
 This script was used to generate the toy model of following publication.
-It can be easily tweaked to generate a desired matrix, simply change the 
+It can be easily tweaked to generate a desired matrix, simply change the
 global variables `NDIM` and `CLUSTS`.
 > G. Diez, D. Nagel, and G. Stock,
 > *Correlation-based feature selection to identify functional dynamcis
@@ -66,7 +66,7 @@ def make_toy_matrix():
     mat[np.diag_indices_from(mat)] = 1
 
     np.savetxt(
-        f'toy_correlation_matrix',
+        'toy_correlation_matrix',
         mat,
         header='Toy matrix to compare different clustering approaches.',
         fmt='%.4f',
