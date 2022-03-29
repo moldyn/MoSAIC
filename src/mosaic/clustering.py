@@ -20,7 +20,7 @@ from sklearn.neighbors import NearestNeighbors
 
 from mosaic._typing import (  # noqa: WPS436
     ClusteringModeString,
-    DistanceMatrix,
+    SimilarityMatrix,
     Float2DArray,
     FloatMatrix,
     Index1DArray,
@@ -211,7 +211,7 @@ class Clustering:
             )
 
     @beartype
-    def fit(self, X: DistanceMatrix, y: Optional[np.ndarray] = None) -> None:
+    def fit(self, X: SimilarityMatrix, y: Optional[np.ndarray] = None) -> None:
         """Clusters the correlation matrix by Leiden clustering on a graph.
 
         Parameters
