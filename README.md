@@ -38,10 +38,10 @@ published works.
 
 ## Features
 - Intuitive usage via [module](#module---inside-a-python-script) and via [CI](#ci---usage-directly-from-the-command-line)
-- Sklearn-style API for fast integration into a Python workflow
-- No magic, only single parameter
+- Sklearn-style API for fast integration into your Python workflow
+- No magic, only a  single parameter
 - Extensive [documentation](https://moldyn.github.io/feature_selection) and
-  long discussion in publication
+  detailed discussion in publication
 
 
 ## Installation
