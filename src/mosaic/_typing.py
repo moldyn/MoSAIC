@@ -9,73 +9,80 @@ Copyright (c) 2021, Daniel Nagel
 All rights reserved.
 
 """
-from typing import List as _List
-from typing import Union as _Union
+from typing import List
+from typing import Union
 
-import numpy as _np
-from beartype.vale import Is as _Is
+import numpy as np
+from beartype.vale import Is
 
 try:  # python <= 3.8
-    from typing import Annotated as _Annotated
+    from typing import Annotated
 except ImportError:
-    from typing_extensions import Annotated as _Annotated
+    from typing_extensions import Annotated
 
 # String (enum-type) datatypes
-MetricString = _Annotated[
-    str, _Is[lambda val: val in {'correlation', 'NMI', 'JSD', 'GY'}],
+MetricString = Annotated[
+    str, Is[lambda val: val in {'correlation', 'NMI', 'JSD', 'GY'}],
 ]
-NormString = _Annotated[
+NormString = Annotated[
     str,
-    _Is[lambda val: val in {
+    Is[lambda val: val in {
         'joint', 'geometric', 'arithmetic', 'min', 'max',
     }],
 ]
-ClusteringModeString = _Annotated[
-    str, _Is[lambda val: val in {'CPM', 'modularity', 'linkage'}],
+ClusteringModeString = Annotated[
+    str, Is[lambda val: val in {'CPM', 'modularity', 'linkage'}],
 ]
 
 # scalar datatypes
-PositiveInt = _Annotated[int, _Is[lambda val: val > 0]]
-NumInRange0to1 = _Annotated[
-    _Union[float, int], _Is[lambda val: 0 <= val <= 1],
+PositiveInt = Annotated[int, Is[lambda val: val > 0]]
+NumInRange0to1 = Annotated[
+    Union[np.floating, np.integer], Is[lambda val: 0 <= val <= 1],
 ]
 
 # array datatypes
-FloatNDArray = _Annotated[
-    _np.ndarray, _Is[lambda arr: _np.issubdtype(arr.dtype, _np.floating)],
+FloatNDArray = Annotated[
+    np.ndarray, Is[lambda arr: np.issubdtype(arr.dtype, np.floating)],
 ]
-IntNDArray = _Annotated[
-    _np.ndarray, _Is[lambda arr: _np.issubdtype(arr.dtype, _np.integer)],
+IntNDArray = Annotated[
+    np.ndarray, Is[lambda arr: np.issubdtype(arr.dtype, np.integer)],
 ]
-ObjectNDArray = _Annotated[
-    _np.ndarray, _Is[lambda arr: _np.issubdtype(arr.dtype, object)],
+ObjectNDArray = Annotated[
+    np.ndarray, Is[lambda arr: np.issubdtype(arr.dtype, object)],
 ]
-ArrayLikeFloat = _Union[_List[float], FloatNDArray]
-Index1DArray = _Annotated[
-    IntNDArray, _Is[
-        lambda arr: arr.ndim == 1 and _np.all(arr >= 0)
+ArrayLikeFloat = Union[List[float], FloatNDArray]
+Index1DArray = Annotated[
+    IntNDArray, Is[
+        lambda arr: arr.ndim == 1 and np.all(arr >= 0)
     ],
 ]
-Float1DArray = _Annotated[
-    FloatNDArray, _Is[lambda arr: arr.ndim == 1],
+Float1DArray = Annotated[
+    FloatNDArray, Is[lambda arr: arr.ndim == 1],
 ]
-Float2DArray = _Annotated[
-    FloatNDArray, _Is[lambda arr: arr.ndim == 2],
+Float2DArray = Annotated[
+    FloatNDArray, Is[lambda arr: arr.ndim == 2],
 ]
-FloatMatrix = _Annotated[
+FloatMatrix = Annotated[
     Float2DArray,
-    _Is[lambda arr: arr.shape[0] == arr.shape[1]],
+    Is[lambda arr: arr.shape[0] == arr.shape[1]],
 ]
-DistanceMatrix = _Annotated[
+SimilarityMatrix = Annotated[
     FloatMatrix,
-    _Is[lambda arr: _np.allclose(arr, arr.T) and _np.allclose(_np.diag(arr), 1)],
+    Is[
+        lambda arr: (
+            np.allclose(arr, arr.T) and
+            np.allclose(np.diag(arr), 1) and
+            np.all(arr <= 1) and
+            np.all(arr >= 0)
+        )
+    ],
 ]
-FloatMax2DArray = _Annotated[
-    FloatNDArray, _Is[lambda arr: 1 <= arr.ndim <= 2],
+FloatMax2DArray = Annotated[
+    FloatNDArray, Is[lambda arr: 1 <= arr.ndim <= 2],
 ]
-Object1DArray = _Annotated[
-    ObjectNDArray, _Is[lambda arr: arr.ndim == 1],
+Object1DArray = Annotated[
+    ObjectNDArray, Is[lambda arr: arr.ndim == 1],
 ]
-ObjectMax2DArray = _Annotated[
-    ObjectNDArray, _Is[lambda arr: 1 <= arr.ndim <= 2],
+ObjectMax2DArray = Annotated[
+    ObjectNDArray, Is[lambda arr: 1 <= arr.ndim <= 2],
 ]
