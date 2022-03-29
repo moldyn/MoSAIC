@@ -20,10 +20,10 @@
 </div>
 
 # Molecular Systems Automated Identification of Cooperativity
-MoSAIC is a new algorithm for correlation analysis which auto-matically detects
+MoSAIC is a new method for correlation analysis which automatically detects
 collective motion in MD simulation data, identifies uncorrelated features
 as noise and hence provides a detailed picture of the key coordinates driving a
-conformational change in a biomolecular system. It is based on a community
+conformational change in a biomolecular system. It is based on the Leiden community
 detection algorithm which is used to bring a correlation matrix in a
 block-diagonal form.
 
@@ -33,7 +33,7 @@ The method was published in:
 > in proteins*,
 > in preparation
 
-We kindly ask you to cite these articles if you use this software package for
+We kindly ask you to cite this article in case you use this software package for
 published works.
 
 ## Features
@@ -46,7 +46,7 @@ published works.
 
 ## Installation
 So far the package is only published to [PyPI](https://pypi.org). Soon, it will
-be added [conda-forge](https://conda-forge.org/), as well. For installing it to within a python environment simple call:
+be added [conda-forge](https://conda-forge.org/), as well. To install it within a python environment simple call:
 ```bash
 python3 -m pip install --upgrade moldyn-mosaic
 ```
@@ -76,7 +76,7 @@ the shell completion, the entry point needs to be used.
 
 ### CI - Usage Directly from the Command Line
 The module brings a rich CI using [click](https://click.palletsprojects.com).
-Each module and submodule contains a detailed help. It can be called by
+Each module and submodule contains a detailed help, which can be accessed by
 ```bash
 $ python -m mosaic
 Usage: python -m mosaic [OPTIONS] COMMAND [ARGS]...
