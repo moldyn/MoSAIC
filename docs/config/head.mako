@@ -21,3 +21,4 @@
     }
 </%def>
 <style>${homelink()}</style>
+<link rel="icon" href="icon.png">
