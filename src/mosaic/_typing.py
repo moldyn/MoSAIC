@@ -9,16 +9,9 @@ Copyright (c) 2021, Daniel Nagel
 All rights reserved.
 
 """
-from typing import List
-from typing import Union
-
 import numpy as np
+from beartype.typing import Annotated, List, Union
 from beartype.vale import Is
-
-try:  # python <= 3.8
-    from typing import Annotated
-except ImportError:
-    from typing_extensions import Annotated
 
 # String (enum-type) datatypes
 MetricString = Annotated[

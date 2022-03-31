@@ -46,7 +46,7 @@ setuptools.setup(
     install_requires=[
         'numpy>=1.21.0',
         'pandas',
-        'beartype>=0.8.1',
+        'beartype>=0.10.4',
         'scipy',
         'scikit-learn',
         'leidenalg>=0.8.0',
