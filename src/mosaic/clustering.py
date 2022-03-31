@@ -8,12 +8,11 @@ All rights reserved.
 """
 __all__ = ['Clustering']  # noqa: WPS410
 
-from typing import Any, Dict, Optional
-
 import igraph as ig
 import leidenalg as la
 import numpy as np
 from beartype import beartype
+from beartype.typing import Any, Dict, Optional
 from scipy.cluster.hierarchy import cut_tree, linkage
 from scipy.spatial.distance import squareform
 from sklearn.neighbors import NearestNeighbors

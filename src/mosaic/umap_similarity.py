@@ -9,11 +9,11 @@ All rights reserved.
 __all__ = ['UMAPSimilarity']  # noqa: WPS410
 
 import warnings
-from typing import Optional
 
 import numpy as np
 import umap
 from beartype import beartype
+from beartype.typing import Optional
 
 from mosaic._typing import (  # noqa:WPS436
     ArrayLikeFloat,

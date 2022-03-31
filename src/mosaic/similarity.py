@@ -9,10 +9,10 @@ All rights reserved.
 __all__ = ['Similarity']  # noqa: WPS410
 
 from functools import singledispatchmethod
-from typing import Callable, Generator, Optional, Tuple, Union
 
 import numpy as np
 from beartype import beartype
+from beartype.typing import Callable, Generator, Optional, Tuple, Union
 from scipy.spatial.distance import jensenshannon
 from sklearn import preprocessing
 from sklearn.feature_selection import mutual_info_regression
