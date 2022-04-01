@@ -4,7 +4,6 @@ beartype>=0.8.1
 scipy
 scikit-learn
 leidenalg>=0.8.0
-umap-learn
 click>=7.0.0
 prettypyplot
 typing_extensions>=3.9.0
