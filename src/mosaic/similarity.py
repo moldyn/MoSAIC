@@ -2,7 +2,7 @@
 """Class for estimating correlation matrices.
 
 MIT License
-Copyright (c) 2021, Daniel Nagel, Georg Diez
+Copyright (c) 2021-2022, Daniel Nagel, Georg Diez
 All rights reserved.
 
 """

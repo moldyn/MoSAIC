@@ -5,7 +5,7 @@ In this module all type hint types are defined. This includes as well the
 available metrics, norms and clustering methods
 
 MIT License
-Copyright (c) 2021, Daniel Nagel
+Copyright (c) 2021-2022, Daniel Nagel
 All rights reserved.
 
 """

@@ -2,7 +2,7 @@
 """Class for embedding correlation matrix with UMAP.
 
 MIT License
-Copyright (c) 2021, Daniel Nagel, Georg Diez
+Copyright (c) 2021-2022, Daniel Nagel, Georg Diez
 All rights reserved.
 
 """

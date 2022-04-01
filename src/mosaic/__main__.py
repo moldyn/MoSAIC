@@ -1,7 +1,7 @@
 """CLI of MoSAIC.
 
 MIT License
-Copyright (c) 2021, Daniel Nagel
+Copyright (c) 2021-2022, Daniel Nagel
 All rights reserved.
 
 """
@@ -30,7 +30,7 @@ HELP_STR = f"""MoSAIC motion v{mosaic.__version__}
 \b
 Molecular systems automated identification of collective motion, is
 a correlation based feature selection framework for MD data.
-Copyright (c) 2021, Georg Diez and Daniel Nagel
+Copyright (c) 2021-2022, Georg Diez and Daniel Nagel
 """
 
 
