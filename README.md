@@ -87,7 +87,7 @@ Usage: python -m mosaic [OPTIONS] COMMAND [ARGS]...
 
   Molecular systems automated identification of collective motion, is
   a correlation based feature selection framework for MD data.
-  Copyright (c) 2021, Georg Diez and Daniel Nagel
+  Copyright (c) 2022, Georg Diez and Daniel Nagel
 
 Options:
   --help  Show this message and exit.
