@@ -25,7 +25,7 @@ def test_clustering():
     assert '--help' in result.output
 
 
-def test_clustering():
+def test_similarity():
     runner = CliRunner()
     result = runner.invoke(main, ['similarity'])
     assert result.exit_code == 0
