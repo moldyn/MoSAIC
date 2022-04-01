@@ -7,4 +7,4 @@ from .similarity import Similarity
 from .umap_similarity import UMAPSimilarity
 
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
