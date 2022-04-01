@@ -160,15 +160,15 @@ class Clustering:
     Examples
     --------
     >>> import mosaic
-    >>> mat = np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.0], [0.8, 0.1, 1.0]])
+    >>> mat = np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.1], [0.9, 0.1, 1.0]])
     >>> clust = mosaic.Clustering()
     >>> clust.fit(mat)
     >>> clust.matrix_
     array([[1. , 0.9, 0.1],
-           [0.8, 1. , 0.1],
-           [0.1, 0. , 1. ]])
+           [0.9, 1. , 0.1],
+           [0.1, 0.1, 1. ]])
     >>> clust.clusters_
-    [array([0, 2]), array([1])]
+    array([list([2, 0]), list([1])], dtype=object)
 
     """
 
