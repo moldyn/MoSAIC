@@ -19,6 +19,9 @@
         margin: auto;
         margin-bottom: .3em;
     }
+    .darkmode {
+        display: none !important;
+    }
 </%def>
 <style>${homelink()}</style>
 <link rel="icon" href="icon.png">

@@ -423,9 +423,6 @@
     h6 {
         page-break-after: avoid;
     }
-    
-    .darkmode {
-        display: none;
-    }
+
 }
 </%def>
