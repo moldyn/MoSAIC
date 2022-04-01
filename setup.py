@@ -43,7 +43,7 @@ README = (HERE / 'README.md').read_text()
 
 # This call to setup() does all the work
 setuptools.setup(
-    name='moldyn-mosaic',
+    name='mosaic-clustering',
     version='0.1.0',
     description='Correlation based feature selection for MD data',
     long_description=README,
@@ -67,7 +67,7 @@ setuptools.setup(
     python_requires='>=3.8',
     entry_points={
         'console_scripts': [
-            'MoSAIC = src.mosaic.__main__:main',
+            'mosaic = mosaic.__main__:main',
         ],
     },
     install_requires=[
