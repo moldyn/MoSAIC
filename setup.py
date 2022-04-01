@@ -16,7 +16,11 @@ def get_extra_requirements(path, add_all=True):
     with open(path) as depfile:
         extra_deps = defaultdict(set)
         for line in depfile:
-            if not line.startswith('#') and ':' in line:
+            if not line.startswith('#'):
+                if ':' not in line:
+                    raise ValueError(
+                        f'Dependency in {path} not correct formatted: {line}',
+                    )
                 dep, tags = line.split(':')
                 tags = {tag.strip() for tag in tags.split(',')}
                 for tag in tags:
@@ -77,5 +81,5 @@ setuptools.setup(
         'click>=7.0.0',
         'prettypyplot',
     ],
-    extra_requires=get_extra_requirements('extra-requirements.txt')
+    extras_require=get_extra_requirements('extra-requirements.txt')
 )
