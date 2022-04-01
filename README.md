@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_dark.png#gh-dark-mode-only" />
-  <img src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_light.png#gh-light-mode-only" />
+  <img src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_dark.png#gh-dark-mode-only" class="light-mode"/>
+  <img src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_light.png#gh-light-mode-only" class="dark-mode"/>
   
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
@@ -12,6 +12,7 @@
     <a href="https://beartype.rtfd.io" alt="bear-ified" >
         <img src="https://raw.githubusercontent.com/beartype/beartype-assets/main/badge/bear-ified.svg" /></a>
   </p>
+
   <p>
     <a href="https://moldyn.github.io/MoSAIC">Docs</a> •
     <a href="#features">Features</a> •
