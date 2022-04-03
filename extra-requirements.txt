@@ -1,6 +1,6 @@
 # Extra requirements
 # package[version_required]: tag1, tag2, ...
-flake8<=7.21:          testing
+flake8:                testing
 pytest:                testing
 pytest-cov:            testing
 pytest-rerunfailures:  testing
