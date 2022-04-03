@@ -425,7 +425,7 @@
 </footer>
 
 % if syntax_highlighting:
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad()</script>
 % endif
 
