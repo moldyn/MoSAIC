@@ -1,340 +1,43 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="43.3536mm"
-   height="22.722317mm"
-   viewBox="0 0 43.3536 22.722316"
-   version="1.1"
-   id="svg8"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
-   sodipodi:docname="logo_large_dark.svg"
-   inkscape:export-filename="/home/dn1016/Documents/Github/MoSAIC/docs/logo_large_dark.png"
-   inkscape:export-xdpi="220"
-   inkscape:export-ydpi="220">
-  <defs
-     id="defs2" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="4.1698681"
-     inkscape:cx="103.05545"
-     inkscape:cy="36.57915"
-     inkscape:document-units="mm"
-     inkscape:current-layer="layer2"
-     inkscape:document-rotation="0"
-     showgrid="false"
-     inkscape:window-width="1871"
-     inkscape:window-height="1020"
-     inkscape:window-x="49"
-     inkscape:window-y="434"
-     inkscape:window-maximized="1"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0" />
-  <metadata
-     id="metadata5">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:label="logo"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-20.565583,-27.909275)"
-     sodipodi:insensitive="true">
-    <g
-       id="g941"
-       transform="matrix(-0.8951809,0,0,0.8951809,51.535516,3.2779011)"
-       style="stroke-width:1.11709"
-       inkscape:export-filename="/home/dn1016/Documents/Github/MoSAIC/docs/logo_large.png"
-       inkscape:export-xdpi="210"
-       inkscape:export-ydpi="210">
-      <g
-         id="g917"
-         style="stroke-width:1.11709">
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect833"
-           width="2.9914079"
-           height="2.9914079"
-           x="40.928276"
-           y="3.9673696"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#e9c46a;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect835"
-           width="2.9914079"
-           height="2.9914079"
-           x="43.919682"
-           y="3.9673696"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#e76f51;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect837"
-           width="2.9914079"
-           height="2.9914079"
-           x="46.911091"
-           y="3.9673696"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#f4a261;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect839"
-           width="2.9914079"
-           height="2.9914079"
-           x="43.919682"
-           y="6.9587774"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#e76f51;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect841"
-           width="2.9914079"
-           height="2.9914079"
-           x="46.911091"
-           y="6.9587774"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#e76f51;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect843"
-           width="2.9914079"
-           height="2.9914079"
-           x="49.902496"
-           y="6.9587774"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#e76f51;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect845"
-           width="2.9914079"
-           height="2.9914079"
-           x="49.902496"
-           y="3.96737"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#f4a261;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect847"
-           width="2.9914079"
-           height="2.9914079"
-           x="46.911091"
-           y="9.9501858"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#e9c46a;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect849"
-           width="2.9914079"
-           height="2.9914079"
-           x="49.902496"
-           y="9.9501858"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect851"
-           width="2.9914079"
-           height="2.9914079"
-           x="49.902496"
-           y="12.941593"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect853"
-           width="2.9914079"
-           height="2.9914079"
-           x="49.902496"
-           y="15.933001"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect855"
-           width="2.9914079"
-           height="2.9914079"
-           x="46.911091"
-           y="12.941593"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#e76f51;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect857"
-           width="2.9914079"
-           height="2.9914079"
-           x="43.919682"
-           y="9.9501858"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect859"
-           width="2.9914079"
-           height="2.9914079"
-           x="40.928276"
-           y="6.9587774"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect861"
-           width="2.9914079"
-           height="2.9914079"
-           x="37.936871"
-           y="3.96737"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect863"
-           width="2.9914079"
-           height="2.9914079"
-           x="34.945461"
-           y="3.96737"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect865"
-           width="2.9914079"
-           height="2.9914079"
-           x="37.936871"
-           y="6.958777"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#2a9d8f;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect867"
-           width="2.9914079"
-           height="2.9914079"
-           x="40.928272"
-           y="9.9501858"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#2a9d8f;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect869"
-           width="2.9914079"
-           height="2.9914079"
-           x="43.919682"
-           y="12.941593"
-           transform="rotate(45)" />
-        <rect
-           style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-           id="rect871"
-           width="2.9914079"
-           height="2.9914079"
-           x="46.911091"
-           y="15.933001"
-           transform="rotate(45)" />
-      </g>
-      <rect
-         style="fill:#264653;fill-opacity:1;stroke:none;stroke-width:1.11709;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
-         id="rect873"
-         width="2.9914079"
-         height="2.9914079"
-         x="49.902496"
-         y="18.924408"
-         transform="rotate(45)" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="43.354mm" height="22.722mm" version="1.1" viewBox="0 0 43.354 22.722" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(-20.566 -27.909)">
+        <g transform="matrix(-.89518 0 0 .89518 51.536 3.2779)" stroke-width="1.1171">
+            <g stroke-width="1.1171">
+                <rect transform="rotate(45)" x="40.928" y="3.9674" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="43.92" y="3.9674" width="2.9914" height="2.9914" fill="#e9c46a" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="3.9674" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="43.92" y="6.9588" width="2.9914" height="2.9914" fill="#f4a261" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="6.9588" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="6.9588" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="3.9674" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="9.9502" width="2.9914" height="2.9914" fill="#f4a261" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="9.9502" width="2.9914" height="2.9914" fill="#e9c46a" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="12.942" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="15.933" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="12.942" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="43.92" y="9.9502" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="40.928" y="6.9588" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="37.937" y="3.9674" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="34.945" y="3.9674" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="37.937" y="6.9588" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="40.928" y="9.9502" width="2.9914" height="2.9914" fill="#2a9d8f" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="43.92" y="12.942" width="2.9914" height="2.9914" fill="#2a9d8f" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="15.933" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+            </g>
+            <rect transform="rotate(45)" x="49.902" y="18.924" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+        </g>
     </g>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="light"
-     style="display:none">
-    <g
-       id="g996"
-       transform="translate(-20.565583,-28.947496)"
-       inkscape:export-filename="/home/dn1016/Documents/Github/MoSAIC/docs/logo_large.png"
-       inkscape:export-xdpi="210"
-       inkscape:export-ydpi="210">
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;line-height:1.05;font-family:'Latin Modern Math';-inkscape-font-specification:'Latin Modern Math';letter-spacing:0px;word-spacing:0px;fill:#264653;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="37.46793"
-         y="38.855167"
-         id="text877"><tspan
-           sodipodi:role="line"
-           x="37.46793"
-           y="38.855167"
-           style="font-size:7.05556px;fill:#264653;fill-opacity:1;stroke-width:0.264583"
-           id="tspan945">MoSAIC</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.9389px;line-height:0;font-family:'Latin Modern Math';-inkscape-font-specification:'Latin Modern Math';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#41778d;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="37.586464"
-         y="39.421814"
-         id="text984"><tspan
-           sodipodi:role="line"
-           id="tspan982"
-           x="37.586464"
-           y="39.421814"
-           style="line-height:1.25;text-align:start;text-anchor:start;fill:#41778d;fill-opacity:1;stroke-width:0.264583" /><tspan
-           sodipodi:role="line"
-           x="37.586464"
-           y="43.572247"
-           style="font-size:3.175px;line-height:1.01;text-align:start;text-anchor:start;fill:#41778d;fill-opacity:1;stroke-width:0.264583"
-           id="tspan986">correlation-based</tspan><tspan
-           sodipodi:role="line"
-           x="37.586464"
-           y="46.778999"
-           style="font-size:3.175px;line-height:1.01;text-align:start;text-anchor:start;fill:#41778d;fill-opacity:1;stroke-width:0.264583"
-           id="tspan988">feature selection</tspan></text>
+    <g display="none">
+        <g transform="translate(-20.566 -28.947)" font-family="'Latin Modern Math'" letter-spacing="0px" stroke-width=".26458" word-spacing="0px">
+            <text x="37.46793" y="38.855167" fill="#264653" font-size="7.0556px" style="line-height:1.05" xml:space="preserve"><tspan x="37.46793" y="38.855167" fill="#264653" font-size="7.0556px" stroke-width=".26458">MoSAIC</tspan></text>
+            <text x="37.586464" y="39.421814" fill="#41778d" font-size="4.9389px" style="line-height:0" xml:space="preserve"><tspan x="37.586464" y="39.421814" style="line-height:1.25"/><tspan x="37.586464" y="43.572247" font-size="3.175px" style="line-height:1.01">correlation-based</tspan><tspan x="37.586464" y="46.778999" font-size="3.175px" style="line-height:1.01">feature selection</tspan></text>
+        </g>
     </g>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="dark"
-     style="display:inline">
-    <g
-       id="g915"
-       transform="translate(-20.565583,-28.947496)"
-       inkscape:export-filename="/home/dn1016/Documents/Github/MoSAIC/docs/logo_large.png"
-       inkscape:export-xdpi="210"
-       inkscape:export-ydpi="210"
-       style="display:inline">
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05556px;line-height:1.05;font-family:'Latin Modern Math';-inkscape-font-specification:'Latin Modern Math';letter-spacing:0px;word-spacing:0px;fill:#ecf3f6;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="37.46793"
-         y="38.855167"
-         id="text905"><tspan
-           sodipodi:role="line"
-           x="37.46793"
-           y="38.855167"
-           style="font-size:7.05556px;fill:#ecf3f6;fill-opacity:1;stroke-width:0.264583"
-           id="tspan903">MoSAIC</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.9389px;line-height:0;font-family:'Latin Modern Math';-inkscape-font-specification:'Latin Modern Math';text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#c6dce5;fill-opacity:1;stroke:none;stroke-width:0.264583"
-         x="37.586464"
-         y="39.421814"
-         id="text913"><tspan
-           sodipodi:role="line"
-           id="tspan907"
-           x="37.586464"
-           y="39.421814"
-           style="line-height:1.25;text-align:start;text-anchor:start;fill:#c6dce5;fill-opacity:1;stroke-width:0.264583" /><tspan
-           sodipodi:role="line"
-           x="37.586464"
-           y="43.572247"
-           style="font-size:3.175px;line-height:1.01;text-align:start;text-anchor:start;fill:#c6dce5;fill-opacity:1;stroke-width:0.264583"
-           id="tspan909">correlation-based</tspan><tspan
-           sodipodi:role="line"
-           x="37.586464"
-           y="46.778999"
-           style="font-size:3.175px;line-height:1.01;text-align:start;text-anchor:start;fill:#c6dce5;fill-opacity:1;stroke-width:0.264583"
-           id="tspan911">feature selection</tspan></text>
-      <path
-         style="fill:none;stroke:none;stroke-width:0.529167;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="m 36.339217,61.218166 c 9.084986,-4.222894 18.023415,-6.950699 26.006439,0.068"
-         id="path924"
-         sodipodi:nodetypes="cc" />
+    <g>
+        <g transform="translate(-20.566 -28.947)">
+            <text x="37.46793" y="38.855167" fill="#ecf3f6" font-family="'Latin Modern Math'" font-size="7.0556px" letter-spacing="0px" stroke-width=".26458" word-spacing="0px" style="line-height:1.05" xml:space="preserve"><tspan x="37.46793" y="38.855167" fill="#ecf3f6" font-size="7.0556px" stroke-width=".26458">MoSAIC</tspan></text>
+            <text x="37.586464" y="39.421814" fill="#c6dce5" font-family="'Latin Modern Math'" font-size="4.9389px" letter-spacing="0px" stroke-width=".26458" word-spacing="0px" style="line-height:0" xml:space="preserve"><tspan x="37.586464" y="39.421814" style="line-height:1.25"/><tspan x="37.586464" y="43.572247" font-size="3.175px" style="line-height:1.01">correlation-based</tspan><tspan x="37.586464" y="46.778999" font-size="3.175px" style="line-height:1.01">feature selection</tspan></text>
+            <path d="m36.339 61.218c9.085-4.2229 18.023-6.9507 26.006 0.068" fill="none"/>
+        </g>
     </g>
-  </g>
 </svg>
