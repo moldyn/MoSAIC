@@ -5,12 +5,22 @@
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
         <img src="https://img.shields.io/badge/style-wemake-000000.svg" /></a>
-    <a href="https://github.com/moldyn/MoSAIC/blob/main/LICENSE" alt="License" >
-        <img src="https://img.shields.io/github/license/moldyn/MoSAIC" /></a>
-    <a href="https://moldyn.github.io/MoSAIC" alt="Docs" >
-        <img src="https://img.shields.io/badge/pdoc3-Documentation-brightgreen" /></a>
     <a href="https://beartype.rtfd.io" alt="bear-ified" >
         <img src="https://raw.githubusercontent.com/beartype/beartype-assets/main/badge/bear-ified.svg" /></a>
+    <a href="https://pypi.org/project/mosaic-clustering" alt="PyPI" >
+        <img src="https://img.shields.io/pypi/v/mosaic-clustering" /></a>
+    <a href="https://pepy.tech/project/mosaic-clustering" alt="Downloads" >
+        <img src="https://pepy.tech/badge/mosaic-clustering" /></a>
+    <a href="https://github.com/moldyn/MoSAIC/actions/workflows/pytest.yml" alt="GitHub Workflow Status">
+        <img src="https://img.shields.io/github/workflow/status/moldyn/MoSAIC/Pytest"></a>
+    <a href="https://img.shields.io/pypi/pyversions/mosaic-clustering" alt="PyPI - Python Version">
+        <img src="https://img.shields.io/pypi/pyversions/mosaic-clustering" /></a>
+    <a href="https://moldyn.github.io/MoSAIC" alt="Docs" >
+        <img src="https://img.shields.io/badge/pdoc3-Documentation-brightgreen" /></a>
+    <a href="#" alt="doi">
+        <img src="https://img.shields.io/badge/doi-in%20preparation-blue" /></a>
+    <a href="https://github.com/moldyn/MoSAIC/blob/main/LICENSE" alt="License" >
+        <img src="https://img.shields.io/github/license/moldyn/MoSAIC" /></a>
   </p>
 
   <p>
