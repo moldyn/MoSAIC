@@ -1,6 +1,6 @@
 <div align="center">
-  <img class="darkmode" src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_dark.png?raw=true#gh-dark-mode-only" />
-  <img class="lightmode" src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_light.png?raw=true#gh-light-mode-only" />
+  <img class="darkmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_dark.svg?raw=true#gh-dark-mode-only" />
+  <img class="lightmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_light.svg?raw=true#gh-light-mode-only" />
   
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
