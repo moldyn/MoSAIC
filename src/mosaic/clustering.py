@@ -100,15 +100,11 @@ class Clustering:
         algorithm ('CPM', or 'modularity') or linkage clustering.
         - 'CPM': will use the constant Potts model on the full, weighted graph
         - 'modularity': will use modularity on a knn-graph
-        - 'linkage': will use complete-linkage
+        - 'linkage': will use complete-linkage clustering
 
     weighted : bool, default=True,
         If True, the underlying graph has weighted edges. Otherwise, the graph
         is constructed using the adjacency matrix.
-
-    n_iterations : int, default=None,
-        Number of iterations to run the Leiden algorithm. None means that the
-        algorithm runs until no further improvement is achieved.
 
     n_neighbors : int, default=None,
         This parameter specifies if the whole matrix is used, or an knn-graph.
@@ -180,7 +176,6 @@ class Clustering:
         weighted: bool = True,
         n_neighbors: Optional[PositiveInt] = None,
         resolution_parameter: Optional[NumInRange0to1] = None,
-        n_iterations: Optional[PositiveInt] = None,
         seed: Optional[int] = None,
     ) -> None:
         """Initialize Clustering class."""
@@ -188,7 +183,6 @@ class Clustering:
         self._weighted: bool = weighted
         self._neighbors: Optional[PositiveInt] = n_neighbors
         self._seed: Optional[int] = seed
-        self._iterations: Optional[int] = n_iterations
 
         if mode == 'linkage' and self._neighbors is not None:
             raise NotImplementedError(
@@ -201,7 +195,7 @@ class Clustering:
             )
             if not weighted:
                 raise NotImplementedError(
-                    f"mode='{mode} does not support weighted=False",
+                    f"mode='{mode}' does not support weighted=False",
                 )
         elif resolution_parameter is not None:
             raise NotImplementedError(
@@ -319,9 +313,7 @@ class Clustering:
     @beartype
     def _setup_leiden_kwargs(self, graph: ig.Graph) -> Dict[str, Any]:
         """Set up the parameters for the Leiden clustering."""
-        kwargs_leiden = {}
-        if self._iterations is None:
-            kwargs_leiden['n_iterations'] = -1
+        kwargs_leiden = {'n_iterations': -1}
         if self._mode == 'CPM':
             kwargs_leiden['partition_type'] = la.CPMVertexPartition
             kwargs_leiden[
@@ -353,7 +345,7 @@ class Clustering:
 
     @beartype
     def _clustering_linkage(self, matrix: FloatMatrix) -> Object1DArray:
-        """Perform the linkage clustering on the graph."""
+        """Perform the linkage clustering."""
         matrix[np.diag_indices_from(matrix)] = 1
         linkage_matrix: Float2DArray = linkage(
             squareform(1 - matrix),
