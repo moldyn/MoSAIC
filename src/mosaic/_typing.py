@@ -29,7 +29,7 @@ NormString = Annotated[
     }],
 ]
 ClusteringModeString = Annotated[
-    str, Is[lambda val: val in {'CPM', 'modularity', 'linkage'}],
+    str, Is[lambda val: val in {'CPM', 'modularity', 'linkage', 'kmedoids'}],
 ]
 
 # scalar datatypes

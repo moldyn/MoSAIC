@@ -406,16 +406,20 @@ class Clustering:
         labels = kmedoids.labels_
 
         # store number of clusters
-        self.n_clusters_: Float2DArray = self._n_clusters
+        nclusters: int = len(np.unique(labels))
+        if nclusters != self._n_clusters:
+            raise ValueError(
+                f'k-medoids tried to find {self._n_clusters} clusters'
+                f'but only {nclusters} found. Please try a different value.'
+            )
+        self.n_clusters_: Float2DArray = nclusters
 
         # In case of clusters of same length, numpy casted it as a 2D array.
         # To ensure that the result is an numpy array of list, we need to
         # create an empty list, adding the values in the second step
-        cluster_list: Object1DArray = np.empty(
-            len(self._n_clusters), dtype=object,
-        )
+        cluster_list: Object1DArray = np.empty(nclusters, dtype=object)
         cluster_list[:] = [  # noqa: WPS362
-            [idx for idx, label in enumerate(labels) if label == clust]
-            for clust in range(self._n_clusters)
+            np.where(labels == label)[0].tolist()
+            for label in np.unique(labels)
         ]
         return cluster_list
