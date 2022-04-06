@@ -76,6 +76,7 @@ setuptools.setup(
         'beartype>=0.10.4',
         'scipy',
         'scikit-learn',
+        'scikit-learn-extra',
         'igraph',
         'leidenalg>=0.8.0',
         'umap-learn',
