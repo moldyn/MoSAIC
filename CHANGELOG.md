@@ -6,6 +6,10 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### API changes warning ⚠️:
+- Removed `n_iterations` parameter from `Clustering`
+### Added Features and Improvements 🙌:
+- Added clustering mode `mode='kmedoids'` for k-medoids clustering
 
 
 ## [0.2.0] - 2022-01-04
