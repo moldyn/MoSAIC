@@ -8,4 +8,4 @@ from .tools import load_clusters
 from .umap_similarity import UMAPSimilarity
 
 
-__version__ = '0.2.0'
+__version__ = '0.2.1'

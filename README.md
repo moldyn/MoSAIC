@@ -102,7 +102,7 @@ Each module and submodule contains a detailed help, which can be accessed by
 $ python -m mosaic
 Usage: python -m mosaic [OPTIONS] COMMAND [ARGS]...
 
-  MoSAIC motion v0.2.0
+  MoSAIC motion v0.2.1
 
   Molecular systems automated identification of collective motion, is
   a correlation based feature selection framework for MD data.
