@@ -43,5 +43,5 @@ def test_load_clusters(X, tmpdir):
     assert len(clusters) == len(clust.clusters_)
     for i in range(len(clusters)):
         np.testing.assert_almost_equal(
-           clust.clusters_[i], clusters[i],
+            clust.clusters_[i], clusters[i],
         )

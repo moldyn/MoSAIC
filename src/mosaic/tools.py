@@ -69,7 +69,7 @@ def load_clusters(filename: str) -> Object1DArray:
         Filename of cluster file.
 
     """
-    clusters_list =  [
+    clusters_list = [
         np.array(
             cluster.split()
         ).astype(int).tolist()

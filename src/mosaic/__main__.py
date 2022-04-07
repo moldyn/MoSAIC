@@ -5,11 +5,6 @@ Copyright (c) 2021-2022, Daniel Nagel
 All rights reserved.
 
 """
-import datetime
-import getpass
-import platform
-import sys
-
 import click
 import numpy as np
 import pandas as pd
