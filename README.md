@@ -18,7 +18,9 @@
     <a href="https://moldyn.github.io/MoSAIC" alt="Docs" >
         <img src="https://img.shields.io/badge/pdoc3-Documentation-brightgreen" /></a>
     <a href="#" alt="doi">
-        <img src="https://img.shields.io/badge/doi-in%20preparation-blue" /></a>
+        <img src="https://img.shields.io/badge/doi-submitted-blue" /></a>
+    <a href="https://arxiv.org/abs/2204.02770" alt="arXiv">
+        <img src="https://img.shields.io/badge/arXiv-2204.02770-red" /></a>
     <a href="https://github.com/moldyn/MoSAIC/blob/main/LICENSE" alt="License" >
         <img src="https://img.shields.io/github/license/moldyn/MoSAIC" /></a>
   </p>
@@ -43,7 +45,7 @@ The method was published in:
 > G. Diez, D. Nagel, and G. Stock,
 > *Correlation-based feature selection to identify functional dynamcis
 > in proteins*,
-> in preparation
+> [arXiv:2204.02770](https://arxiv.org/abs/2204.02770)
 
 We kindly ask you to cite this article in case you use this software package for
 published works.
