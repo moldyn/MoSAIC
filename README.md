@@ -29,7 +29,7 @@
     <a href="https://moldyn.github.io/MoSAIC">Docs</a> •
     <a href="#features">Features</a> •
     <a href="#installation">Installation</a> •
-    <a href="#usage">Usage</a>
+    <a href="#usage">Usage</a> •
     <a href="#faq">FAQ</a>
   </p>
 </div>
