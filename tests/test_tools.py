@@ -20,12 +20,12 @@ def Xrand(N):
 
 
 @pytest.mark.parametrize('X', [Xrand(N=10), Xrand(N=30), Xrand(N=50)])
-def test_load_clusters(X):
+def test_load_clusters(X, tmpdir):
     clust = mosaic.Clustering(mode='CPM')
     clust.fit(X)
 
     # save clusters
-    filename = 'load_clusters_test'
+    filename = str(tmpdir.mkdir('sub').join('load_clusters_test'))
     clusters_string = np.array(
         [
             ' '.join([str(state) for state in cluster])
