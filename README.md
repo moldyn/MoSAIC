@@ -30,6 +30,7 @@
     <a href="#features">Features</a> •
     <a href="#installation">Installation</a> •
     <a href="#usage">Usage</a>
+    <a href="#faq">FAQ</a>
   </p>
 </div>
 
@@ -73,13 +74,19 @@ python3 -m pip install git+ssh://git@github.com/moldyn/MoSAIC.git
 python3 -m pip install git+https://github.com/moldyn/MoSAIC.git
 ```
 
+In case one wants to use the deprecated `UMAPSimilarity` or the module
+`mosaic umap` one needs to specify the `extras_require='umap'`, so
+```bash
+python3 -m pip install --upgrade moldyn-mosaic[umap]
+```
+
 ### Shell Completion
 Using the `bash`, `zsh` or `fish` shell click provides an easy way to
 provide shell completion, checkout the
 [docs](https://click.palletsprojects.com/en/8.0.x/shell-completion).
 In the case of bash you need to add following line to your `~/.bashrc`
 ```bash
-eval "$(_MOSAIC_COMPLETE=bash_source MoSAIC)"
+eval "$(_MOSAIC_COMPLETE=bash_source mosaic)"
 ```
 
 ## Usage
@@ -95,11 +102,11 @@ Each module and submodule contains a detailed help, which can be accessed by
 $ python -m mosaic
 Usage: python -m mosaic [OPTIONS] COMMAND [ARGS]...
 
-  MoSAIC motion v0.1.0
+  MoSAIC motion v0.2.0
 
   Molecular systems automated identification of collective motion, is
   a correlation based feature selection framework for MD data.
-  Copyright (c) 2022, Georg Diez and Daniel Nagel
+  Copyright (c) 2021-2022, Georg Diez and Daniel Nagel
 
 Options:
   --help  Show this message and exit.
@@ -163,3 +170,31 @@ clusters = clust.clusters_
 clusterd_X = clust.matrix_
 ...
 ```
+
+### FAQ
+#### How to load the clusters file back to Python?
+Simply use the function provided in `tools`:
+```python
+import mosaic
+
+clusterfile = '...'
+clusters = mosaic.tools.load_clusters(clusterfile)
+```
+
+#### I get an error.
+Please open an issue.
+
+#### Should I upgrade the package?
+You can check out the CHANGELOG.md to see what changed.
+
+#### How can I interpretate the results?
+Check out our publication for two detailed examples.
+
+#### Is it possible to install the CLI only?
+Partially, yes. If you do not want to screw up your current Python
+environment there are multiples possibilities. Either create a
+virtual environment on your own via `conda` or `venv`, or you can
+simply use [pipx](https://pypa.github.io/pipx/)
+
+#### Is the silhouette method implemented?
+This feature will be added in `v0.3.0` in the next weeks.

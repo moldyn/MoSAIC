@@ -8,8 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### API changes warning ⚠️:
 - Removed `n_iterations` parameter from `Clustering`
+
 ### Added Features and Improvements 🙌:
 - Added clustering mode `mode='kmedoids'` for k-medoids clustering
+- Added tools module to reopen clusters
+
+### Other changes:
+Improved some test functions.
 
 
 ## [0.2.0] - 2022-01-04
