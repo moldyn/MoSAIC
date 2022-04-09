@@ -6,6 +6,9 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [0.2.1] - 2022-01-07
 ### API changes warning ⚠️:
 - Removed `n_iterations` parameter from `Clustering`
 
@@ -64,7 +67,8 @@ Improved some test functions.
 - Initial release
 
 
-[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.1.1...main
+[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.2.1...main
+[0.2.1]: https://github.com/moldyn/MoSAIC/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/moldyn/MoSAIC/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/moldyn/MoSAIC/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/moldyn/MoSAIC/tree/v0.1.0
