@@ -3,25 +3,27 @@
   <img class="lightmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_light.svg?raw=true#gh-light-mode-only" />
   
   <p>
-    <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide" >
+    <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide">
         <img src="https://img.shields.io/badge/style-wemake-000000.svg" /></a>
-    <a href="https://beartype.rtfd.io" alt="bear-ified" >
+    <a href="https://beartype.rtfd.io" alt="bear-ified">
         <img src="https://raw.githubusercontent.com/beartype/beartype-assets/main/badge/bear-ified.svg" /></a>
-    <a href="https://pypi.org/project/mosaic-clustering" alt="PyPI" >
+    <a href="https://pypi.org/project/mosaic-clustering" alt="PyPI">
         <img src="https://img.shields.io/pypi/v/mosaic-clustering" /></a>
-    <a href="https://pepy.tech/project/mosaic-clustering" alt="Downloads" >
+    <a href="https://pepy.tech/project/mosaic-clustering" alt="Downloads">
         <img src="https://pepy.tech/badge/mosaic-clustering" /></a>
     <a href="https://github.com/moldyn/MoSAIC/actions/workflows/pytest.yml" alt="GitHub Workflow Status">
         <img src="https://img.shields.io/github/workflow/status/moldyn/MoSAIC/Pytest"></a>
+    <a href="https://codecov.io/gh/moldyn/MoSAIC" alt="Code coverage">
+        <img src="https://codecov.io/gh/moldyn/MoSAIC/branch/main/graph/badge.svg?token=KNWDAUXIGI" /></a>
     <a href="https://img.shields.io/pypi/pyversions/mosaic-clustering" alt="PyPI - Python Version">
         <img src="https://img.shields.io/pypi/pyversions/mosaic-clustering" /></a>
-    <a href="https://moldyn.github.io/MoSAIC" alt="Docs" >
+    <a href="https://moldyn.github.io/MoSAIC" alt="Docs">
         <img src="https://img.shields.io/badge/pdoc3-Documentation-brightgreen" /></a>
     <a href="#" alt="doi">
         <img src="https://img.shields.io/badge/doi-submitted-blue" /></a>
     <a href="https://arxiv.org/abs/2204.02770" alt="arXiv">
         <img src="https://img.shields.io/badge/arXiv-2204.02770-red" /></a>
-    <a href="https://github.com/moldyn/MoSAIC/blob/main/LICENSE" alt="License" >
+    <a href="https://github.com/moldyn/MoSAIC/blob/main/LICENSE" alt="License">
         <img src="https://img.shields.io/github/license/moldyn/MoSAIC" /></a>
   </p>
 
