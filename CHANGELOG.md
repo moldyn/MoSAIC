@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -6,6 +7,9 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [0.2.2] - 2022-04-25
 ### Added Features and Improvements 🙌:
 - Officialy support python 3.10
 
@@ -15,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add code coverage report via Codecov
 
 
-## [0.2.1] - 2022-01-07
+## [0.2.1] - 2022-04-07
 ### API changes warning ⚠️:
 - Removed `n_iterations` parameter from `Clustering`
 
@@ -24,10 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added tools module to reopen clusters
 
 ### Other changes:
-Improved some test functions.
+- Improved some test functions
 
 
-## [0.2.0] - 2022-01-04
+## [0.2.0] - 2022-04-01
 ### API changes warning ⚠️:
 - Renamed cli script `mosaic`, former `MoSAIC` 
 - Renamed package to `mosaic-clustering`
@@ -74,7 +78,8 @@ Improved some test functions.
 - Initial release
 
 
-[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.2.1...main
+[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.2.2...main
+[0.2.2]: https://github.com/moldyn/MoSAIC/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/moldyn/MoSAIC/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/moldyn/MoSAIC/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/moldyn/MoSAIC/compare/v0.1.0...v0.1.1
