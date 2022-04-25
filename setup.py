@@ -12,7 +12,6 @@ if sys.version_info < (3, 8):
 
 def get_extra_requirements(path, add_all=True):
     """Parse extra-requirements file."""
-
     with open(path) as depfile:
         extra_deps = defaultdict(set)
         for line in depfile:
@@ -35,11 +34,26 @@ def get_extra_requirements(path, add_all=True):
     return extra_deps
 
 
+def remove_gh_dark_mode_only_tags(text, tag='#gh-dark-mode-only'):
+    """Remove recursively all """
+    idx = text.find(tag)
+    if idx < 0:
+        return text
+
+    idx_tag_end = text.find('>', idx)
+    idx_tag_start = text.rfind('<', 0, idx)
+    return remove_gh_dark_mode_only_tags(
+        text[:idx_tag_start] + text[idx_tag_end + 1:], tag,
+    )
+
+
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
 
 # The text of the README file
-README = (HERE / 'README.md').read_text()
+README = remove_gh_dark_mode_only_tags(
+    (HERE / 'README.md').read_text(),
+)
 
 # This call to setup() does all the work
 setuptools.setup(
