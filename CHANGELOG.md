@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Other changes:
 - Adding many helpful links to PyPI
 - Remove dark-mode-only image from PyPI readme
+- Add code coverage report via Codecov
 
 
 ## [0.2.1] - 2022-01-07
