@@ -6,6 +6,12 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added Features and Improvements 🙌:
+- Officialy support python 3.10
+
+### Other changes:
+- Adding many helpful links to PyPI
+- Remove dark-mode-only image from PyPI readme
 
 
 ## [0.2.1] - 2022-01-07
