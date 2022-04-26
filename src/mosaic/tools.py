@@ -32,7 +32,7 @@ def get_rui(submod):
         'pc': platform.node(),
         'date': date,
         'args': ' '.join(sys.argv),
-        'submod': '' if submod is None else f' {submod}' ,
+        'submod': '' if submod is None else f' {submod}',
     }
 
     return (
