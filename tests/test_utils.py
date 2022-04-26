@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests for the tools module.
+"""Tests for the utils module.
 
 MIT License
 Copyright (c) 2021-2022, Daniel Nagel
@@ -43,7 +43,7 @@ def clust_ref(idx):
 def test_load_clusters(filename, clusters_ref):
     """Test loading clusters"""
     # load clusters
-    clusters = mosaic.tools.load_clusters(filename)
+    clusters = mosaic.utils.load_clusters(filename)
 
     assert len(clusters) == len(clusters_ref)
     for idx, cluster in enumerate(clusters):
@@ -59,8 +59,8 @@ def test_save_clusters(clusters_ref, tmpdir):
     """Test loading clusters"""
     # save and load clusters
     filename = str(tmpdir.mkdir('sub').join('load_clusters_test'))
-    mosaic.tools.save_clusters(filename, clusters_ref)
-    clusters = mosaic.tools.load_clusters(filename)
+    mosaic.utils.save_clusters(filename, clusters_ref)
+    clusters = mosaic.utils.load_clusters(filename)
 
     assert len(clusters) == len(clusters_ref)
     for idx, cluster in enumerate(clusters):
@@ -79,8 +79,8 @@ def test_save_load_clusters(X, tmpdir):
 
     # save and load clusters
     filename = str(tmpdir.mkdir('sub').join('load_clusters_test'))
-    mosaic.tools.save_clusters(filename, clust.clusters_)
-    clusters = mosaic.tools.load_clusters(filename)
+    mosaic.utils.save_clusters(filename, clust.clusters_)
+    clusters = mosaic.utils.load_clusters(filename)
 
     assert len(clusters) == len(clust.clusters_)
     for i, cluster in enumerate(clusters):

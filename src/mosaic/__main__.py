@@ -12,7 +12,7 @@ import prettypyplot as pplt
 from matplotlib import pyplot as plt
 
 import mosaic
-from mosaic.tools import savetxt, save_clusters
+from mosaic.utils import savetxt, save_clusters
 
 # setup matplotlibs rcParam
 pplt.use_style(figsize=2, figratio=1, cmap='turbo')
