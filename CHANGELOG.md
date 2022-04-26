@@ -7,6 +7,19 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### API changes warning ⚠️:
+- Module `tools` was renamed to `utils`
+- `load_clusters` needs to be accessed via `mosaic.utils`
+
+### Added Features and Improvements 🙌:
+- Added LGTM reports
+
+### Bugfix 🐛:
+- Fix bug of `load_clusters` in case of a single cluster
+
+### Other changes:
+- Improved test functions of utils module
+- Fixed some typos
 
 
 ## [0.2.2] - 2022-04-25
