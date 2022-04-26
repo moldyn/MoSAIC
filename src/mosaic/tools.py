@@ -69,7 +69,9 @@ def load_clusters(filename: str) -> Object1DArray:
         np.array(
             cluster.split()
         ).astype(int).tolist()
-        for cluster in np.loadtxt(filename, delimiter='\n', dtype=str)
+        for cluster in np.atleast_1d(
+            np.loadtxt(filename, delimiter='\n', dtype=str),
+        )
     ]
 
     # In case of clusters of same length, numpy casted it as a 2D array.
