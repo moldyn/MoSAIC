@@ -6,7 +6,7 @@ Copyright (c) 2021-2022, Daniel Nagel
 All rights reserved.
 
 """
-__all__ = ['load_clusters']  # noqa: WPS410
+__all__ = ['load_clusters', 'save_clusters']  # noqa: WPS410
 
 import datetime
 import getpass
@@ -21,7 +21,7 @@ from mosaic._typing import (  # noqa: WPS436
 )
 
 
-def get_rui(submod):
+def _get_rui(submod):
     """Get the runetime user information, to store as comment."""
     # get time without microseconds
     date = datetime.datetime.now()
@@ -43,7 +43,7 @@ def get_rui(submod):
 
 def savetxt(filename, array, fmt, submodule=None, header=None):
     """Save ndarray with user runtime information."""
-    header_generic = get_rui(submodule)
+    header_generic = _get_rui(submodule)
     if header:
         header_generic = f'{header_generic}\n\n{header}'
 
@@ -76,12 +76,23 @@ def load_clusters(filename: str) -> Object1DArray:
     # To ensure that the result is an numpy array of list, we need to
     # create an empty list, adding the values in the second step
     clusters: Object1DArray = np.empty(len(clusters_list), dtype=object)
-    clusters[:] = clusters_list
+    clusters[:] = clusters_list  # noqa: WPS362
     return clusters
 
 
 @beartype
 def save_clusters(filename: str, clusters: Object1DArray):
+    """Save clusters from Clustering.clusters_ to txt file.
+
+    Parameters
+    ----------
+    filename : str
+        Filename of cluster file.
+    clusters: ndarray of shape (n_clusters, )
+        A list of arrays, each containing all indices (features) for each
+        cluster.
+
+    """
     clusters_string = np.array(
         [
             ' '.join([str(state) for state in cluster])
