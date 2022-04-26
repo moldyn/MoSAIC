@@ -2,7 +2,7 @@
 """.. include:: ../../README.md"""
 __all__ = ['Clustering', 'Similarity', 'UMAPSimilarity']
 
-import mosaic.utils
+import mosaic.utils  # noqa: F401
 from .clustering import Clustering
 from .similarity import Similarity
 from .umap_similarity import UMAPSimilarity
