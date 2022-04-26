@@ -50,13 +50,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix coverage run
 - Fix PEP 585 warnings by importing `typing` classes from `beartype.typing`
 - Reset `Clustering.labels_` on calling `CLustering.fit(...)`
-- Allow also numpy types, e.g., `np.float64`, or `np.int64`  for resolution parameter
+- Allow also numpy types, e.g., `np.float64`, or `np.int64` for resolution parameter
 
 ### Other changes:
 - Increase required beartype version `0.8.1->0.10.4`
 - Rename `DistanceMatrix` to `SimilarityMatrix`
 - Fix example in `Clustering` to satisfy typing requirements
-- Change import in `_typing.py` to non privat
+- Change import in `_typing.py` to non-private
 - Improve some typings
 - Require `typing_extensions` only for python < 3.9
 
