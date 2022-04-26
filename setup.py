@@ -71,7 +71,7 @@ setuptools.setup(
     license='BSD 3-Clause License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Intended Audience :: Science/Research',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
