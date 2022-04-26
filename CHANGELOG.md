@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.2] - 2022-04-25
 ### Added Features and Improvements 🙌:
-- Officialy support python 3.10
+- Officially support python 3.10
 
 ### Other changes:
 - Adding many helpful links to PyPI
@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2022-04-01
 ### API changes warning ⚠️:
-- Renamed cli script `mosaic`, former `MoSAIC` 
+- Renamed cli script `mosaic`, former `MoSAIC`
 - Renamed package to `mosaic-clustering`
 - Renamed repository!!!
 
