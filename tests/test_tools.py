@@ -43,7 +43,7 @@ def clust_ref(idx):
 def test_load_clusters(filename, clusters_ref):
     """Test loading clusters"""
     # load clusters
-    clusters = mosaic.load_clusters(filename)
+    clusters = mosaic.tools.load_clusters(filename)
 
     assert len(clusters) == len(clusters_ref)
     for idx, cluster in enumerate(clusters):
@@ -60,7 +60,7 @@ def test_save_clusters(clusters_ref, tmpdir):
     # save and load clusters
     filename = str(tmpdir.mkdir('sub').join('load_clusters_test'))
     mosaic.tools.save_clusters(filename, clusters_ref)
-    clusters = mosaic.load_clusters(filename)
+    clusters = mosaic.tools.load_clusters(filename)
 
     assert len(clusters) == len(clusters_ref)
     for idx, cluster in enumerate(clusters):
@@ -80,7 +80,7 @@ def test_save_load_clusters(X, tmpdir):
     # save and load clusters
     filename = str(tmpdir.mkdir('sub').join('load_clusters_test'))
     mosaic.tools.save_clusters(filename, clust.clusters_)
-    clusters = mosaic.load_clusters(filename)
+    clusters = mosaic.tools.load_clusters(filename)
 
     assert len(clusters) == len(clust.clusters_)
     for i, cluster in enumerate(clusters):
