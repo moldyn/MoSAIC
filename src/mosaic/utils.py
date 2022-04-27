@@ -10,6 +10,7 @@ __all__ = ['load_clusters', 'save_clusters']  # noqa: WPS410
 
 import datetime
 import getpass
+import importlib
 import platform
 import sys
 
@@ -110,5 +111,25 @@ def save_clusters(filename: str, clusters: Object1DArray):
         header=(
             'In ith row are the indices listed (zero-indexed) corresponding '
             'to cluster i.'
+        ),
+    )
+
+
+def _importOptinalRequires(module, error):
+    """Import optinal module once needed."""
+    try:
+        lib = importlib.import_module(module)
+    except ImportError:
+        raise ImportError(error)
+    return lib
+
+
+def _importUmap():
+    """Import optinal module once needed."""
+    return _importOptinalRequires(
+        'umap',
+        (
+            'Optinal depedency "umap" is not installed. Please install '
+            'mosaic via:\n\tpython -m pip install mosaic-clustering[umap]',
         ),
     )
