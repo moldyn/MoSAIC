@@ -12,7 +12,7 @@ import prettypyplot as pplt
 from matplotlib import pyplot as plt
 
 import mosaic
-from mosaic.utils import savetxt, save_clusters
+from mosaic.utils import save_clusters, savetxt
 
 # setup matplotlibs rcParam
 pplt.use_style(figsize=2, figratio=1, cmap='turbo')
@@ -383,7 +383,7 @@ def umap(
 ):
     if verbose:
         click.echo('\nMoSAIC UMAP\n~~~ Initialize umap similarity class')
-    umap = mosaic.UMAPSimilarity(
+    umapsim = mosaic.UMAPSimilarity(
         densmap=densmap,
         n_neighbors=n_neighbors,
         n_components=n_components,
@@ -399,12 +399,12 @@ def umap(
     ).values
     if verbose:
         click.echo('~~~ Fit input.')
-    umap.fit(X)
+    umapsim.fit(X)
     if verbose:
         click.echo(f'~~~ Store similarity matrix in {output_file}')
     savetxt(
         output_file,
-        umap.matrix_,
+        umapsim.matrix_,
         fmt='%.5f',
         submodule='umap',
         header='Similarity matrix',
