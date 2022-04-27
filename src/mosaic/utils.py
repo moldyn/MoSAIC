@@ -65,6 +65,12 @@ def load_clusters(filename: str) -> Object1DArray:
     filename : str
         Filename of cluster file.
 
+    Returns
+    -------
+    clusters : ndarray of shape (n_clusters, )
+        A list of arrays, each containing all indices (features) for each
+        cluster.
+
     """
     clusters_list = [
         np.array(
@@ -85,13 +91,13 @@ def load_clusters(filename: str) -> Object1DArray:
 
 @beartype
 def save_clusters(filename: str, clusters: Object1DArray):
-    """Save clusters from Clustering.clusters_ to txt file.
+    """Save clusters from `mosaic.Clustering.clusters_` to txt file.
 
     Parameters
     ----------
     filename : str
         Filename of cluster file.
-    clusters: ndarray of shape (n_clusters, )
+    clusters : ndarray of shape (n_clusters, )
         A list of arrays, each containing all indices (features) for each
         cluster.
 
