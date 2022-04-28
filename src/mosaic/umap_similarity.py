@@ -11,7 +11,6 @@ __all__ = ['UMAPSimilarity']  # noqa: WPS410
 import warnings
 
 import numpy as np
-import umap
 from beartype import beartype
 from beartype.typing import Optional
 
@@ -21,6 +20,7 @@ from mosaic._typing import (  # noqa:WPS436
     FloatMatrix,
     PositiveInt,
 )
+from mosaic.utils import _importUmap  # noqa: WPS450
 
 
 @beartype
@@ -77,6 +77,9 @@ class UMAPSimilarity:  # noqa: WPS214
         n_components: PositiveInt = _default_n_components,
     ):
         """Initialize UMAPSimilarity class."""
+        # import optinal dependency umap.
+        self._umap = _importUmap()
+
         self._densmap: bool = densmap
         self._n_neighbors: Optional[PositiveInt] = n_neighbors
         self._n_components: PositiveInt = n_components
@@ -103,7 +106,7 @@ class UMAPSimilarity:  # noqa: WPS214
             )
         self.n_neighbors_: PositiveInt = self._n_neighbors
 
-        reducer = umap.UMAP(
+        reducer = self._umap.UMAP(
             n_neighbors=self._n_neighbors,
             densmap=self._densmap,
             n_components=self._n_components,
