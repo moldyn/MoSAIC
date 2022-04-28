@@ -20,13 +20,13 @@ from sklearn_extra.cluster import KMedoids
 
 from mosaic._typing import (  # noqa: WPS436
     ClusteringModeString,
-    SimilarityMatrix,
     Float2DArray,
     FloatMatrix,
     Index1DArray,
     NumInRange0to1,
     Object1DArray,
     PositiveInt,
+    SimilarityMatrix,
 )
 
 
