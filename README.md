@@ -9,6 +9,8 @@
         <img src="https://raw.githubusercontent.com/beartype/beartype-assets/main/badge/bear-ified.svg" /></a>
     <a href="https://pypi.org/project/mosaic-clustering" alt="PyPI">
         <img src="https://img.shields.io/pypi/v/mosaic-clustering" /></a>
+    <a href="https://anaconda.org/conda-forge/mosaic-clustering" alt="conda version">
+	<img src="https://img.shields.io/conda/vn/conda-forge/mosaic-clustering" /></a>
     <a href="https://pepy.tech/project/mosaic-clustering" alt="Downloads">
         <img src="https://pepy.tech/badge/mosaic-clustering" /></a>
     <a href="https://github.com/moldyn/MoSAIC/actions/workflows/pytest.yml" alt="GitHub Workflow Status">
@@ -64,11 +66,16 @@ published works.
 
 
 ## Installation
-So far the package is only published to [PyPI](https://pypi.org). Soon, it will
-be added [conda-forge](https://conda-forge.org/), as well. To install it within a python environment simple call:
+The package is called `mosaic-clustering` and is available via [PyPI](https://pypi.org/project/mosaic-clustering)
+or [conda](https://anaconda.org/conda-forge/mosaic-clustering). To install it, simply call:
 ```bash
-python3 -m pip install --upgrade moldyn-mosaic
+python3 -m pip install --upgrade mosaic-clustering
 ```
+or
+```
+conda install -c conda-forge mosaic-clustering
+```
+
 or for the latest dev version
 ```bash
 # via ssh key
