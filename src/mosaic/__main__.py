@@ -20,6 +20,12 @@ pplt.use_style(figsize=2, figratio=1, cmap='turbo')
 NORMALIZES = ['joint', 'geometric', 'arithmetic', 'min', 'max']
 METRICS = ['correlation', 'NMI', 'JSD', 'GY']
 MODES = ['CPM', 'modularity', 'linkage']
+PRECISION = ['half', 'single', 'double']
+PRECISION_TO_DTYPE = {
+    'half': np.float16,
+    'single': np.float32,
+    'double': np.float64,
+}
 
 HELP_STR = f"""MoSAIC motion v{mosaic.__version__}
 
@@ -98,6 +104,16 @@ def main():
     )
 )
 @click.option(
+    '--precision',
+    default='single',
+    show_default=True,
+    type=click.Choice(PRECISION, case_sensitive=True),
+    help=(
+        'Precision used for calculation. Lower precision reduces memory '
+        'impact but may lead to overflow errors.'
+    ),
+)
+@click.option(
     '-v',
     '--verbose',
     is_flag=True,
@@ -110,6 +126,7 @@ def similarity(
     input_file,
     output_file,
     knn_estimator,
+    precision,
     verbose,
 ):
     if verbose:
@@ -132,7 +149,7 @@ def similarity(
             sep=r'\s+',
             header=None,
             comment='#',
-            dtype=np.float16,
+            dtype=PRECISION_TO_DTYPE[precision],
         ).values
         if verbose:
             click.echo('~~~ Fit input.')
@@ -212,6 +229,16 @@ def similarity(
     ),
 )
 @click.option(
+    '--precision',
+    default='single',
+    show_default=True,
+    type=click.Choice(PRECISION, case_sensitive=True),
+    help=(
+        'Precision used for calculation. Lower precision reduces memory '
+        'impact but may lead to overflow errors.'
+    ),
+)
+@click.option(
     '-v',
     '--verbose',
     is_flag=True,
@@ -226,6 +253,7 @@ def clustering(
     output_file,
     name_file,
     plot,
+    precision,
     verbose,
 ):
     if verbose:
@@ -248,7 +276,7 @@ def clustering(
         sep=r'\s+',
         header=None,
         comment='#',
-        dtype=np.float16,
+        dtype=PRECISION_TO_DTYPE[precision],
     ).values
     X = np.abs(X)
     if verbose:
@@ -373,13 +401,29 @@ def clustering(
     ),
 )
 @click.option(
+    '--precision',
+    default='single',
+    show_default=True,
+    type=click.Choice(PRECISION, case_sensitive=True),
+    help=(
+        'Precision used for calculation. Lower precision reduces memory '
+        'impact but may lead to overflow errors.'
+    ),
+)
+@click.option(
     '-v',
     '--verbose',
     is_flag=True,
     help='Activate verbose mode.',
 )
 def umap(
-    n_components, n_neighbors, densmap, input_file, output_file, verbose,
+    n_components,
+    n_neighbors,
+    densmap,
+    input_file,
+    output_file,
+    precision,
+    verbose,
 ):
     if verbose:
         click.echo('\nMoSAIC UMAP\n~~~ Initialize umap similarity class')
@@ -395,7 +439,7 @@ def umap(
         sep=r'\s+',
         header=None,
         comment='#',
-        dtype=np.float16,
+        dtype=PRECISION_TO_DTYPE[precision],
     ).values
     if verbose:
         click.echo('~~~ Fit input.')

@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### API changes warning ⚠️:
 - Module `tools` was renamed to `utils`
 - `load_clusters` needs to be accessed via `mosaic.utils`
+- Change the default precision from `half` to `single` in CI (`__main__.py`)
 
 ### Added Features and Improvements 🙌:
 - Added LGTM reports
+- Allow to select the desired precision in the CI directly
 
 ### Bugfix 🐛:
 - Fix bug of `load_clusters` in case of a single cluster
