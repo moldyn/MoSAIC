@@ -140,9 +140,9 @@ class Similarity:  # noqa: WPS214
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
 
-        Note: `'NMI'` is supported only with online=False
+        Note: `'NMI'` is supported only with low_memory=False
 
-    online : bool, default=False
+    low_memory : bool, default=False
         If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
 
@@ -187,8 +187,8 @@ class Similarity:  # noqa: WPS214
     The correlation is defined as
     $$\rho_{X,Y} =
     \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
-    where for the online algorithm the Welford algorithm taken from Donald E.
-    Knuth were used [^2].
+    where for the online (low memory) algorithm the Welford algorithm taken
+    from Donald E. Knuth were used [^2].
 
     [^1]: Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
         information about a random function contained in another such
@@ -218,13 +218,13 @@ class Similarity:  # noqa: WPS214
         self,
         *,
         metric: MetricString = 'correlation',
-        online: bool = False,
+        low_memory: bool = False,
         normalize_method: Optional[NormString] = None,
         knn_estimator: bool = False,
     ):
         """Initialize Similarity class."""
         self._metric: MetricString = metric
-        self._online: bool = online
+        self._low_memory: bool = low_memory
         self._knn_estimate: bool = knn_estimator
         if self._metric == 'NMI':
             if normalize_method is None:
@@ -253,7 +253,7 @@ class Similarity:  # noqa: WPS214
 
         Parameters
         ----------
-        X : ndarray of shape (n_samples, n_features) or str if online=True
+        X : ndarray of shape (n_samples, n_features) or str if low_memory=True
             Training data.
 
         y : Ignored
@@ -264,14 +264,14 @@ class Similarity:  # noqa: WPS214
 
     @fit.register
     def _(self, X: np.ndarray, y=None) -> None:
-        """Dispatched for online=False with matrix input."""
+        """Dispatched for low_memory=False with matrix input."""
         self._reset()
 
         corr: np.ndarray
         matrix_: np.ndarray
         # parse data
-        if self._online:
-            raise TypeError('Using online=True requires X:str')
+        if self._low_memory:
+            raise TypeError('Using low_memory=True requires X:str')
         if X.ndim == 1:
             raise ValueError(
                 'Reshape your data either using array.reshape(-1, 1) if your '
@@ -297,21 +297,21 @@ class Similarity:  # noqa: WPS214
 
     @fit.register
     def _(self, X: str, y=None) -> None:
-        """Dispatched for online=True with string."""
+        """Dispatched for low_memory=True with string."""
         self._reset()
 
         corr: np.ndarray
         matrix_: np.ndarray
         # parse data
-        if not self._online:
-            raise ValueError('Mode online=False reuqires X:np.ndarray.')
+        if not self._low_memory:
+            raise ValueError('Mode low_memory=False reuqires X:np.ndarray.')
 
         if self._metric == 'correlation':
             corr = self._online_correlation(X)
             matrix_ = np.abs(corr)
         else:
             raise ValueError(
-                'Mode online=True is only implemented for correlation.',
+                'Mode low_memory=True is only implemented for correlation.',
             )
 
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)

@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Module `tools` was renamed to `utils`
 - `load_clusters` needs to be accessed via `mosaic.utils`
 - Change the default precision from `half` to `single` in CI (`__main__.py`)
+- Rename in `Similarity` class the parameter `online` to `low_memory` and in
+  `mosaic similarity` the flag `--online` to `--low-memory`
 
 ### Added Features and Improvements 🙌:
 - Added LGTM reports

@@ -146,7 +146,7 @@ def test__correlation(X, result, error):
     ('correlation', {}, X1(), X1_result('correlation'), None),
     (
         'correlation',
-        {'online': True},
+        {'low_memory': True},
         X1_file(),
         X1_result('correlation'),
         None,

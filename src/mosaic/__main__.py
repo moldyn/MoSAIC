@@ -62,12 +62,12 @@ def main():
     ),
 )
 @click.option(
-    '--online',
+    '--low-memory',
     is_flag=True,
     help=(
-        'Is set the correlation is calculated using the Welford online '
-        'algorithm. This is much slower but needs less RAM and is sutable '
-        'for larger files. Online metric=correlation is supported.'
+        'If set the correlation is calculated on-the-fly using the online '
+        'Welford algorithm. This is much slower but needs less RAM and is '
+        'preferable for larger files. This supports only metric=correlation.'
     ),
 )
 @click.option(
@@ -121,7 +121,7 @@ def main():
 )
 def similarity(
     metric,
-    online,
+    low_memory,
     normalize_method,
     input_file,
     output_file,
@@ -133,7 +133,7 @@ def similarity(
         click.echo('\nMoSAIC SIMILARITY\n~~~ Initialize similarity class')
     sim = mosaic.Similarity(
         metric=metric,
-        online=online,
+        low_memory=low_memory,
         normalize_method=normalize_method,
         knn_estimator=knn_estimator,
     )
