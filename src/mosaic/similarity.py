@@ -19,6 +19,7 @@ from sklearn.feature_selection import mutual_info_regression
 
 from mosaic._typing import (  # noqa: WPS436
     ArrayLikeFloat,
+    DTypeLike,
     Float1DArray,
     Float2DArray,
     FloatMatrix,
@@ -122,6 +123,57 @@ def _knn_mutual_information(
             X, feature,
         )
     return mi_knn
+
+
+@beartype
+def _data_gen(
+    *,
+    filename: str,
+    dtype: DTypeLike,
+    comments: Union[str, Tuple[str, ...]] = ('#', '@'),
+) -> Generator[Float1DArray, None, None]:
+    """Return all non comment lines as generator."""
+    with open(filename) as file_obj:
+        for line in file_obj:
+            if line.startswith(comments):
+                continue
+            yield np.array(line.split()).astype(dtype)
+
+@beartype
+def _welford_correlation(
+    *,
+    filename: str,
+    n_features: Union[int, np.integer],
+    dtype: DTypeLike,
+) -> Tuple[FloatMatrix, int]:
+    """Calculate the correlation via online Welford algorithm.
+
+    Welford algorithm, generalized to correlation. Taken from:
+    Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
+    Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
+
+    """
+    n: int = 0
+    mean: np.ndarray = np.zeros(n_features, dtype=dtype)
+    corr: np.ndarray = np.zeros(  # noqa: WPS317
+        (n_features, n_features), dtype=dtype,
+    )
+
+    for x in _data_gen(filename=filename, dtype=dtype):
+        n += 1
+        dx: np.ndarray = x - mean
+        mean = mean + dx / n
+        corr = corr + dx.reshape(-1, 1) * (
+            x - mean
+        ).reshape(1, -1)
+
+    if n < 2:
+        return np.full_like(corr, np.nan), n
+
+    std = np.sqrt(np.diag(corr) / (n - 1))
+    return corr / (n - 1) / (
+        std.reshape(-1, 1) * std.reshape(1, -1)
+    ), n
 
 
 class Similarity:  # noqa: WPS214
@@ -419,49 +471,15 @@ class Similarity:  # noqa: WPS214
     def _online_correlation(self, X: str) -> FloatMatrix:
         """Calculate correlation on the fly."""
         self._filename: str = X
-        self._n_features: int = len(next(self._data_gen()))
-        # parse mean, std and corr
-        return self._welford_correlation()
-
-    @beartype
-    def _data_gen(
-        self, comments: Union[str, Tuple[str, ...]] = ('#', '@'),
-    ) -> Generator[Float1DArray, None, None]:
-        """Return all non comment lines as generator."""
-        with open(self._filename) as file_obj:
-            for line in file_obj:
-                if line.startswith(comments):
-                    continue
-                yield np.array(line.split()).astype(self._dtype)
-
-    @beartype
-    def _welford_correlation(self) -> FloatMatrix:
-        """Calculate the correlation via online Welford algorithm.
-
-        Welford algorithm, generalized to correlation. Taken from:
-        Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
-        Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
-
-        """
-        n: int = 0
-        mean: np.ndarray = np.zeros(self._n_features, dtype=self._dtype)
-        corr: np.ndarray = np.zeros(  # noqa: WPS317
-            (self._n_features, self._n_features), dtype=self._dtype,
+        self._n_features: int = len(
+            next(
+                _data_gen(filename=self._filename, dtype=self._dtype),
+            ),
         )
-
-        for x in self._data_gen():
-            n += 1
-            dx: np.ndarray = x - mean
-            mean = mean + dx / n
-            corr = corr + dx.reshape(-1, 1) * (
-                x - mean
-            ).reshape(1, -1)
-
-        self._n_samples = n
-        if n < 2:
-            return np.full_like(corr, np.nan)
-
-        std = np.sqrt(np.diag(corr) / (n - 1))
-        return corr / (n - 1) / (
-            std.reshape(-1, 1) * std.reshape(1, -1)
+        corr, n = _welford_correlation(
+            filename=self._filename,
+            dtype=self._dtype,
+            n_features=self._n_features,
         )
+        self._n_samples: int = n
+        return corr

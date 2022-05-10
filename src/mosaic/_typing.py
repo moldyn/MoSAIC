@@ -38,6 +38,11 @@ NumInRange0to1 = Annotated[
     Union[int, float, np.integer, np.floating], Is[lambda val: 0 <= val <= 1],
 ]
 
+# beartype substitute for np.typing.DTypeLike
+DTypeLike = Annotated[
+    type, Is[lambda dtype: np.issubdtype(dtype, np.generic)],
+]
+
 # array datatypes
 FloatNDArray = Annotated[
     np.ndarray, Is[lambda arr: np.issubdtype(arr.dtype, np.floating)],
