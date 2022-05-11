@@ -16,11 +16,12 @@ import mosaic
 
 # Current directory
 HERE = os.path.dirname(__file__)
+TEST_FILE_DIR = os.path.join(HERE, 'test_files')
 
 
 def X1_file():
     """Define coordinate file."""
-    return os.path.join(HERE, 'X1.dat')
+    return os.path.join(TEST_FILE_DIR, 'X1.dat')
 
 
 def X1():
@@ -36,6 +37,7 @@ def X1_result(mode):
     return {
         'correlation': 0.9697832,
         'GY': 0.94966701,
+        'GY_knn': 0.99995091,
         'JSD': 0.67786610,
         'NMI_joint': 0.54114068,
         'NMI_max': 0.68108618,
@@ -75,6 +77,7 @@ def test__standard_scaler(X, error):
         None,
     ),
     ('GY', {}, X1(), X1_result('GY'), None),
+    ('GY', {'knn_estimator': True}, X1(), X1_result('GY_knn'), None),
     ('JSD', {}, X1(), X1_result('JSD'), None),
     ('NMI', {'normalize_method': 'joint'}, X1(), X1_result('NMI_joint'), None),
     ('NMI', {'normalize_method': 'max'}, X1(), X1_result('NMI_max'), None),

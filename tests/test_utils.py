@@ -15,6 +15,7 @@ import mosaic
 
 # Current directory
 HERE = os.path.dirname(__file__)
+TEST_FILE_DIR = os.path.join(HERE, 'test_files')
 
 
 def Xrand(N):
@@ -26,7 +27,7 @@ def Xrand(N):
 
 def clust_ref(idx):
     """Get filename and expected clusters, idx=1, 2, 3."""
-    filename = os.path.join(HERE, f'clust{idx}.dat')
+    filename = os.path.join(TEST_FILE_DIR, f'clust{idx}.dat')
     clusters_list = {
         1: [[0, 1, 2], [4, 5], [3], [6, 7, 8, 9]],
         2: [[0, 1], [4, 5], [2, 3], [6, 7], [8, 9]],

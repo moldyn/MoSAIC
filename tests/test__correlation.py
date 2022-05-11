@@ -16,6 +16,42 @@ import mosaic
 
 # Current directory
 HERE = os.path.dirname(__file__)
+TEST_FILE_DIR = os.path.join(HERE, 'test_files')
+
+
+def X1_file(only_first_line=False):
+    """Define coordinate file."""
+    if only_first_line:
+        return os.path.join(TEST_FILE_DIR, 'X1_single_row.dat')
+    return os.path.join(TEST_FILE_DIR, 'X1.dat')
+
+
+def no_file():
+    """Not existing file."""
+    return os.path.join(TEST_FILE_DIR, 'no_file')
+
+
+@pytest.mark.parametrize('filename, result', [
+    (
+        X1_file(),
+        (
+            np.array([[1, 0.9697832], [0.9697832, 1]]),
+            1000,
+            2,
+        ),
+    ),
+    (
+        X1_file(only_first_line=True),
+        (np.full((2, 2), np.nan), 1, 2),
+    ),
+])
+def test__welford_correlation(filename, result):
+    wc_res = mosaic._correlation_utils._welford_correlation(
+        filename=filename, dtype=np.float64,
+    )
+
+    for idx in range(3):
+        np.testing.assert_almost_equal(wc_res[idx], result[idx])
 
 
 @pytest.mark.parametrize('p, result, error', [
