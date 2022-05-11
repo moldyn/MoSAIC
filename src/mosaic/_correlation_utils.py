@@ -18,7 +18,6 @@ from mosaic._typing import (  # noqa: WPS436
     Float1DArray,
     Float2DArray,
     FloatMatrix,
-    MetricString,
     NormString,
     PositiveInt,
 )
