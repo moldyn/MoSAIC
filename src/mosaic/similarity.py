@@ -220,7 +220,7 @@ class Similarity:  # noqa: WPS214
         for the mutual information:
 
         - `'joint'` is the joint entropy
-        - `'max'`is the maximum of the individual entropies
+        - `'max'` is the maximum of the individual entropies
         - `'arithmetic'` is the mean of the individual entropies
         - `'geometric'` is the square root of the product of the individual
           entropies
@@ -308,7 +308,7 @@ class Similarity:  # noqa: WPS214
                 (
                     'The mutual information estimate based on k-nearest'
                     'neighbors distances is only supported with metric="GY"'
-                )
+                ),
             )
 
     @singledispatchmethod
@@ -416,8 +416,12 @@ class Similarity:  # noqa: WPS214
 
     @beartype
     def _nonlinear_GY_knn(self, X: Float2DArray) -> FloatMatrix:
-        """Return the nonlinear correlation matrix based on Gel'fand-Yaglom
-        based on a reliable knn-estimate of the mutual information."""
+        """Gel'fand-Yaglom correlation matrix based on k-nn estimator.
+
+        Return the nonlinear correlation matrix based on Gel'fand-Yaglom
+        based on a reliable knn-estimate of the mutual information.
+
+        """
         nl_knn_corr = _knn_mutual_information(X, self._n_features)
         return np.sqrt(
             1 - np.exp(-2 * nl_knn_corr),
