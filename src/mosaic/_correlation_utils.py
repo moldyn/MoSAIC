@@ -10,7 +10,6 @@ import numpy as np
 from beartype import beartype
 from beartype.typing import Callable, Generator, Optional, Tuple, Union
 from scipy.spatial.distance import jensenshannon
-from sklearn import preprocessing
 from sklearn.feature_selection import mutual_info_regression
 
 from mosaic._typing import (  # noqa: WPS436
@@ -189,18 +188,6 @@ def _nmi_gen(method: str) -> Callable:
         return mutual_info / normalization
 
     return _nmi
-
-
-def _nonlinear_correlation_func(
-    metric: MetricString, normalize_method: NormString,
-) -> Callable:
-    """Return function to estimate non linear correlation."""
-    if metric == 'NMI':
-        return _nmi_gen(normalize_method)
-    elif metric == 'GY':
-        return _gy
-    # JSD
-    return _jsd
 
 
 @beartype
