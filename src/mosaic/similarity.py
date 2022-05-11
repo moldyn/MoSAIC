@@ -139,13 +139,27 @@ def _data_gen(
                 continue
             yield np.array(line.split()).astype(dtype)
 
+
+@beartype
+def _get_n_features(
+    *,
+    filename: str,
+    dtype: DTypeLike,
+) -> int:
+    """Return the number of columns/features."""
+    return len(
+        next(
+            _data_gen(filename=filename, dtype=dtype),
+        ),
+    )
+
+
 @beartype
 def _welford_correlation(
     *,
     filename: str,
-    n_features: Union[int, np.integer],
     dtype: DTypeLike,
-) -> Tuple[FloatMatrix, int]:
+) -> Tuple[FloatMatrix, int, int]:
     """Calculate the correlation via online Welford algorithm.
 
     Welford algorithm, generalized to correlation. Taken from:
@@ -153,27 +167,30 @@ def _welford_correlation(
     Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
 
     """
-    n: int = 0
+    n_samples: int = 0
+    n_features: int = _get_n_features(filename=filename, dtype=dtype)
     mean: np.ndarray = np.zeros(n_features, dtype=dtype)
     corr: np.ndarray = np.zeros(  # noqa: WPS317
         (n_features, n_features), dtype=dtype,
     )
 
     for x in _data_gen(filename=filename, dtype=dtype):
-        n += 1
+        n_samples += 1
         dx: np.ndarray = x - mean
-        mean = mean + dx / n
+        mean = mean + dx / n_samples
         corr = corr + dx.reshape(-1, 1) * (
             x - mean
         ).reshape(1, -1)
 
-    if n < 2:
-        return np.full_like(corr, np.nan), n
+    if n_samples < 2:
+        return np.full_like(corr, np.nan), n_samples, n_features
 
-    std = np.sqrt(np.diag(corr) / (n - 1))
-    return corr / (n - 1) / (
+    std = np.sqrt(np.diag(corr) / (n_samples - 1))
+    corr = corr / (n_samples - 1) / (
         std.reshape(-1, 1) * std.reshape(1, -1)
-    ), n
+    )
+
+    return corr, n_samples, n_features
 
 
 class Similarity:  # noqa: WPS214
@@ -330,10 +347,8 @@ class Similarity:  # noqa: WPS214
                 'data has a single feature or array.reshape(1, -1) if it '
                 'contains a single sample.',
             )
-        n_features: int
-        n_samples: int
-        n_samples, n_features = X.shape
 
+        n_samples, n_features = X.shape
         self._n_samples: int = n_samples
         self._n_features: int = n_features
 
@@ -471,15 +486,11 @@ class Similarity:  # noqa: WPS214
     def _online_correlation(self, X: str) -> FloatMatrix:
         """Calculate correlation on the fly."""
         self._filename: str = X
-        self._n_features: int = len(
-            next(
-                _data_gen(filename=self._filename, dtype=self._dtype),
-            ),
-        )
-        corr, n = _welford_correlation(
+
+        corr, n_samples, n_features = _welford_correlation(
             filename=self._filename,
             dtype=self._dtype,
-            n_features=self._n_features,
         )
-        self._n_samples: int = n
+        self._n_samples: int = n_samples
+        self._n_features: int = n_features
         return corr

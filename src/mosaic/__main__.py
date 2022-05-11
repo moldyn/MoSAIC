@@ -137,9 +137,9 @@ def similarity(
         normalize_method=normalize_method,
         knn_estimator=knn_estimator,
     )
-    if online:
+    if low_memory:
         if verbose:
-            click.echo(f'~~~ Fit online {input_file}')
+            click.echo(f'~~~ Fit on-the-fly {input_file}')
         sim.fit(input_file)
     else:
         if verbose:
