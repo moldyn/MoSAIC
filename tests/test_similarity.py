@@ -79,6 +79,7 @@ def test__standard_scaler(X, error):
     ('GY', {}, X1(), X1_result('GY'), None),
     ('GY', {'knn_estimator': True}, X1(), X1_result('GY_knn'), None),
     ('JSD', {}, X1(), X1_result('JSD'), None),
+    ('NMI', {}, X1(), X1_result('NMI_geometric'), None),
     ('NMI', {'normalize_method': 'joint'}, X1(), X1_result('NMI_joint'), None),
     ('NMI', {'normalize_method': 'max'}, X1(), X1_result('NMI_max'), None),
     (
@@ -96,6 +97,24 @@ def test__standard_scaler(X, error):
         None,
     ),
     ('NMI', {'normalize_method': 'min'}, X1(), X1_result('NMI_min'), None),
+    (
+        'correlation',
+        {'normalize_method': 'joint'},
+        X1(),
+        None,
+        NotImplementedError,
+    ),
+    (
+        'correlation',
+        {'knn_estimator': True},
+        X1(),
+        None,
+        NotImplementedError,
+    ),
+    ('correlation', {'low_memory': True}, X1(), None, TypeError),
+    ('correlation', {}, X1()[:, 0], None, ValueError),
+    ('correlation', {}, X1_file(), None, TypeError),
+    ('NMI', {'low_memory': True}, X1_file(), None, NotImplementedError),
 ])
 def test_Similarity(metric, kwargs, X, result, error):
     if not error:
@@ -108,3 +127,15 @@ def test_Similarity(metric, kwargs, X, result, error):
         with pytest.raises(error):
             sim = mosaic.Similarity(metric=metric, **kwargs)
             sim.fit(X)
+
+
+@pytest.mark.parametrize('metric, X, kwargs', [
+    ('correlation', X1(), {}),
+    ('correlation', X1_file(), {'low_memory': True}),
+])
+def test__reset(metric, X, kwargs):
+    sim = mosaic.Similarity(metric=metric, **kwargs)
+    sim.fit(X)
+    assert hasattr(sim, 'matrix_')
+    sim._reset()
+    assert not hasattr(sim, 'matrix_')
