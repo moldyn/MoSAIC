@@ -219,13 +219,13 @@ class Similarity:  # noqa: WPS214
         matrix_: np.ndarray
         # parse data
         if not self._low_memory:
-            raise ValueError('Mode low_memory=False reuqires X:np.ndarray.')
+            raise TypeError('Mode low_memory=False reuqires X:np.ndarray.')
 
         if self._metric == 'correlation':
             corr = self._online_correlation(X)
             matrix_ = np.abs(corr)
         else:
-            raise ValueError(
+            raise NotImplementedError(
                 'Mode low_memory=True is only implemented for correlation.',
             )
 
@@ -234,8 +234,6 @@ class Similarity:  # noqa: WPS214
     @beartype
     def _reset(self) -> None:
         """Reset internal data-dependent state of correlation."""
-        if hasattr(self, '_filename'):  # noqa: WPS421
-            del self._filename  # noqa: WPS420
         if hasattr(self, 'matrix_'):  # noqa: WPS421
             del self.matrix_  # noqa: WPS420
 
