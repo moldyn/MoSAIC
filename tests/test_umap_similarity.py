@@ -75,7 +75,7 @@ def test_UMAPSimilarity(kwargs, X, result, error):
         umap = mosaic.UMAPSimilarity(**kwargs)
         umap.fit(X)
         np.testing.assert_allclose(
-            umap.matrix_, result, atol=0.3,
+            umap.matrix_, result, atol=0.5,
         )
     else:
         with pytest.raises(error):
