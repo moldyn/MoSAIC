@@ -200,7 +200,7 @@ class Clustering:
             raise NotImplementedError(
                 f"mode='{mode}' needs parameter 'n_clusters'",
             )
-        elif self._n_clusters is not None:
+        elif mode != 'kmedoids' and self._n_clusters is not None:
             raise NotImplementedError(
                 f"mode='{mode}' does not support the usage of 'n_clusters'",
             )
