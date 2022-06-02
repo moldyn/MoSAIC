@@ -215,7 +215,7 @@ class Clustering:
             )
 
         if mode == 'kmedoids' and self._n_clusters is None:
-            raise NotImplementedError(
+            raise TypeError(
                 f"mode='{mode}' needs parameter 'n_clusters'",
             )
         elif mode != 'kmedoids' and self._n_clusters is not None:
@@ -262,11 +262,12 @@ class Clustering:
             mat = np.copy(X)
         else:
             mat = self._construct_knn_mat(X)
-        # mask diagonal and zero elements
-        mat[mat == 0] = np.nan
-        mat[np.diag_indices_from(mat)] = np.nan
 
         if self._mode in {'CPM', 'linkage'}:
+            # mask diagonal and zero elements
+            mat[mat == 0] = np.nan
+            mat[np.diag_indices_from(mat)] = np.nan
+
             if self._resolution_parameter is None:
                 if self._neighbors is None:
                     third_quartile = 0.75
@@ -419,7 +420,7 @@ class Clustering:
             'method': 'pam',
         }
 
-        kmedoids = KMedoids(**kmedoids_kwargs, n_clusters=self._n_clusters)
+        kmedoids = KMedoids(n_clusters=self._n_clusters, **kmedoids_kwargs)
         kmedoids.fit(1 - matrix)
         labels = kmedoids.labels_
 
@@ -428,7 +429,7 @@ class Clustering:
         if nclusters != self._n_clusters:
             raise ValueError(
                 f'k-medoids tried to find {self._n_clusters} clusters'
-                f'but only {nclusters} found. Please try a different value.'
+                f'but only {nclusters} found. Please try a different value.',
             )
         self.n_clusters_: Float2DArray = nclusters
 
