@@ -23,6 +23,7 @@ from mosaic._typing import (  # noqa: WPS436
     Float2DArray,
     FloatMatrix,
     Index1DArray,
+    Int,
     NumInRange0to1,
     Object1DArray,
     PositiveInt,
@@ -54,32 +55,42 @@ def _sort_coarse_clustermatrix(
     clusters = np.empty(nclusters, dtype=object)
     clusters[:] = [[i] for i in range(nclusters)]  # noqa: WPS362
     # make deep copy of clusterssize
-    coarseclusters = np.empty(nclusters, dtype=object)
-    coarseclusters[:] = [  # noqa: WPS362
-        list(cl) for cl in clusterssize
-    ]
+    coarseclusters = _copy_clusters(clusterssize)
 
     for _ in range(nclusters - 1):
         cmat = _coarse_clustermatrix(clusters, coarsemat)
         # find largest of diagonal value
         cmat[np.diag_indices_from(cmat)] = np.nan
-        x_idxs, y_idxs = np.where(cmat == np.nanmax(cmat))
+        (xi, *_), (yi, *_) = np.where(cmat == np.nanmax(cmat))
 
         # add smaller to larger cluster
-        xi, yi = x_idxs[0], y_idxs[0]
         x_large, x_small = (xi, yi) if (
             len(coarseclusters[xi]) >= len(coarseclusters[yi])
         ) else (yi, xi)
 
         # merge clusters
-        clusters[x_large].extend(clusters[x_small])
-        clusters = np.delete(clusters, x_small)
-
+        clusters = _merge_clusters(clusters, x_large, x_small)
         # keep track of clusrer size
-        coarseclusters[x_large].extend(coarseclusters[x_small])
-        coarseclusters = np.delete(coarseclusters, x_small)
+        coarseclusters = _merge_clusters(coarseclusters, x_large, x_small)
 
     return np.asarray(clusters[0], dtype=int)
+
+
+@beartype
+def _merge_clusters(
+    clusters: Object1DArray, idx_i: Int, idx_j: Int,
+) -> Object1DArray:
+    clusters[idx_i].extend(clusters[idx_j])
+    return np.delete(clusters, idx_j)
+
+
+@beartype
+def _copy_clusters(clusters: Object1DArray) -> Object1DArray:
+    new_clusters = np.empty(len(clusters), dtype=object)
+    new_clusters[:] = [  # noqa: WPS362
+        list(cl) for cl in clusters
+    ]
+    return new_clusters
 
 
 @beartype
