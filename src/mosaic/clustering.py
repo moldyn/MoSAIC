@@ -46,11 +46,18 @@ def _coarse_clustermatrix(
 
 
 @beartype
-def _sort_coarse_clustermatrix(coarsemat: FloatMatrix) -> Index1DArray:
+def _sort_coarse_clustermatrix(
+    clusterssize: Object1DArray, coarsemat: FloatMatrix,
+) -> Index1DArray:
     """Return indices which sort clusters to minimize off-diagonal values."""
     nclusters = len(coarsemat)
     clusters = np.empty(nclusters, dtype=object)
     clusters[:] = [[i] for i in range(nclusters)]  # noqa: WPS362
+    # make deep copy of clusterssize
+    coarseclusters = np.empty(nclusters, dtype=object)
+    coarseclusters[:] = [  # noqa: WPS362
+        list(cl) for cl in clusterssize
+    ]
 
     for _ in range(nclusters - 1):
         cmat = _coarse_clustermatrix(clusters, coarsemat)
@@ -58,8 +65,19 @@ def _sort_coarse_clustermatrix(coarsemat: FloatMatrix) -> Index1DArray:
         cmat[np.diag_indices_from(cmat)] = np.nan
         x_idxs, y_idxs = np.where(cmat == np.nanmax(cmat))
 
-        clusters[x_idxs[0]].extend(clusters[y_idxs[0]])
-        clusters = np.delete(clusters, y_idxs[0])
+        # add smaller to larger cluster
+        xi, yi = x_idxs[0], y_idxs[0]
+        x_large, x_small = (xi, yi) if (
+            len(coarseclusters[xi]) >= len(coarseclusters[yi])
+        ) else (yi, xi)
+
+        # merge clusters
+        clusters[x_large].extend(clusters[x_small])
+        clusters = np.delete(clusters, x_small)
+
+        # keep track of clusrer size
+        coarseclusters[x_large].extend(coarseclusters[x_small])
+        coarseclusters = np.delete(coarseclusters, x_small)
 
     return np.asarray(clusters[0], dtype=int)
 
@@ -77,7 +95,7 @@ def _sort_clusters(
     # sort the order of the cluster
     clusters_permuted = clusters[
         _sort_coarse_clustermatrix(
-            _coarse_clustermatrix(clusters, mat),
+            clusters, _coarse_clustermatrix(clusters, mat),
         )
     ]
 
