@@ -77,7 +77,7 @@ def test__standard_scaler(X, error):
         None,
     ),
     ('GY', {}, X1(), X1_result('GY'), None),
-    ('GY', {'knn_estimator': True}, X1(), X1_result('GY_knn'), None),
+    ('GY', {'use_knn_estimator': True}, X1(), X1_result('GY_knn'), None),
     ('JSD', {}, X1(), X1_result('JSD'), None),
     ('NMI', {}, X1(), X1_result('NMI_geometric'), None),
     ('NMI', {'normalize_method': 'joint'}, X1(), X1_result('NMI_joint'), None),
@@ -106,7 +106,7 @@ def test__standard_scaler(X, error):
     ),
     (
         'correlation',
-        {'knn_estimator': True},
+        {'use_knn_estimator': True},
         X1(),
         None,
         NotImplementedError,
@@ -122,6 +122,9 @@ def test_Similarity(metric, kwargs, X, result, error):
         sim.fit(X)
         np.testing.assert_almost_equal(
             sim.matrix_[-1, 0], result,
+        )
+        np.testing.assert_almost_equal(
+            sim.fit_transform(X)[-1, 0], result,
         )
     else:
         with pytest.raises(error):

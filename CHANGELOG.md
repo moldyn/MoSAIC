@@ -13,8 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change the default precision from `half` to `single` in CI (`__main__.py`)
 - Rename in `Similarity` class the parameter `online` to `low_memory` and in
   `mosaic similarity` the flag `--online` to `--low-memory`
+- Rename in `Similarity` class the parameter `knn_estimator` to `use_knn_estimator`
 
 ### Added Features and Improvements 🙌:
+- `Similarity` class derives now from `sklearn.base.BaseEstimator`
+- `fit_transform` method was added to `Similarity` class
 - Added LGTM reports
 - Allow to select the desired precision in the CI directly
 - Improved clusters sorting algorithm to prefer larger clusters
