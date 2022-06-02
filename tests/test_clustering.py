@@ -12,11 +12,13 @@ import pytest
 import mosaic
 
 
-def X1():
+@pytest.fixture
+def X():
     return np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.1], [0.9, 0.1, 1.0]])
 
 
-def X1_sorted():
+@pytest.fixture
+def Xresult():
     return np.array([[1.0, 0.9, 0.1], [0.9, 1.0, 0.1], [0.1, 0.1, 1.0]])
 
 
@@ -52,25 +54,44 @@ def test__coarse_clustermatrix(clusters, mat, result, error):
             mosaic.clustering._coarse_clustermatrix(cluster_list, mat)
 
 
-@pytest.mark.parametrize('mode, kwargs, X, Xresult, n_clusters, error', [
-    ('modularity', {'n_neighbors': 1}, X1(), X1_sorted(), 2, None),
-    ('modularity', {'n_neighbors': 2}, X1(), X1_sorted(), 1, None),
-    ('modularity', {'n_neighbors': 3}, X1(), None, None, ValueError),
-    ('CPM', {}, X1(), X1_sorted(), 2, None),
-    ('CPM', {'resolution_parameter': 0.9}, X1(), X1_sorted(), 3, None),
-    ('CPM', {'resolution_parameter': 0.05}, X1(), X1_sorted(), 1, None),
-    ('linkage', {'resolution_parameter': 0.9}, X1(), X1_sorted(), 3, None),
-    ('linkage', {'resolution_parameter': 0.05}, X1(), X1_sorted(), 1, None),
+@pytest.mark.parametrize('mode, kwargs, n_clusters, error', [
+    ('modularity', {'n_neighbors': 1}, 2, None),
+    ('modularity', {'n_neighbors': 2}, 1, None),
+    ('modularity', {'n_neighbors': 3}, None, ValueError),
+    ('CPM', {}, 2, None),
+    ('CPM', {'resolution_parameter': 0.9}, 3, None),
+    ('CPM', {'resolution_parameter': 0.05}, 1, None),
+    ('linkage', {'resolution_parameter': 0.9}, 3, None),
+    ('linkage', {'resolution_parameter': 0.05}, 1, None),
     (
         'linkage',
         {'resolution_parameter': 0.05, 'n_neighbors': 3},
-        X1(),
-        None,
         None,
         NotImplementedError,
     ),
+    ('CPM', {'n_clusters': 1}, None, NotImplementedError),
+    ('linkage', {'n_clusters': 1}, None, NotImplementedError),
+    ('modularity', {'n_clusters': 1}, None, NotImplementedError),
+    ('kmedoids', {}, None, TypeError),
+    ('kmedoids', {'n_clusters': 2}, 2, None),
+    (
+        'kmedoids',
+        {'n_neighbors': 2, 'n_clusters': 2},
+        None,
+        NotImplementedError,
+    ),
+    ('linkage', {'n_neighbors': 2}, None, NotImplementedError),
+    ('CPM', {'weighted': False}, None, NotImplementedError),
+    ('linkage', {'weighted': False}, None, NotImplementedError),
+    (
+        'kmedoids',
+        {'n_neighbors': 2, 'resolution_parameter': 0.9},
+        None,
+        NotImplementedError,
+    ),
+    ('modularity', {'resolution_parameter': 0.9}, None, NotImplementedError),
 ])
-def test_Similarity(mode, kwargs, X, Xresult, n_clusters, error):
+def test_Clustering(mode, kwargs, n_clusters, error, X, Xresult):
     if not error:
         clust = mosaic.Clustering(mode=mode, **kwargs)
         clust.fit(X)
