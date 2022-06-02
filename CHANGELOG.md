@@ -17,12 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added Features and Improvements 🙌:
 - Added LGTM reports
 - Allow to select the desired precision in the CI directly
+- Improved clusters sorting algorithm to prefer larger clusters
 
 ### Bugfix 🐛:
 - Fix bug of `load_clusters` in case of a single cluster
+- Fix bug where `mode='kmedoids'` can not be executed with `n_clusters`
+- Fix bug for `mode='kmedoids'`, preventing masking diagonal
 
 ### Other changes:
 - Improved test functions of utils module
+- Add more tests for clustering module
 - Fixed some typos
 
 
