@@ -33,9 +33,14 @@ ClusteringModeString = Annotated[
 ]
 
 # scalar datatypes
-PositiveInt = Annotated[int, Is[lambda val: val > 0]]
+PositiveInt = Annotated[
+    Union[int, np.integer],
+    Is[lambda val: val > 0],
+]
+Int = Union[int, np.integer]
 NumInRange0to1 = Annotated[
-    Union[int, float, np.integer, np.floating], Is[lambda val: 0 <= val <= 1],
+    Union[int, float, np.integer, np.floating],
+    Is[lambda val: 0 <= val <= 1],
 ]
 
 # beartype substitute for np.typing.DTypeLike
