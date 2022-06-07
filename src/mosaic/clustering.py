@@ -138,9 +138,10 @@ class Clustering:
         is constructed using the adjacency matrix.
 
     n_neighbors : int, default=None,
-        This parameter specifies if the whole matrix is used, or an knn-graph.
+        This parameter specifies whether the whole matrix should be used, or 
+        a knn-graph, which reduces the required memory. 
         The default depends on the `mode`
-        - 'CPM': `None` uses full graph, and
+        - 'CPM': `None` uses the full graph, and
         - 'modularity': `None` uses square root of the number of features.
 
     resolution_parameter : float, default=None,
@@ -149,7 +150,7 @@ class Clustering:
         `n_neighbors=None` and else to the mean value of the knn graph.
 
     n_clusters : int, default=None,
-        Required for 'kmedoids'. The number of medoids which constitute
+        Required for 'kmedoids'. The number of medoids which will constitute
         the later clusters.
 
     seed : int, default=None,
@@ -160,16 +161,17 @@ class Clustering:
     ----------
     clusters_ : ndarray of shape (n_clusters, )
         The result of the clustering process. A list of arrays, each
-        containing all indices (features) for each cluster.
+        containing all indices (features) corresponging to each cluster.
 
     labels_ : ndarray of shape (n_features, )
         Labels of each feature.
 
     matrix_ : ndarray of shape (n_features, n_features)
-        Permuted matrix according to the found clusters.
+        Permuted matrix according to the determined clusters.
 
     ticks_ : ndarray of shape (n_clusters, )
-        Get cumulative indices where new cluster starts in `matrix_`.
+        The cumulative number of features containing to the clusters.
+        May be used as ticks for plotting `matrix_`.
 
     permutation_ : ndarray of shape (n_features, )
         Permutation of the input features (corresponds to flattened
