@@ -138,8 +138,8 @@ class Clustering:
         is constructed using the adjacency matrix.
 
     n_neighbors : int, default=None,
-        This parameter specifies whether the whole matrix should be used, or 
-        a knn-graph, which reduces the required memory. 
+        This parameter specifies whether the whole matrix should be used, or
+        a knn-graph, which reduces the required memory.
         The default depends on the `mode`
         - 'CPM': `None` uses the full graph, and
         - 'modularity': `None` uses square root of the number of features.
@@ -186,8 +186,8 @@ class Clustering:
         used for the CPM based Leiden clustering.
 
     linkage_matrix_ : ndarray of shape (n_clusters - 1, 4)
-        Only for mode 'linkage'. Contains the hierarchical clustering encoded as 
-        a linkage matrix, see
+        Only for mode 'linkage'. Contains the hierarchical clustering encoded
+        as a linkage matrix, see
         [scipy:spatial.distance.linkage](https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html).
 
     Examples
