@@ -149,7 +149,8 @@ class Clustering:
         `n_neighbors=None` and else to the mean value of the knn graph.
 
     n_clusters : int, default=None,
-        Required for 'kmedoids'. The number of clusters to form.
+        Required for 'kmedoids'. The number of medoids which constitute
+        the later clusters.
 
     seed : int, default=None,
         Use an integer to make the randomness of Leidenalg deterministic. By
@@ -183,8 +184,8 @@ class Clustering:
         used for the CPM based Leiden clustering.
 
     linkage_matrix_ : ndarray of shape (n_clusters - 1, 4)
-        Only for mode 'linkage'. Holds hierarchicak clustering encoded as a
-        linkage matrix, see
+        Only for mode 'linkage'. Contains the hierarchical clustering encoded as 
+        a linkage matrix, see
         [scipy:spatial.distance.linkage](https://docs.scipy.org/doc/scipy/reference/generated/scipy.cluster.hierarchy.linkage.html).
 
     Examples
