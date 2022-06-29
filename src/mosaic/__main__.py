@@ -19,7 +19,7 @@ pplt.use_style(figsize=2, figratio=1, cmap='turbo')
 
 NORMALIZES = ['joint', 'geometric', 'arithmetic', 'min', 'max']
 METRICS = ['correlation', 'NMI', 'JSD', 'GY']
-MODES = ['CPM', 'modularity', 'linkage']
+MODES = ['CPM', 'modularity', 'linkage', 'kmedoids']
 PRECISION = ['half', 'single', 'double']
 PRECISION_TO_DTYPE = {
     'half': np.float16,
@@ -135,7 +135,7 @@ def similarity(
         metric=metric,
         low_memory=low_memory,
         normalize_method=normalize_method,
-        knn_estimator=knn_estimator,
+        use_knn_estimator=knn_estimator,
     )
     if low_memory:
         if verbose:
@@ -190,6 +190,11 @@ def similarity(
     '--resolution-parameter',
     type=click.FloatRange(min=0, max=1),
     help='Resolution parameter used for CPM.',
+)
+@click.option(
+    '--n-clusters',
+    type=click.IntRange(min=2),
+    help='Required for mode="kmedoids". The number of clusters to form.',
 )
 @click.option(
     '-i',
@@ -249,6 +254,7 @@ def clustering(
     input_file,
     n_neighbors,
     resolution_parameter,
+    n_clusters,
     weighted,
     output_file,
     name_file,
@@ -266,6 +272,7 @@ def clustering(
         mode=mode,
         weighted=weighted,
         n_neighbors=n_neighbors,
+        n_clusters=n_clusters,
         resolution_parameter=resolution_parameter,
     )
 
@@ -327,7 +334,9 @@ def clustering(
         _, ax = plt.subplots()
         mat = clust.matrix_.astype(np.float64)
         mat[np.diag_indices_from(mat)] = np.nan
-        im = ax.imshow(mat, aspect='equal', origin='upper')
+        im = ax.imshow(
+            mat, aspect='equal', origin='upper', interpolation='none',
+        )
 
         ticks = np.array([0, *clust.ticks_[: -1]]) - 0.5
         major_mask = np.array([
