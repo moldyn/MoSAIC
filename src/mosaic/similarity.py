@@ -258,6 +258,26 @@ class Similarity(BaseEstimator):
         return self.matrix_
 
     @beartype
+    def transform(
+        self,
+        X: Union[FloatMax2DArray, str],
+    ) -> FloatMatrix:
+        """Compute the correlation/nmi distance matrix and returns it.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_samples, n_features) or str if low_memory=True
+            Training data.
+
+        Returns
+        -------
+        Similarity : ndarray of shape (n_features, n_features)
+            Similarity matrix.
+
+        """
+        return self.fit_transform(X)
+
+    @beartype
     def _reset(self) -> None:
         """Reset internal data-dependent state of correlation."""
         if hasattr(self, 'matrix_'):  # noqa: WPS421
