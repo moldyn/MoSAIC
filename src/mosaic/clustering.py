@@ -15,11 +15,15 @@ from beartype import beartype
 from beartype.typing import Any, Dict, Optional
 from scipy.cluster.hierarchy import cut_tree, linkage
 from scipy.spatial.distance import squareform
+from sklearn.base import BaseEstimator, ClusterMixin
 from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics import silhouette_score
+from sklearn.utils.validation import check_is_fitted
 from sklearn_extra.cluster import KMedoids
 
 from mosaic._typing import (  # noqa: WPS436
     ClusteringModeString,
+    Float,
     Float2DArray,
     FloatMatrix,
     Index1DArray,
@@ -120,7 +124,7 @@ def _sort_clusters(
     return clusters_permuted
 
 
-class Clustering:
+class Clustering(ClusterMixin, BaseEstimator):
     r"""Class for clustering a correlation matrix.
 
     Parameters
@@ -214,28 +218,28 @@ class Clustering:
         seed: Optional[int] = None,
     ) -> None:
         """Initialize Clustering class."""
-        self._mode: ClusteringModeString = mode
-        self._weighted: bool = weighted
-        self._neighbors: Optional[PositiveInt] = n_neighbors
-        self._seed: Optional[int] = seed
-        self._n_clusters: Optional[PositiveInt] = n_clusters
+        self.mode: ClusteringModeString = mode
+        self.weighted: bool = weighted
+        self.n_neighbors: Optional[PositiveInt] = n_neighbors
+        self.seed: Optional[int] = seed
+        self.n_clusters: Optional[PositiveInt] = n_clusters
 
-        if mode in {'linkage', 'kmedoids'} and self._neighbors is not None:
+        if mode in {'linkage', 'kmedoids'} and self.n_neighbors is not None:
             raise NotImplementedError(
                 f"mode='{mode}' does not support knn-graphs.",
             )
 
-        if mode == 'kmedoids' and self._n_clusters is None:
+        if mode == 'kmedoids' and self.n_clusters is None:
             raise TypeError(
                 f"mode='{mode}' needs parameter 'n_clusters'",
             )
-        elif mode != 'kmedoids' and self._n_clusters is not None:
+        elif mode != 'kmedoids' and self.n_clusters is not None:
             raise NotImplementedError(
                 f"mode='{mode}' does not support the usage of 'n_clusters'",
             )
 
         if mode in {'CPM', 'linkage'}:
-            self._resolution_parameter: Optional[NumInRange0to1] = (
+            self.resolution_parameter: Optional[NumInRange0to1] = (
                 resolution_parameter
             )
             if not weighted:
@@ -267,38 +271,38 @@ class Clustering:
 
         # prepare matric for graph construction
         mat: FloatMatrix
-        if self._mode in {'linkage', 'kmedoids'}:
+        if self.mode in {'linkage', 'kmedoids'}:
             mat = np.copy(X)
-        elif self._mode == 'CPM' and self._neighbors is None:
+        elif self.mode == 'CPM' and self.n_neighbors is None:
             mat = np.copy(X)
         else:
             mat = self._construct_knn_mat(X)
 
-        if self._mode in {'CPM', 'linkage'}:
+        if self.mode in {'CPM', 'linkage'}:
             # mask diagonal and zero elements
             mat[mat == 0] = np.nan
             mat[np.diag_indices_from(mat)] = np.nan
 
-            if self._resolution_parameter is None:
-                if self._neighbors is None:
+            if self.resolution_parameter is None:
+                if self.n_neighbors is None:
                     third_quartile = 0.75
-                    self._resolution_parameter = np.nanquantile(
+                    self.resolution_parameter = np.nanquantile(
                         mat, third_quartile,
                     )
                 else:
-                    self._resolution_parameter = np.nanmean(mat)
+                    self.resolution_parameter = np.nanmean(mat)
 
             self.resolution_param_: NumInRange0to1 = (
-                self._resolution_parameter
+                self.resolution_parameter
             )
 
         # create graph
         mat[np.isnan(mat)] = 0
 
         clusters: Object1DArray
-        if self._mode == 'linkage':
+        if self.mode == 'linkage':
             clusters = self._clustering_linkage(mat)
-        elif self._mode == 'kmedoids':
+        elif self.mode == 'kmedoids':
             clusters = self._clustering_kmedoids(mat)
         else:  # _mode in {'CPM', 'modularity'}
             graph: ig.Graph = ig.Graph.Weighted_Adjacency(
@@ -318,6 +322,73 @@ class Clustering:
         for idx, cluster in enumerate(self.clusters_):
             labels[cluster] = idx
         self.labels_: Index1DArray = labels
+
+    @beartype
+    def fit_predict(
+        self, X: SimilarityMatrix, y: Optional[np.ndarray] = None,
+    ) -> Index1DArray:
+        """Clusters the correlation matrix by Leiden clustering on a graph.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_features, n_features)
+            Matrix containing the correlation metric which is clustered. The
+            values should go from [0, 1] where 1 means completely correlated
+            and 0 no correlation.
+
+        y : Ignored
+            Not used, present for scikit API consistency by convention.
+
+        Returns
+        -------
+        labels : ndarray of shape (n_samples,)
+            Cluster labels.
+
+        """
+        return super().fit_predict(X, y)
+
+    @beartype
+    def score(
+        self,
+        X: SimilarityMatrix,
+        y: Optional[np.ndarray] = None,
+        sample_weight: Optional[np.ndarray] = None,
+    ) -> Float:
+        """Estimate silhouette_score of new correlation matrix.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_features, n_features)
+            New matrix containing the correlation metric to score. The
+            values should go from [0, 1] where 1 means completely correlated
+            and 0 no correlation.
+
+        y : Ignored
+            Not used, present for scikit API consistency by convention.
+
+        sample_weight: Ignored
+            Not used, present for scikit API consistency by convention.
+
+        Returns
+        -------
+        score : float
+            Silhouette score of new correlation matrix based on fitted labels.
+
+        """
+        check_is_fitted(self, attributes=['labels_', 'matrix_'])
+
+        n_labels = len(self.labels_)
+        n_unique_labels = len(np.unique(self.labels_))
+
+        if n_labels != len(X):
+            raise ValueError(
+                f'Dimension of X d={len(X):.0f} needs to agree with the '
+                f'dimension of the fitted data d={n_labels:.0f}.',
+            )
+
+        if n_unique_labels in {1, n_labels}:
+            return -1.0
+        return silhouette_score(X, labels=self.labels_)
 
     @beartype
     def _reset(self) -> None:
@@ -341,22 +412,22 @@ class Clustering:
     @beartype
     def _construct_knn_mat(self, matrix: FloatMatrix) -> FloatMatrix:
         """Construct the knn matrix."""
-        if self._neighbors is None:
+        if self.n_neighbors is None:
             n_features = len(matrix)
-            self._neighbors = np.ceil(np.sqrt(n_features)).astype(int)
-        elif self._neighbors >= len(matrix):
+            self.n_neighbors = np.ceil(np.sqrt(n_features)).astype(int)
+        elif self.n_neighbors >= len(matrix):
             raise ValueError(
                 'The number of nearest neighbors must be smaller than the '
                 'number of features.',
             )
-        self.n_neighbors_: PositiveInt = self._neighbors
+        self.n_neighbors_: PositiveInt = self.n_neighbors
 
         neigh = NearestNeighbors(
-            n_neighbors=self._neighbors,
+            n_neighbors=self.n_neighbors,
             metric='precomputed',
         )
         neigh.fit(1 - matrix)
-        if self._weighted:
+        if self.weighted:
             dist_mat = neigh.kneighbors_graph(mode='distance').toarray()
             dist_mat[dist_mat == 0] = 1
             return 1 - dist_mat
@@ -366,7 +437,7 @@ class Clustering:
     def _setup_leiden_kwargs(self, graph: ig.Graph) -> Dict[str, Any]:
         """Set up the parameters for the Leiden clustering."""
         kwargs_leiden = {'n_iterations': -1}
-        if self._mode == 'CPM':
+        if self.mode == 'CPM':
             kwargs_leiden['partition_type'] = la.CPMVertexPartition
             kwargs_leiden[
                 'resolution_parameter'
@@ -375,10 +446,10 @@ class Clustering:
             kwargs_leiden[
                 'partition_type'
             ] = la.ModularityVertexPartition
-        if self._weighted:
+        if self.weighted:
             kwargs_leiden['weights'] = graph.es['weight']
 
-        kwargs_leiden['seed'] = self._seed
+        kwargs_leiden['seed'] = self.seed
 
         return kwargs_leiden
 
@@ -431,15 +502,15 @@ class Clustering:
             'method': 'pam',
         }
 
-        kmedoids = KMedoids(n_clusters=self._n_clusters, **kmedoids_kwargs)
+        kmedoids = KMedoids(n_clusters=self.n_clusters, **kmedoids_kwargs)
         kmedoids.fit(1 - matrix)
         labels = kmedoids.labels_
 
         # store number of clusters
         nclusters: int = len(np.unique(labels))
-        if nclusters != self._n_clusters:
+        if nclusters != self.n_clusters:
             raise ValueError(
-                f'k-medoids tried to find {self._n_clusters} clusters'
+                f'k-medoids tried to find {self.n_clusters} clusters'
                 f'but only {nclusters} found. Please try a different value.',
             )
         self.n_clusters_: Float2DArray = nclusters
