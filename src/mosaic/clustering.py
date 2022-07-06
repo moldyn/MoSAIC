@@ -137,25 +137,25 @@ class Clustering(ClusterMixin, BaseEstimator):
         - 'linkage': will use complete-linkage clustering
         - 'kmedoids': will use $k$-medoids clustering
 
-    weighted : bool, default=True,
+    weighted : bool, default=True
         If True, the underlying graph has weighted edges. Otherwise, the graph
         is constructed using the adjacency matrix.
 
-    n_neighbors : int, default=None,
+    n_neighbors : int, default=None
         This parameter specifies if the whole matrix is used, or an knn-graph.
         The default depends on the `mode`
         - 'CPM': `None` uses full graph, and
         - 'modularity': `None` uses square root of the number of features.
 
-    resolution_parameter : float, default=None,
+    resolution_parameter : float, default=None
         Required for mode 'CPM' and 'linkage'. If None, the resolution
         parameter will be set to the third quartile of `X` for
         `n_neighbors=None` and else to the mean value of the knn graph.
 
-    n_clusters : int, default=None,
+    n_clusters : int, default=None
         Required for 'kmedoids'. The number of clusters to form.
 
-    seed : int, default=None,
+    seed : int, default=None
         Use an integer to make the randomness of Leidenalg deterministic. By
         default uses a random seed if nothing is specified.
 
