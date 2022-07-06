@@ -5,7 +5,7 @@ This script was used to generate the toy model of following publication.
 It can be easily tweaked to generate a desired matrix, simply change the
 global variables `NDIM` and `CLUSTS`.
 > G. Diez, D. Nagel, and G. Stock,
-> *Correlation-based feature selection to identify functional dynamcis
+> *Correlation-based feature selection to identify functional dynamics
 > in proteins*,
 > in preparation
 
