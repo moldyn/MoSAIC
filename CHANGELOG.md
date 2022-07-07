@@ -7,6 +7,9 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [0.3.0] - 2022-07-07
 ### API changes warning ⚠️:
 - Module `tools` was renamed to `utils`
 - `load_clusters` needs to be accessed via `mosaic.utils`
@@ -107,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 
 
-[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.2.2...main
+[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.3.0...main
+[0.3.0]: https://github.com/moldyn/MoSAIC/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/moldyn/MoSAIC/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/moldyn/MoSAIC/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/moldyn/MoSAIC/compare/v0.1.1...v0.2.0

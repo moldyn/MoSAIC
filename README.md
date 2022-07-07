@@ -192,6 +192,11 @@ clusterfile = '...'
 clusters = mosaic.tools.load_clusters(clusterfile)
 ```
 
+#### Is it possible to use cross validation together with silhouette score?
+The new release `v0.3.0` refactored the classes, so that the
+[`sklearn.model_selection.GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html) can be used.
+In the next weeks a tutorial and helper class will be added/implemented.
+
 #### I get an error.
 Please [open an issue](https://github.com/moldyn/MoSAIC/issues/new/choose).
 
@@ -208,4 +213,4 @@ virtual environment on your own via `conda` or `venv`, or you can
 simply use [pipx](https://pypa.github.io/pipx/)
 
 #### Is the silhouette method implemented?
-This feature will be added in `v0.3.0` in the next weeks.
+Yes, simply use the `score` method implemented in the `Clustering` class.
