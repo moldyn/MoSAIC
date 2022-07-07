@@ -101,6 +101,14 @@ def test_Clustering(mode, kwargs, n_clusters, error, X, Xresult):
         np.testing.assert_almost_equal(
             len(clust.clusters_), n_clusters,
         )
+        # refit to test resetting
+        clust.fit(X)
+        np.testing.assert_array_almost_equal(
+            clust.matrix_, Xresult,
+        )
+        np.testing.assert_almost_equal(
+            len(clust.clusters_), n_clusters,
+        )
     else:
         with pytest.raises(error):
             clust = mosaic.Clustering(mode=mode, **kwargs)
