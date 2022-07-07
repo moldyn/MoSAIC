@@ -51,8 +51,8 @@ block-diagonal form.
 The method was published in:
 > G. Diez, D. Nagel, and G. Stock,
 > *Correlation-Based Feature Selection to Identify Functional Dynamcis
-> in Proteins*, J. Chem. Theory Comput., 2022, XXXX, XXX, XXX-XXX
-> [10.1021/acs.jctc.2c00337])https://pubs.acs.org/doi/10.1021/acs.jctc.2c00337)
+> in Proteins*, J. Chem. Theory Comput., 2022, XXXX, XXX, XXX-XXX,
+> [10.1021/acs.jctc.2c00337](https://pubs.acs.org/doi/10.1021/acs.jctc.2c00337)
 
 We kindly ask you to cite this article in case you use this software package for
 published works.
@@ -113,7 +113,7 @@ Each module and submodule contains a detailed help, which can be accessed by
 $ python -m mosaic
 Usage: python -m mosaic [OPTIONS] COMMAND [ARGS]...
 
-  MoSAIC motion v0.2.1
+  MoSAIC motion v0.2.2
 
   Molecular systems automated identification of collective motion, is
   a correlation based feature selection framework for MD data.
@@ -193,7 +193,7 @@ clusters = mosaic.tools.load_clusters(clusterfile)
 ```
 
 #### I get an error.
-Please open an issue.
+Please [open an issue](https://github.com/moldyn/MoSAIC/issues/new/choose).
 
 #### Should I upgrade the package?
 You can check out the CHANGELOG.md to see what changed.
