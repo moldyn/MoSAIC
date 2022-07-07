@@ -126,6 +126,9 @@ def test_Similarity(metric, kwargs, X, result, error):
         np.testing.assert_almost_equal(
             sim.fit_transform(X)[-1, 0], result,
         )
+        np.testing.assert_almost_equal(
+            sim.transform(X)[-1, 0], result,
+        )
     else:
         with pytest.raises(error):
             sim = mosaic.Similarity(metric=metric, **kwargs)
