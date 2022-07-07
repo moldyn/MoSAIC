@@ -14,6 +14,7 @@ import numpy as np
 from beartype import beartype
 from beartype.typing import Callable, Optional, Union
 from sklearn import preprocessing
+from sklearn.base import BaseEstimator
 
 from mosaic._correlation_utils import (  # noqa: WPS436
     _correlation,
@@ -41,7 +42,7 @@ def _standard_scaler(X: Float2DArray) -> Float2DArray:
     return scaler.transform(X)
 
 
-class Similarity:  # noqa: WPS214
+class Similarity(BaseEstimator):
     r"""Class for calculating the similarity measure.
 
     Parameters
@@ -74,7 +75,7 @@ class Similarity:  # noqa: WPS214
           entropies
         - `'min'` is the minimum of the individual entropies
 
-    knn_estimator : bool, default=False
+    use_knn_estimator : bool, default=False
         Can only be set for metric GY. If True, the mutual information
         is estimated reliably by a parameter free method based on entropy
         estimation from k-nearest neighbors distances[^3].
@@ -137,21 +138,21 @@ class Similarity:  # noqa: WPS214
         metric: MetricString = 'correlation',
         low_memory: bool = False,
         normalize_method: Optional[NormString] = None,
-        knn_estimator: bool = False,
+        use_knn_estimator: bool = False,
     ):
         """Initialize Similarity class."""
-        self._metric: MetricString = metric
-        self._low_memory: bool = low_memory
-        self._knn_estimate: bool = knn_estimator
-        if self._metric == 'NMI':
+        self.metric: MetricString = metric
+        self.low_memory: bool = low_memory
+        self.use_knn_estimator: bool = use_knn_estimator
+        if self.metric == 'NMI':
             if normalize_method is None:
                 normalize_method = self._default_normalize_method
-            self._normalize_method: NormString = normalize_method
         elif normalize_method is not None:
             raise NotImplementedError(
                 'Normalize methods are only supported with metric="NMI"',
             )
-        if self._metric != 'GY' and self._knn_estimate:
+        self.normalize_method: NormString = normalize_method
+        if self.metric != 'GY' and self.use_knn_estimator:
             raise NotImplementedError(
                 (
                     'The mutual information estimate based on k-nearest'
@@ -187,7 +188,7 @@ class Similarity:  # noqa: WPS214
         corr: np.ndarray
         matrix_: np.ndarray
         # parse data
-        if self._low_memory:
+        if self.low_memory:
             raise TypeError('Using low_memory=True requires X:str')
         if X.ndim == 1:
             raise ValueError(
@@ -201,10 +202,10 @@ class Similarity:  # noqa: WPS214
         self._n_features: int = n_features
 
         X: np.ndarray = _standard_scaler(X)
-        if self._metric == 'correlation':
+        if self.metric == 'correlation':
             corr = _correlation(X)
             matrix_ = np.abs(corr)
-        elif self._metric == 'GY' and self._knn_estimate:
+        elif self.metric == 'GY' and self.use_knn_estimator:
             matrix_ = _nonlinear_GY_knn(X)
         else:  # 'NMI', 'JSD', 'GY
             matrix_ = self._nonlinear_correlation(X)
@@ -218,10 +219,10 @@ class Similarity:  # noqa: WPS214
         corr: np.ndarray
         matrix_: np.ndarray
         # parse data
-        if not self._low_memory:
+        if not self.low_memory:
             raise TypeError('Mode low_memory=False reuqires X:np.ndarray.')
 
-        if self._metric == 'correlation':
+        if self.metric == 'correlation':
             corr = self._online_correlation(X)
             matrix_ = np.abs(corr)
         else:
@@ -230,6 +231,51 @@ class Similarity:  # noqa: WPS214
             )
 
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
+
+    @beartype
+    def fit_transform(
+        self,
+        X: Union[FloatMax2DArray, str],
+        y: Optional[ArrayLikeFloat] = None,
+    ) -> FloatMatrix:
+        """Compute the correlation/nmi distance matrix and returns it.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_samples, n_features) or str if low_memory=True
+            Training data.
+
+        y : Ignored
+            Not used, present for scikit API consistency by convention.
+
+        Returns
+        -------
+        Similarity : ndarray of shape (n_features, n_features)
+            Similarity matrix.
+
+        """
+        self.fit(X)
+        return self.matrix_
+
+    @beartype
+    def transform(
+        self,
+        X: Union[FloatMax2DArray, str],
+    ) -> FloatMatrix:
+        """Compute the correlation/nmi distance matrix and returns it.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_samples, n_features) or str if low_memory=True
+            Training data.
+
+        Returns
+        -------
+        Similarity : ndarray of shape (n_features, n_features)
+            Similarity matrix.
+
+        """
+        return self.fit_transform(X)
 
     @beartype
     def _reset(self) -> None:
@@ -241,9 +287,9 @@ class Similarity:  # noqa: WPS214
     def _nonlinear_correlation(self, X: Float2DArray) -> FloatMatrix:
         """Return the nonlinear correlation."""
         calc_nl_corr: Callable
-        if self._metric == 'NMI':
-            calc_nl_corr = _nmi_gen(self._normalize_method)
-        elif self._metric == 'GY':
+        if self.metric == 'NMI':
+            calc_nl_corr = _nmi_gen(self.normalize_method)
+        elif self.metric == 'GY':
             calc_nl_corr = _gy
         else:
             calc_nl_corr = _jsd

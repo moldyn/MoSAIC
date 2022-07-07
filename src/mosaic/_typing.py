@@ -38,6 +38,7 @@ PositiveInt = Annotated[
     Is[lambda val: val > 0],
 ]
 Int = Union[int, np.integer]
+Float = Union[float, np.floating]
 NumInRange0to1 = Annotated[
     Union[int, float, np.integer, np.floating],
     Is[lambda val: 0 <= val <= 1],
