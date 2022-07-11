@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix bug where `mode='kmedoids'` can not be executed with `n_clusters`
 - Fix bug for `mode='kmedoids'`, preventing masking diagonal
 - Prevent interpolation in plot
+- Enforce higher precision on storing correlation matrix to remove artifacts
+  of slight deviation from symmetry
 
 ### Other changes:
 - Improved test functions of utils module
