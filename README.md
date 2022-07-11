@@ -61,7 +61,7 @@ published works.
 - Intuitive usage via [module](#module---inside-a-python-script) and via [CI](#ci---usage-directly-from-the-command-line)
 - Sklearn-style API for fast integration into your Python workflow
 - No magic, only a  single parameter
-- Extensive [documentation](https://moldyn.github.io/feature_selection) and
+- Extensive [documentation](https://moldyn.github.io/MoSAIC) and
   detailed discussion in publication
 
 
