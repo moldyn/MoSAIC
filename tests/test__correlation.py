@@ -116,8 +116,8 @@ def test__estimate_densities(x, y, kwargs, error):
 
 @pytest.mark.parametrize('X, result, error', [
     (
-        np.array([[1.0, 1.0], [0.9, 0.8], [0.8, 0.6]]),
-        np.array([[49, 44], [44, 40]]) / 60,
+        np.sqrt(3 / 2) * np.array([[-1, 1], [0, 0], [1, -1]]),
+        np.array([[1, -1], [-1, 1]]),
         None,
     ),
     (np.arange(10), None, BeartypeException),
