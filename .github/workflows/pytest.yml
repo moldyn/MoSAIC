@@ -28,7 +28,7 @@ jobs:
         python -m flake8 --config flake8-CI.cfg
     - name: Test with pytest
       run: |
-        pytest --cov-report=xml
+        PY_IGNORE_IMPORTMISMATCH=1 pytest --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
