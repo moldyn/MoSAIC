@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename in `Similarity` class the parameter `online` to `low_memory` and in
   `mosaic similarity` the flag `--online` to `--low-memory`
 - Rename in `Similarity` class the parameter `knn_estimator` to `use_knn_estimator`
+- `Similarity.fit` and `Clustering.fit` are returning `self` which allows a
+  chaining like `sim = Similarity().fit(X)`
 
 ### Added Features and Improvements 🙌:
 - `Similarity` class derives now from `sklearn.base.BaseEstimator`

@@ -256,7 +256,7 @@ class Clustering(ClusterMixin, BaseEstimator):
             )
 
     @beartype
-    def fit(self, X: SimilarityMatrix, y: Optional[np.ndarray] = None) -> None:
+    def fit(self, X: SimilarityMatrix, y: Optional[np.ndarray] = None):
         """Clusters the correlation matrix by Leiden clustering on a graph.
 
         Parameters
@@ -268,6 +268,11 @@ class Clustering(ClusterMixin, BaseEstimator):
 
         y : Ignored
             Not used, present for scikit API consistency by convention.
+
+        Returns
+        -------
+        self : object
+            Fitted estimator.
 
         """
         self._reset()
@@ -325,6 +330,8 @@ class Clustering(ClusterMixin, BaseEstimator):
         for idx, cluster in enumerate(self.clusters_):
             labels[cluster] = idx
         self.labels_: Index1DArray = labels
+
+        return self
 
     @beartype
     def fit_predict(

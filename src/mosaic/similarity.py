@@ -166,7 +166,7 @@ class Similarity(BaseEstimator):
         self,
         X: Union[FloatMax2DArray, str],
         y: Optional[ArrayLikeFloat] = None,
-    ) -> None:
+    ):
         """Compute the correlation/nmi distance matrix.
 
         Parameters
@@ -177,11 +177,16 @@ class Similarity(BaseEstimator):
         y : Ignored
             Not used, present for scikit API consistency by convention.
 
+        Returns
+        -------
+        self : object
+            Fitted estimator.
+
         """
         raise NotImplementedError('Fatal error, this should never be reached.')
 
     @fit.register
-    def _(self, X: np.ndarray, y=None) -> None:
+    def _(self, X: np.ndarray, y=None):
         """Dispatched for low_memory=False with matrix input."""
         self._reset()
 
@@ -211,8 +216,10 @@ class Similarity(BaseEstimator):
             matrix_ = self._nonlinear_correlation(X)
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
 
+        return self
+
     @fit.register
-    def _(self, X: str, y=None) -> None:
+    def _(self, X: str, y=None):
         """Dispatched for low_memory=True with string."""
         self._reset()
 
@@ -231,6 +238,8 @@ class Similarity(BaseEstimator):
             )
 
         self.matrix_: np.ndarray = np.clip(matrix_, a_min=0, a_max=1)
+
+        return self
 
     @beartype
     def fit_transform(
