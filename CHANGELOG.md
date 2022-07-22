@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
-## [0.3.0] - 2022-07-07
+## [0.3.0] - 2022-07-22
 ### API changes warning ⚠️:
 - Module `tools` was renamed to `utils`
 - `load_clusters` needs to be accessed via `mosaic.utils`
@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved test functions of utils module
 - Add more tests for clustering module
 - Fixed some typos
+- Improved README
 
 
 ## [0.2.2] - 2022-04-25
