@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   chaining like `sim = Similarity().fit(X)`
 
 ### Added Features and Improvements 🙌:
+- `GridSearchCV` class was added, allowing for easy silhouette-CV basedr
+  parameter search
 - `Similarity` class derives now from `sklearn.base.BaseEstimator`
 - `Clustering` class derives now from `sklearn.base.BaseEstimator` and `sklearn.base.BaseMixin`
 - `fit_transform` and `transform`  method were added to `Similarity` class
