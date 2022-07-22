@@ -91,11 +91,11 @@ class GridSearchCV(SKGridSearchCV):
     >>> search = mosaic.GridSearchCV(
     ...     similarity=mosaic.Similarity(),
     ...     clustering=mosaic.Clustering(),
-    ...     param_grid={'resolution_parameter': [0.05, 0.2, 0.999]},
+    ...     param_grid={'resolution_parameter': [0.05, 0.2]},
     ... )
     >>> search.fit(traj)
     GridSearchCV(clustering=Clustering(),
-                 param_grid={'clust__resolution_parameter': [0.05, 0.2, 0.999]},
+                 param_grid={'clust__resolution_parameter': [0.05, 0.2]},
                  similarity=Similarity())
     >>> search.best_params_
     {'clust__resolution_parameter': 0.2}

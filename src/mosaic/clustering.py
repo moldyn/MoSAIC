@@ -135,7 +135,7 @@ class Clustering(ClusterMixin, BaseEstimator):
         - 'CPM': will use the constant Potts model on the full, weighted graph
         - 'modularity': will use modularity on a knn-graph
         - 'linkage': will use complete-linkage clustering
-        - 'kmedoids': will use $k$-medoids clustering
+        - 'kmedoids': will use k-medoids clustering
 
     weighted : bool, default=True
         If True, the underlying graph has weighted edges. Otherwise, the graph

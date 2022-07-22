@@ -8,7 +8,6 @@ All rights reserved.
 """
 import numpy as np
 import pytest
-from beartype.roar import BeartypeException
 
 import mosaic
 
@@ -18,7 +17,7 @@ def X():
     # fix random seed
     np.random.seed(42)
 
-    x = np.linspace(0, 2*np.pi, 1000)
+    x = np.linspace(0, 2 * np.pi, 1000)
     rand_offsets = np.random.uniform(
         low=-np.pi / 6, high=np.pi / 6, size=10,
     )
