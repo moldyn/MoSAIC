@@ -95,6 +95,7 @@ class Similarity(BaseEstimator):
     >>> data = np.array([np.cos(x), np.cos(x + np.pi / 6)]).T
     >>> sim = mosaic.Similarity()
     >>> sim.fit(data)
+    Similarity()
     >>> sim.matrix_
     array([[1.       , 0.9697832],
            [0.9697832, 1.       ]])

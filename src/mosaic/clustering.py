@@ -200,6 +200,7 @@ class Clustering(ClusterMixin, BaseEstimator):
     >>> mat = np.array([[1.0, 0.1, 0.9], [0.1, 1.0, 0.1], [0.9, 0.1, 1.0]])
     >>> clust = mosaic.Clustering()
     >>> clust.fit(mat)
+    Clustering(resolution_parameter=0.7)
     >>> clust.matrix_
     array([[1. , 0.9, 0.1],
            [0.9, 1. , 0.1],
