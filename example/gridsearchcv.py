@@ -7,9 +7,9 @@ pplt.use_style(colors='tab20c', figsize=2.4)
 
 
 def main():
-    ## Load trajectory from file
+    # Load trajectory from file
     # traj = np.loadtxt(filename)
-    ## Here we use some random sample data
+    # Here we use some random sample data
     traj = create_traj()
 
     # specify parameters grid
@@ -33,16 +33,15 @@ def main():
         n_clusters,
         mean_score + std_score,
         mean_score - std_score,
-        color='C0',
+        color='C2',
     )
     ax.plot(n_clusters, mean_score + std_score, c='C1')
     ax.plot(n_clusters, mean_score - std_score, c='C1')
-    ax.plot(n_clusters, mean_score, c='C2')
+    ax.plot(n_clusters, mean_score, c='C0')
 
     ax.set_xlim([0, traj.shape[1]])
-    ax.set_xlabel(r'$k$ no. of clusters')
-    ax.set_ylabel(r'silhouette score')
-
+    ax.set_xlabel('$k$ no. of clusters')
+    ax.set_ylabel('silhouette score')
 
     pplt.savefig('cv_silhouette.pdf')
 
