@@ -223,10 +223,13 @@ class Clustering(ClusterMixin, BaseEstimator):
     ) -> None:
         """Initialize Clustering class."""
         self.mode: ClusteringModeString = mode
-        self.weighted: bool = weighted
-        self.n_neighbors: Optional[PositiveInt] = n_neighbors
-        self.seed: Optional[int] = seed
         self.n_clusters: Optional[PositiveInt] = n_clusters
+        self.n_neighbors: Optional[PositiveInt] = n_neighbors
+        self.resolution_parameter: Optional[NumInRange0to1] = (
+            resolution_parameter
+        )
+        self.seed: Optional[int] = seed
+        self.weighted: bool = weighted
 
         if mode in {'linkage', 'kmedoids'} and self.n_neighbors is not None:
             raise NotImplementedError(
@@ -243,9 +246,6 @@ class Clustering(ClusterMixin, BaseEstimator):
             )
 
         if mode in {'CPM', 'linkage'}:
-            self.resolution_parameter: Optional[NumInRange0to1] = (
-                resolution_parameter
-            )
             if not weighted:
                 raise NotImplementedError(
                     f"mode='{mode}' does not support weighted=False",
