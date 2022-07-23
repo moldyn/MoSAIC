@@ -107,7 +107,7 @@ class Similarity(BaseEstimator):
     $$\rho_{X,Y} =
     \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
     where for the online (low memory) algorithm the Welford algorithm taken
-    from Donald E. Knuth were used [^2].
+    from Donald E. Knuth is used [^2].
 
     [^1]: Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
         information about a random function contained in another such
