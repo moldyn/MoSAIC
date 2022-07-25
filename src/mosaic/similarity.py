@@ -103,11 +103,10 @@ class Similarity(BaseEstimator):
 
     Notes
     -----
-    The correlation is defined as
+    The Pearson correlation coefficient is defined as
     $$\rho_{X,Y} =
-    \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$
-    where for the online (low memory) algorithm the Welford algorithm taken
-    from Donald E. Knuth is used [^2].
+    \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$.
+    For the online (low memory) option the Welford algorithm[^2] is used.
 
     [^1]: Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
         information about a random function contained in another such
