@@ -1,7 +1,7 @@
 <div align="center">
   <img class="darkmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_dark.svg?raw=true#gh-dark-mode-only" />
   <img class="lightmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/logo_large_light.svg?raw=true#gh-light-mode-only" />
-  
+
   <p>
     <a href="https://github.com/wemake-services/wemake-python-styleguide" alt="wemake-python-styleguide">
         <img src="https://img.shields.io/badge/style-wemake-000000.svg" /></a>
@@ -42,10 +42,10 @@
 
 # Molecular Systems Automated Identification of Cooperativity
 MoSAIC is a new method for correlation analysis which automatically detects
-collective motion in MD simulation data, identifies uncorrelated features
-as noise and hence provides a detailed picture of the key coordinates driving a
-conformational change in a biomolecular system. It is based on the Leiden community
-detection algorithm which is used to bring a correlation matrix in a
+collective motion in MD simulation data, identifies uncorrelated features as
+noise and hence provides a detailed picture of the key coordinates driving a
+conformational change in a biomolecular system. It is based on the Leiden
+community detection algorithm which is used to bring a correlation matrix in a
 block-diagonal form.
 
 The method was published in:
@@ -54,20 +54,24 @@ The method was published in:
 > in Proteins*, J. Chem. Theory Comput., 2022, XXXX, XXX, XXX-XXX,
 > [10.1021/acs.jctc.2c00337](https://pubs.acs.org/doi/10.1021/acs.jctc.2c00337)
 
-We kindly ask you to cite this article in case you use this software package for
-published works.
+We kindly ask you to cite this article in case you use this software package
+for published works.
 
 ## Features
-- Intuitive usage via [module](#module---inside-a-python-script) and via [CI](#ci---usage-directly-from-the-command-line)
+- Intuitive usage via [module](#module---inside-a-python-script) and via
+  [CI](#ci---usage-directly-from-the-command-line)
 - Sklearn-style API for fast integration into your Python workflow
-- No magic, only a  single parameter which can be optimized via cross-validation
+- No magic, only a  single parameter which can be optimized via
+  cross-validation
 - Extensive [documentation](https://moldyn.github.io/MoSAIC) and
   detailed discussion in publication
 
 
 ## Installation
-The package is called `mosaic-clustering` and is available via [PyPI](https://pypi.org/project/mosaic-clustering)
-or [conda](https://anaconda.org/conda-forge/mosaic-clustering). To install it, simply call:
+The package is called `mosaic-clustering` and is available via
+[PyPI](https://pypi.org/project/mosaic-clustering) or
+[conda](https://anaconda.org/conda-forge/mosaic-clustering). To install it,
+simply call:
 ```bash
 python3 -m pip install --upgrade mosaic-clustering
 ```
@@ -183,12 +187,16 @@ clusterd_X = clust.matrix_
 ```
 
 ### Cross-Validation of Parameters
-Selecting the optimal parameters, e.g., `resolution_parameter`, or `n_clusters`, can be quite difficult.
-Here we show a short example how one can use cross-validation for optimizing the parameters. Nevertheless,
-one should keep in mind that the here used silhouette score is not optimal for our task. Hence, the here
-obtained optimal parameters should be considered as a good first guess.
+Selecting the optimal parameters, e.g., `resolution_parameter`, or
+`n_clusters`, can be quite difficult. Here we show a short example how one can
+use cross-validation for optimizing the parameters. Nevertheless, one should
+keep in mind that the here used silhouette score is not optimal for our task.
+Hence, the here obtained optimal parameters should be considered as a good
+first guess.
 
-Here a figure visualizing the optimal cluster value `n_clusters=12` and the code to produce it.
+Here a figure visualizing the optimal cluster value `n_clusters=12` and the
+code to produce it.
+
 <img class="lightmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/cv_silhouette_light.svg?raw=true#gh-light-mode-only" /><img class="darkmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/cv_silhouette_dark.svg?raw=true#gh-dark-mode-only" />
 
 ```python
@@ -247,8 +255,8 @@ clusters = mosaic.tools.load_clusters(clusterfile)
 
 #### Is it possible to use cross validation together with silhouette score?
 The new release `v0.3.0` refactored the classes, so that the
-[`sklearn.model_selection.GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html) can be used. Check out
-[cv example](#cross-validation-of-parameters).
+[`sklearn.model_selection.GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html)
+can be used. Check out the [cv example](#cross-validation-of-parameters).
 
 #### I get an error.
 Please [open an issue](https://github.com/moldyn/MoSAIC/issues/new/choose).
