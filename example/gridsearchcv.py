@@ -58,7 +58,7 @@ def create_traj():
     traj = np.array([
         *[np.sin(x + xi) for xi in rand_offsets],
         *[np.cos(x + xi) for xi in rand_offsets],
-        *[np.zeros_like(x) for xi in rand_offsets],
+        *[np.zeros_like(x) for _ in rand_offsets],
     ]).T
     return traj + np.random.normal(size=traj.shape, scale=.2)
 
