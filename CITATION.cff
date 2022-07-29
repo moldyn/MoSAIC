@@ -1,12 +1,12 @@
 # This CITATION.cff file was generated with cffinit.
 # Visit https://bit.ly/cffinit to generate yours today!
-
 cff-version: 1.2.0
+message: 'If you use this software, please cite it as below'
 authors:
   - given-names: Daniel
     family-names: Nagel
-message: 'If you use this software, please cite it as below'
 title: 'MoSAIC: Molecular Systems Automated Identification of Cooperativity'
+url: 'https://moldyn.github.io/MoSAIC'
 preffered-citation:
   type: article
   title: 'Correlation-Based Feature Selection to Identify Functional Dynamics in Proteins'
@@ -21,15 +21,9 @@ preffered-citation:
       family-names: Stock
       orcid: 'https://orcid.org/0000-0002-3302-3044'
   doi: '10.1021/acs.jctc.2c00337'
-  year: 2022
-  issue: XXX
+  journal: 'Journal of Chemical Theory and Computation'
   start: XX
   end: XX
+  issue: XXX
   volume: X
-  journal: 'Journal of Chemical Theory and Computation'
-url: 'https://moldyn.github.io/MoSAIC'
-keywords:
-  - protein dynamcis
-  - feature selection
-  - python
-license: MIT
+  year: 2022
