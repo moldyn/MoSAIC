@@ -3,12 +3,12 @@
 
 cff-version: 1.2.0
 title: >-
-  MoSAIC: Molecular Systems Automated Identification
-  of Cooperativity
+  Correlation-Based Feature Selection to Identify
+  Functional Dynamics in Proteins
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
-type: software
+type: article
 authors:
   - given-names: Georg
     family-names: Diez
@@ -31,21 +31,50 @@ authors:
       Biomolecular Dynamics, Institute of Physics,
       Albert-Ludwigs-Universität, 79104 Freiburg,
       Germany
-identifiers:
-  - type: doi
-    value: 10.1021/acs.jctc.2c00337
+doi: 10.1021/acs.jctc.2c00337
 repository-code: 'https://github.com/moldyn/MoSAIC'
-url: 'https://moldyn.github.io/MoSAIC/'
+url: 'https://doisorg/10.1021/acs.jctc.2c00337'
 abstract: >-
-  MoSAIC is a new method for correlation analysis
-  which automatically detects collective motion in MD
-  simulation data, identifies uncorrelated features
-  as noise and hence provides a detailed picture of
-  the key coordinates driving a conformational change
-  in a biomolecular system. It is based on the Leiden
-  community detection algorithm which is used to
-  bring a correlation matrix in a block-diagonal
-  form.
+  To interpret molecular dynamics simulations of
+  biomolecular systems, systematic dimensionality
+  reduction methods are commonly employed. Among
+  others, this includes principal component
+  analysis (PCA) and time-lagged independent
+  component analysis (TICA), which aim to maximize
+  the variance and the time scale of the first
+  components, respectively. A crucial first step
+  of such an analysis is the identification of
+  suitable and relevant input coordinates (the
+  so-called features), such as backbone dihedral
+  angles and interresidue distances. As typically
+  only a small subset of those coordinates is
+  involved in a specific biomolecular process,
+  it is important to discard the remaining
+  uncorrelated motions or weakly correlated noise
+  coordinates. This is because they may exhibit
+  large amplitudes or long time scales and
+  therefore will be erroneously considered
+  important by PCA and TICA, respectively. To
+  discriminate collective motions underlying
+  functional dynamics from uncorrelated motions,
+  the correlation matrix of the input coordinates
+  is block-diagonalized by a clustering method.
+  This strategy avoids possible bias due to
+  presumed functional observables and
+  conformational states or variation principles
+  that maximize variance or time scales.
+  Considering several linear and nonlinear
+  correlation measures and various clustering
+  algorithms, it is shown that the combination of
+  linear correlation and the Leiden community
+  detection algorithm yields excellent results for
+  all considered model systems. These include the
+  functional motion of T4 lysozyme to demonstrate
+  the successful identification of collective
+  motion, as well as the folding of the villin
+  headpiece to highlight the physical
+  interpretation of the correlated motions in
+  terms of a functional mechanism.
 keywords:
   - protein dynamcis
   - feature selection
