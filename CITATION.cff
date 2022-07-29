@@ -2,79 +2,49 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: >-
-  Correlation-Based Feature Selection to Identify
-  Functional Dynamics in Proteins
+authors:
+  - given-names: Daniel
+    family-names: Nagel
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
-type: article
-authors:
-  - given-names: Georg
-    family-names: Diez
-    affiliation: >-
-      Biomolecular Dynamics, Institute of Physics,
-      Albert-Ludwigs-Universität, 79104 Freiburg,
-      Germany
-    orcid: 'https://orcid.org/0000-0002-4114-1577'
-  - orcid: 'https://orcid.org/0000-0002-2863-2646'
-    given-names: Daniel
-    family-names: Nagel
-    affiliation: >-
-      Biomolecular Dynamics, Institute of Physics,
-      Albert-Ludwigs-Universität, 79104 Freiburg,
-      Germany
-  - given-names: Gerhard
-    family-names: Stock
-    orcid: 'https://orcid.org/0000-0002-3302-3044'
-    affiliation: >-
-      Biomolecular Dynamics, Institute of Physics,
-      Albert-Ludwigs-Universität, 79104 Freiburg,
-      Germany
-doi: 10.1021/acs.jctc.2c00337
+title: >-
+  MoSAIC: Molecular Systems Automated Identification
+  of Cooperativity
+type: software
+preffered-citation:
+  title: >-
+    Correlation-Based Feature Selection to Identify
+    Functional Dynamics in Proteins
+  authors:
+    - given-names: Georg
+      family-names: Diez
+      affiliation: >-
+        Biomolecular Dynamics, Institute of Physics,
+        Albert-Ludwigs-Universität, 79104 Freiburg,
+        Germany
+      orcid: 'https://orcid.org/0000-0002-4114-1577'
+    - orcid: 'https://orcid.org/0000-0002-2863-2646'
+      given-names: Daniel
+      family-names: Nagel
+      affiliation: >-
+        Biomolecular Dynamics, Institute of Physics,
+        Albert-Ludwigs-Universität, 79104 Freiburg,
+        Germany
+    - given-names: Gerhard
+      family-names: Stock
+      orcid: 'https://orcid.org/0000-0002-3302-3044'
+      affiliation: >-
+        Biomolecular Dynamics, Institute of Physics,
+        Albert-Ludwigs-Universität, 79104 Freiburg,
+        Germany
+  doi: 10.1021/acs.jctc.2c00337
+  year: 2022
+  type: article
+  journal: >-
+    'Journal of Chemical Theory and Computation'
 repository-code: 'https://github.com/moldyn/MoSAIC'
-url: 'https://doisorg/10.1021/acs.jctc.2c00337'
-abstract: >-
-  To interpret molecular dynamics simulations of
-  biomolecular systems, systematic dimensionality
-  reduction methods are commonly employed. Among
-  others, this includes principal component
-  analysis (PCA) and time-lagged independent
-  component analysis (TICA), which aim to maximize
-  the variance and the time scale of the first
-  components, respectively. A crucial first step
-  of such an analysis is the identification of
-  suitable and relevant input coordinates (the
-  so-called features), such as backbone dihedral
-  angles and interresidue distances. As typically
-  only a small subset of those coordinates is
-  involved in a specific biomolecular process,
-  it is important to discard the remaining
-  uncorrelated motions or weakly correlated noise
-  coordinates. This is because they may exhibit
-  large amplitudes or long time scales and
-  therefore will be erroneously considered
-  important by PCA and TICA, respectively. To
-  discriminate collective motions underlying
-  functional dynamics from uncorrelated motions,
-  the correlation matrix of the input coordinates
-  is block-diagonalized by a clustering method.
-  This strategy avoids possible bias due to
-  presumed functional observables and
-  conformational states or variation principles
-  that maximize variance or time scales.
-  Considering several linear and nonlinear
-  correlation measures and various clustering
-  algorithms, it is shown that the combination of
-  linear correlation and the Leiden community
-  detection algorithm yields excellent results for
-  all considered model systems. These include the
-  functional motion of T4 lysozyme to demonstrate
-  the successful identification of collective
-  motion, as well as the folding of the villin
-  headpiece to highlight the physical
-  interpretation of the correlated motions in
-  terms of a functional mechanism.
+url: 'https://moldyn.github.io/MoSAIC'
 keywords:
   - protein dynamcis
   - feature selection
