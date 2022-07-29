@@ -5,45 +5,28 @@ cff-version: 1.2.0
 authors:
   - given-names: Daniel
     family-names: Nagel
-message: >-
-  If you use this software, please cite it using the
-  metadata from this file.
-title: >-
-  MoSAIC: Molecular Systems Automated Identification
-  of Cooperativity
-type: software
+message: 'If you use this software, please cite it as below'
+title: 'MoSAIC: Molecular Systems Automated Identification of Cooperativity'
 preffered-citation:
-  title: >-
-    Correlation-Based Feature Selection to Identify
-    Functional Dynamics in Proteins
+  type: article
+  title: 'Correlation-Based Feature Selection to Identify Functional Dynamics in Proteins'
   authors:
     - given-names: Georg
       family-names: Diez
-      affiliation: >-
-        Biomolecular Dynamics, Institute of Physics,
-        Albert-Ludwigs-Universität, 79104 Freiburg,
-        Germany
       orcid: 'https://orcid.org/0000-0002-4114-1577'
     - orcid: 'https://orcid.org/0000-0002-2863-2646'
       given-names: Daniel
       family-names: Nagel
-      affiliation: >-
-        Biomolecular Dynamics, Institute of Physics,
-        Albert-Ludwigs-Universität, 79104 Freiburg,
-        Germany
     - given-names: Gerhard
       family-names: Stock
       orcid: 'https://orcid.org/0000-0002-3302-3044'
-      affiliation: >-
-        Biomolecular Dynamics, Institute of Physics,
-        Albert-Ludwigs-Universität, 79104 Freiburg,
-        Germany
-  doi: 10.1021/acs.jctc.2c00337
+  doi: '10.1021/acs.jctc.2c00337'
   year: 2022
-  type: article
-  journal: >-
-    'Journal of Chemical Theory and Computation'
-repository-code: 'https://github.com/moldyn/MoSAIC'
+  issue: XXX
+  start: XX
+  end: XX
+  volume: X
+  journal: 'Journal of Chemical Theory and Computation'
 url: 'https://moldyn.github.io/MoSAIC'
 keywords:
   - protein dynamcis
