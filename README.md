@@ -41,12 +41,13 @@
 </div>
 
 # Molecular Systems Automated Identification of Cooperativity
-MoSAIC is a new method for correlation analysis which automatically detects
-collective motion in MD simulation data, identifies uncorrelated features as
-noise and hence provides a detailed picture of the key coordinates driving a
-conformational change in a biomolecular system. It is based on the Leiden
-community detection algorithm which is used to bring a correlation matrix in a
-block-diagonal form.
+MoSAIC is an unsupervised method for correlation analysis which automatically detects
+the collective motion in MD simulation data, while simultaneously identifying 
+uncorrelated coordinates as noise. 
+Hence it can be used as a feature selection scheme for Markov state modeling or simply
+to obtain a detailed picture of the key coordinates driving a biomolecular process. 
+It is based on the Leiden community detection algorithm which is used to bring a 
+correlation matrix in a block-diagonal form.
 
 The method was published in:
 > G. Diez, D. Nagel, and G. Stock,
@@ -54,8 +55,7 @@ The method was published in:
 > in Proteins*, J. Chem. Theory Comput., 2022, XXXX, XXX, XXX-XXX,
 > [10.1021/acs.jctc.2c00337](https://pubs.acs.org/doi/10.1021/acs.jctc.2c00337)
 
-We kindly ask you to cite this article in case you use this software package
-for published works.
+If you use this software package, pleaes cite the above mentioned paper.
 
 ## Features
 - Intuitive usage via [module](#module---inside-a-python-script) and via
