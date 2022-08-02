@@ -44,7 +44,7 @@
 MoSAIC is an unsupervised method for correlation analysis which automatically detects
 the collective motion in MD simulation data, while simultaneously identifying 
 uncorrelated coordinates as noise. 
-Hence it can be used as a feature selection scheme for Markov state modeling or simply
+Hence, it can be used as a feature selection scheme for Markov state modeling or simply
 to obtain a detailed picture of the key coordinates driving a biomolecular process. 
 It is based on the Leiden community detection algorithm which is used to bring a 
 correlation matrix in a block-diagonal form.
