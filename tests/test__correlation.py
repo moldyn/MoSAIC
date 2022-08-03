@@ -11,6 +11,7 @@ import os.path
 import numpy as np
 import pytest
 from beartype.roar import BeartypeException
+from sklearn.preprocessing import StandardScaler
 
 import mosaic
 
@@ -131,3 +132,26 @@ def test__correlation(X, result, error):
     else:
         with pytest.raises(error):
             mosaic._correlation_utils._correlation(X)
+
+
+@pytest.mark.parametrize('n_samples, n_features, dtype', [
+    (100000, 10, np.float16),
+    (100000, 10, np.float32),
+    (100000, 10, np.float64),
+    (10000, 100, np.float16),
+    (10000, 100, np.float32),
+    (1000, 1000, np.float16),
+    (1000, 1000, np.float32),
+])
+def test__correlation_dtype(n_samples, n_features, dtype):
+    np.random.seed(42)
+
+    # create random data
+    X = StandardScaler().fit_transform(
+        np.random.normal(
+            size=(n_samples, n_features),
+        ).astype(dtype),
+    )
+
+    # check if results is symmetric and diagonal close to 1
+    mosaic._correlation_utils._correlation(X)

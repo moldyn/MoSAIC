@@ -94,24 +94,31 @@ def _correlation(X: Float2DArray) -> FloatMatrix:
     Each feature (column) of X need to be mean-free with standard deviation 1.
 
     """
-    corr = (
-        X.T / len(X) @ X
-    ).astype(np.float64)
+    corr = X.T / len(X) @ X
 
-    # symmetrize and enforce diag equals 1
-    if not np.allclose(corr, corr.T):
+    # check if matrix is symmetric with diag(C)=1 within dtype precision
+    atol = np.max([
+        np.finfo(X.dtype).resolution,
+        1e-8,  # np default atol
+    ])
+    if not np.allclose(corr, corr.T, atol=atol):
         raise ValueError(
             'Correlation matrix is not symmetric. This should not occur and '
-            'is probably caused by an overflow error.'
+            'is probably caused by an overflow error or too low dtype '
+            'precision.'
         )
-    if not np.allclose(np.diag(corr), 1):
+    if not np.allclose(np.diag(corr), 1, atol=atol):
         raise ValueError(
             'Self-correlation is not 1. This should not occur and is probably'
-            'caused by an overflow error.'
+            'caused by too low dtype precision.'
         )
+
+    # symmetrize and enforce diag equals 1
     corr = 0.5 * (corr + corr.T)
     corr[np.diag_indices_from(corr)] = 1
-    return corr
+    # clip result. Due to numerical artifacts, for too little samples the
+    # correlation can become larger one.
+    return np.clip(corr, a_min=-1, a_max=1)
 
 
 @beartype

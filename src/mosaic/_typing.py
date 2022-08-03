@@ -18,6 +18,25 @@ try:  # for python <= 3.8 use typing_extensions
 except ImportError:
     from typing_extensions import Annotated
 
+
+def _get_resolution(x):
+    dtype = np.result_type(x)
+    if np.issubdtype(dtype, np.integer):
+        return 0
+    return np.finfo(dtype).resolution
+
+
+def _allclose(x, y) -> bool:
+    """Wrapper around np.allclose with dtype dependent atol."""
+    atol = np.max([
+        _get_resolution(x),
+        _get_resolution(y),
+        # default value of numpy
+        1e-8,
+    ])
+    return np.allclose(x, y, atol=atol)
+
+
 # String (enum-type) datatypes
 MetricString = Annotated[
     str, Is[lambda val: val in {'correlation', 'NMI', 'JSD', 'GY'}],
@@ -79,8 +98,8 @@ SimilarityMatrix = Annotated[
     FloatMatrix,
     Is[
         lambda arr: (
-            np.allclose(arr, arr.T) and
-            np.allclose(np.diag(arr), 1) and
+            _allclose(arr, arr.T) and
+            _allclose(np.diag(arr), 1) and
             np.all(arr <= 1) and
             np.all(arr >= 0)
         )
