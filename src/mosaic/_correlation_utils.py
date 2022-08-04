@@ -89,26 +89,35 @@ def _estimate_densities(
 
 @beartype
 def _correlation(X: Float2DArray) -> FloatMatrix:
-    """Return the correlation of input.
+    """Return the Pearson correlation coefficient of input.
 
-    Each feature (column) of X need to be mean-free with standard deviation 1.
+    In general, the result matrix is hermitian with diagonal elements equal
+    1. Due to floating point rounding this is not guaranteed by
+    [np.corrcoef](https://github.com/numpy/numpy/blob/54c52f13713f3d21795926ca4dbb27e16fada171/numpy/lib/function_base.py#L2766-L2770)
+    and therefore it is enforced in this function.
 
     """
-    corr = (
-        X.T / len(X) @ X
-    ).astype(np.float64)
+    # numpy.corrcoef clips result to [-1, 1]
+    corr = np.corrcoef(X, rowvar=False)
 
-    # symmetrize and enforce diag equals 1
-    if not np.allclose(corr, corr.T):
+    # check if matrix is symmetric with diag(C)=1 within dtype precision
+    atol = np.max([
+        np.finfo(X.dtype).resolution,
+        1e-8,  # np default atol
+    ])
+    if not np.allclose(corr, corr.T, atol=atol):
         raise ValueError(
             'Correlation matrix is not symmetric. This should not occur and '
-            'is probably caused by an overflow error.'
+            'is probably caused by an overflow error or too low dtype '
+            'precision.'
         )
-    if not np.allclose(np.diag(corr), 1):
+    if not np.allclose(np.diag(corr), 1, atol=atol):
         raise ValueError(
             'Self-correlation is not 1. This should not occur and is probably'
-            'caused by an overflow error.'
+            'caused by too low dtype precision.'
         )
+
+    # symmetrize and enforce diag equals 1
     corr = 0.5 * (corr + corr.T)
     corr[np.diag_indices_from(corr)] = 1
     return corr

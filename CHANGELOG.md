@@ -7,6 +7,13 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Bugfix 🐛:
+- Fixing floating-point error for `np.float16, np.float32` in `Similarity().fit()`, see#9
+
+### Other changes:
+- Use deprecated decorator for `UMAPSimilarity`
+- Refactor all type definitions
+- Ensure using the same MODES, METRICS, and NORMS  in the cli and the package itself
 
 
 ## [0.3.0] - 2022-07-22
