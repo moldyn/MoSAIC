@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.1] - 2022-08-04
 ### Bugfix 🐛:
-- Fixing floating-point error for `np.float16, np.float32` in `Similarity().fit()`, see#9
+- Fixing floating-point error for `np.float16, np.float32` in `Similarity().fit()`, see [#9](/../../issues/9)
 
 ### Other changes:
 - Use deprecated decorator for `UMAPSimilarity`
