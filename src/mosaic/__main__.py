@@ -17,9 +17,6 @@ from mosaic.utils import save_clusters, savetxt
 # setup matplotlibs rcParam
 pplt.use_style(figsize=2, figratio=1, cmap='turbo')
 
-NORMALIZES = ['joint', 'geometric', 'arithmetic', 'min', 'max']
-METRICS = ['correlation', 'NMI', 'JSD', 'GY']
-MODES = ['CPM', 'modularity', 'linkage', 'kmedoids']
 PRECISION = ['half', 'single', 'double']
 PRECISION_TO_DTYPE = {
     'half': np.float16,
@@ -50,12 +47,12 @@ def main():
     '--metric',
     default='correlation',
     show_default=True,
-    type=click.Choice(METRICS, case_sensitive=True),
+    type=click.Choice(mosaic.METRICS, case_sensitive=True),
     help='Metric used to estimate similarity measure matrix.',
 )
 @click.option(
     '--normalize-method',
-    type=click.Choice(NORMALIZES, case_sensitive=True),
+    type=click.Choice(mosaic.NORMS, case_sensitive=True),
     help=(
         'Only required for metric="NMI". Determines the normalization factor '
         'for the mutual information. See docs for help.'
@@ -174,7 +171,7 @@ def similarity(
     '--mode',
     default='CPM',
     show_default=True,
-    type=click.Choice(MODES, case_sensitive=True),
+    type=click.Choice(mosaic.MODES, case_sensitive=True),
     help='Mode used for Leiden clustering.',
 )
 @click.option(

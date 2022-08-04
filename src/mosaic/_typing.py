@@ -12,15 +12,12 @@ All rights reserved.
 import numpy as np
 from beartype.typing import List, Union
 from beartype.vale import Is, IsAttr, IsEqual
+from mosaic import METRICS, MODES, NORMS
 
 try:  # for python <= 3.8 use typing_extensions
     from beartype.typing import Annotated
 except ImportError:
     from typing_extensions import Annotated
-
-METRICS = {'correlation', 'NMI', 'JSD', 'GY'}
-MODES = {'CPM', 'modularity', 'linkage', 'kmedoids'}
-NORMS = {'joint', 'geometric', 'arithmetic', 'min', 'max'}
 
 
 def _get_resolution(x):
