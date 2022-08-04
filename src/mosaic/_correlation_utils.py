@@ -89,12 +89,16 @@ def _estimate_densities(
 
 @beartype
 def _correlation(X: Float2DArray) -> FloatMatrix:
-    """Return the correlation of input.
+    """Return the Pearson correlation coefficient of input.
 
-    Each feature (column) of X need to be mean-free with standard deviation 1.
+    In general, the result matrix is hermitian with diagonal elements equal
+    1. Due to floating point rounding this is not guaranteed by
+    [np.corrcoef](https://github.com/numpy/numpy/blob/54c52f13713f3d21795926ca4dbb27e16fada171/numpy/lib/function_base.py#L2766-L2770)
+    and therefore it is enforced in this function.
 
     """
-    corr = X.T / len(X) @ X
+    # numpy.corrcoef clips result to [-1, 1]
+    corr = np.corrcoef(X, rowvar=False)
 
     # check if matrix is symmetric with diag(C)=1 within dtype precision
     atol = np.max([
@@ -116,9 +120,7 @@ def _correlation(X: Float2DArray) -> FloatMatrix:
     # symmetrize and enforce diag equals 1
     corr = 0.5 * (corr + corr.T)
     corr[np.diag_indices_from(corr)] = 1
-    # clip result. Due to numerical artifacts, for too little samples the
-    # correlation can become larger one.
-    return np.clip(corr, a_min=-1, a_max=1)
+    return corr
 
 
 @beartype
