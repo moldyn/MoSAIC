@@ -6,3 +6,4 @@ pytest-cov:            testing
 pytest-rerunfailures:  testing
 pdoc3:                 docs
 umap-learn:            docs, testing, umap
+decorit:               docs, testing, umap

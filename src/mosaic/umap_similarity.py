@@ -13,6 +13,7 @@ import warnings
 import numpy as np
 from beartype import beartype
 from beartype.typing import Optional
+from decorit import deprecated
 
 from mosaic._typing import (  # noqa:WPS436
     ArrayLikeFloat,
@@ -68,6 +69,16 @@ class UMAPSimilarity:  # noqa: WPS214
 
     _default_n_components: PositiveInt = 2
 
+    @deprecated(
+        (
+            'UMAPSimilarity class will be removed. As shown in our '
+            'publication, using Leiden/CPM outpferms an additional '
+            'UMAP embedding. If an embedding is desired, using MDS '
+            'in high dimensions is preferable.'
+        ),
+        since='0.2.1',
+        remove='1.0.0',
+    )
     @beartype
     def __init__(
         self,
