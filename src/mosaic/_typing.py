@@ -11,12 +11,16 @@ All rights reserved.
 """
 import numpy as np
 from beartype.typing import List, Union
-from beartype.vale import Is
+from beartype.vale import Is, IsAttr, IsEqual
 
 try:  # for python <= 3.8 use typing_extensions
     from beartype.typing import Annotated
 except ImportError:
     from typing_extensions import Annotated
+
+METRICS = {'correlation', 'NMI', 'JSD', 'GY'}
+MODES = {'CPM', 'modularity', 'linkage', 'kmedoids'}
+NORMS = {'joint', 'geometric', 'arithmetic', 'min', 'max'}
 
 
 def _get_resolution(x):
@@ -37,80 +41,64 @@ def _allclose(x, y) -> bool:
     return np.allclose(x, y, atol=atol)
 
 
+class NDim:
+    """Class for creating Validators checking for desired dimensions."""
+    def __class_getitem__(self, ndim):
+        return IsAttr['ndim', IsEqual[ndim]]
+
+
+class DType:
+    """Class for creating Validators checking for desired dtype."""
+    def __class_getitem__(self, dtype):
+        return Is[lambda arr: np.issubdtype(arr.dtype, dtype)]
+
+
+# Define Validators
+IsDiagonalOne = Is[lambda arr: _allclose(np.diag(arr), 1)]
+IsDTypeLike = Is[lambda dtype: np.issubdtype(dtype, np.generic)]
+IsLessThanOne = Is[lambda arr: np.all(arr <= 1)]
+IsMatrix = Is[lambda arr: arr.shape[0] == arr.shape[1]]
+IsMetricString = Is[lambda val: val in METRICS]
+IsModeString = Is[lambda val: val in MODES]
+IsNormString = Is[lambda val: val in NORMS]
+IsPositive = Is[lambda arr: np.all(arr >= 0)]
+IsStrictlyPositive = Is[lambda arr: np.all(arr > 0)]
+IsSymmetric = Is[lambda arr: _allclose(arr, arr.T)]
+
+# Define Types
 # String (enum-type) datatypes
-MetricString = Annotated[
-    str, Is[lambda val: val in {'correlation', 'NMI', 'JSD', 'GY'}],
-]
-NormString = Annotated[
-    str,
-    Is[lambda val: val in {
-        'joint', 'geometric', 'arithmetic', 'min', 'max',
-    }],
-]
-ClusteringModeString = Annotated[
-    str, Is[lambda val: val in {'CPM', 'modularity', 'linkage', 'kmedoids'}],
-]
+MetricString = Annotated[str, IsMetricString]
+NormString = Annotated[str, IsNormString]
+ClusteringModeString = Annotated[str, IsModeString]
 
 # scalar datatypes
 PositiveInt = Annotated[
     Union[int, np.integer],
-    Is[lambda val: val > 0],
+    IsStrictlyPositive,
 ]
 Int = Union[int, np.integer]
 Float = Union[float, np.floating]
 NumInRange0to1 = Annotated[
     Union[int, float, np.integer, np.floating],
-    Is[lambda val: 0 <= val <= 1],
+    IsPositive & IsLessThanOne,
 ]
 
 # beartype substitute for np.typing.DTypeLike
-DTypeLike = Annotated[
-    type, Is[lambda dtype: np.issubdtype(dtype, np.generic)],
-]
+DTypeLike = Annotated[type, IsDTypeLike]
 
 # array datatypes
-FloatNDArray = Annotated[
-    np.ndarray, Is[lambda arr: np.issubdtype(arr.dtype, np.floating)],
-]
-IntNDArray = Annotated[
-    np.ndarray, Is[lambda arr: np.issubdtype(arr.dtype, np.integer)],
-]
-ObjectNDArray = Annotated[
-    np.ndarray, Is[lambda arr: np.issubdtype(arr.dtype, object)],
-]
+FloatNDArray = Annotated[np.ndarray, DType[np.floating]]
+IntNDArray = Annotated[np.ndarray, DType[np.integer]]
+ObjectNDArray = Annotated[np.ndarray, DType[object]]
 ArrayLikeFloat = Union[List[float], FloatNDArray]
-Index1DArray = Annotated[
-    IntNDArray, Is[
-        lambda arr: arr.ndim == 1 and np.all(arr >= 0)
-    ],
-]
-Float1DArray = Annotated[
-    FloatNDArray, Is[lambda arr: arr.ndim == 1],
-]
-Float2DArray = Annotated[
-    FloatNDArray, Is[lambda arr: arr.ndim == 2],
-]
-FloatMatrix = Annotated[
-    Float2DArray,
-    Is[lambda arr: arr.shape[0] == arr.shape[1]],
-]
+Index1DArray = Annotated[IntNDArray, NDim[1] & IsPositive]
+Float1DArray = Annotated[FloatNDArray, NDim[1]]
+Float2DArray = Annotated[FloatNDArray, NDim[2]]
+FloatMatrix = Annotated[Float2DArray, IsMatrix]
 SimilarityMatrix = Annotated[
     FloatMatrix,
-    Is[
-        lambda arr: (
-            _allclose(arr, arr.T) and
-            _allclose(np.diag(arr), 1) and
-            np.all(arr <= 1) and
-            np.all(arr >= 0)
-        )
-    ],
+    IsPositive & IsLessThanOne & IsSymmetric & IsDiagonalOne,
 ]
-FloatMax2DArray = Annotated[
-    FloatNDArray, Is[lambda arr: 1 <= arr.ndim <= 2],
-]
-Object1DArray = Annotated[
-    ObjectNDArray, Is[lambda arr: arr.ndim == 1],
-]
-ObjectMax2DArray = Annotated[
-    ObjectNDArray, Is[lambda arr: 1 <= arr.ndim <= 2],
-]
+FloatMax2DArray = Annotated[FloatNDArray, NDim[1] | NDim[2]]
+Object1DArray = Annotated[ObjectNDArray, NDim[1]]
+ObjectMax2DArray = Annotated[ObjectNDArray, NDim[1] | NDim[2]]
