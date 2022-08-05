@@ -51,15 +51,17 @@ class DType:
 
 
 # Define Validators
+# cast np.bool_ return type of np.all to bool to avoid tri-state boolean
+# error, see beartype #153
 IsDiagonalOne = Is[lambda arr: _allclose(np.diag(arr), 1)]
 IsDTypeLike = Is[lambda dtype: np.issubdtype(dtype, np.generic)]
-IsLessThanOne = Is[lambda arr: np.all(arr <= 1)]
+IsLessThanOne = Is[lambda arr: bool(np.all(arr <= 1))]
 IsMatrix = Is[lambda arr: arr.shape[0] == arr.shape[1]]
 IsMetricString = Is[lambda val: val in METRICS]
 IsModeString = Is[lambda val: val in MODES]
 IsNormString = Is[lambda val: val in NORMS]
-IsPositive = Is[lambda arr: np.all(arr >= 0)]
-IsStrictlyPositive = Is[lambda arr: np.all(arr > 0)]
+IsPositive = Is[lambda arr: bool(np.all(arr >= 0))]
+IsStrictlyPositive = Is[lambda arr: bool(np.all(arr > 0))]
 IsSymmetric = Is[lambda arr: _allclose(arr, arr.T)]
 
 # Define Types

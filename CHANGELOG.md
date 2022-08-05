@@ -7,6 +7,8 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Bugfix 🐛:
+- Fixing `AssertionError` when Similarity matrix is not in range [0, 1], see [#9](/../../issues/9)
 
 
 ## [0.3.1] - 2022-08-04
