@@ -1,13 +1,13 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 authors:
-- given-names: "Daniel"
-  family-names: "Nagel"
-  orcid: "https://orcid.org/0000-0002-2863-2646"
+  - given-names: "Daniel"
+    family-names: "Nagel"
+    orcid: "https://orcid.org/0000-0002-2863-2646"
 title: "MoSAIC: Molecular Systems Automated Identification of Cooperativity"
 version: 0.2.1
 url: "https://moldyn.github.io/MoSAIC"
-preffered-citation:
+preferred-citation:
   type: article
   title: "Correlation-Based Feature Selection to Identify Functional Dynamics in Proteins"
   authors:
