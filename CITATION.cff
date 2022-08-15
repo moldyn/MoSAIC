@@ -1,27 +1,28 @@
-# This CITATION.cff file was generated with cffinit.
-# Visit https://bit.ly/cffinit to generate yours today!
 cff-version: 1.2.0
-message: 'If you use this software, please cite it as below'
+message: "If you use this software, please cite it as below."
 authors:
-  - given-names: Daniel
-    family-names: Nagel
-title: 'MoSAIC: Molecular Systems Automated Identification of Cooperativity'
-url: 'https://moldyn.github.io/MoSAIC'
+- given-names: "Daniel"
+  family-names: "Nagel"
+  orcid: "https://orcid.org/0000-0002-2863-2646"
+title: "MoSAIC: Molecular Systems Automated Identification of Cooperativity"
+version: 0.2.1
+url: "https://moldyn.github.io/MoSAIC"
 preffered-citation:
   type: article
-  title: 'Correlation-Based Feature Selection to Identify Functional Dynamics in Proteins'
+  title: "Correlation-Based Feature Selection to Identify Functional Dynamics in Proteins"
   authors:
-    - given-names: Georg
-      family-names: Diez
-      orcid: 'https://orcid.org/0000-0002-4114-1577'
-    - given-names: Daniel
-      family-names: Nagel
-      orcid: 'https://orcid.org/0000-0002-2863-2646'
-    - given-names: Gerhard
-      family-names: Stock
-      orcid: 'https://orcid.org/0000-0002-3302-3044'
-  doi: '10.1021/acs.jctc.2c00337'
-  journal: 'J. Chem. Theory Comput.'
+  - given-names: "Georg"
+    family-names: "Diez"
+    orcid: "https://orcid.org/0000-0002-4114-1577"
+  - given-names: "Daniel"
+    family-names: "Nagel"
+    orcid: "https://orcid.org/0000-0002-2863-2646"
+  - given-names: "Gerhard"
+    family-names: "Stock"
+    orcid: "https://orcid.org/0000-0002-3302-3044"
+  doi: "10.1021/acs.jctc.2c00337"
+  journal: "J. Chem. Theory Comput."
+  month: 8
   start: 5079
   end: 5088
   issue: 8
