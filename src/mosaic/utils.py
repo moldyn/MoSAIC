@@ -78,7 +78,7 @@ def load_clusters(filename: str) -> Object1DArray:
             np.array(
                 cluster.split()
             ).astype(int).tolist()
-            for cluster in clusters if not clusters.startswith(comment)
+            for cluster in clusters if not cluster.startswith(comment)
         ]
 
     # In case of clusters of same length, numpy casted it as a 2D array.
