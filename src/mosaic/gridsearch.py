@@ -20,7 +20,7 @@ from mosaic._typing import FloatMax2DArray  # noqa: WPS436
 
 
 class GridSearchCV(SKGridSearchCV):
-    r"""Class for grid searhc cross validation.
+    r"""Class for grid search cross validation.
 
     Parameters
     ----------
