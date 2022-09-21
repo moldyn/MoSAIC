@@ -7,8 +7,16 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [0.3.2] - 2022-09-21
+### Other changes:
+- Update reference and add `CITATION.cff`
+
 ### Bugfix 🐛:
 - Fixing `AssertionError` when Similarity matrix is not in range [0, 1], see [#9](/../../issues/9)
+- Add support for `numpy>=1.23.0`, #13
+- Fix support for `prettypyplot<0.8.x`, #11
 
 
 ## [0.3.1] - 2022-08-04
@@ -129,7 +137,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 
 
-[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.3.1...main
+[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.3.2...main
+[0.3.2]: https://github.com/moldyn/MoSAIC/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/moldyn/MoSAIC/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/moldyn/MoSAIC/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/moldyn/MoSAIC/compare/v0.2.1...v0.2.2
