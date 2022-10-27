@@ -56,7 +56,7 @@ The method was published in:
 > *J. Chem. Theory Comput.* **2022** 18 (8), 5079-5088,
 > [10.1021/acs.jctc.2c00337](https://pubs.acs.org/doi/10.1021/acs.jctc.2c00337)
 
-If you use this software package, pleaes cite the above mentioned paper.
+If you use this software package, please cite the above mentioned paper.
 
 ## Features
 - Intuitive usage via [module](#module---inside-a-python-script) and via
