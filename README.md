@@ -14,7 +14,7 @@
     <a href="https://pepy.tech/project/mosaic-clustering" alt="Downloads">
         <img src="https://pepy.tech/badge/mosaic-clustering" /></a>
     <a href="https://github.com/moldyn/MoSAIC/actions/workflows/pytest.yml" alt="GitHub Workflow Status">
-        <img src="https://img.shields.io/github/workflow/status/moldyn/MoSAIC/Pytest"></a>
+        <img src="https://img.shields.io/github/actions/workflow/status/moldyn/MoSAIC/pytest.yml?branch=main"></a>
     <a href="https://codecov.io/gh/moldyn/MoSAIC" alt="Code coverage">
         <img src="https://codecov.io/gh/moldyn/MoSAIC/branch/main/graph/badge.svg?token=KNWDAUXIGI" /></a>
     <a href="https://lgtm.com/projects/g/moldyn/MoSAIC" alt="Code coverage">
