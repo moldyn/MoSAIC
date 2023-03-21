@@ -1,0 +1,8 @@
+site_name: MoSAIC
+
+theme:
+  name: "material"
+
+nav:
+  - MoSAIC: index.md
+  - Tutorial: tutorials.md
