@@ -17,8 +17,8 @@
         <img src="https://img.shields.io/github/actions/workflow/status/moldyn/MoSAIC/pytest.yml?branch=main"></a>
     <a href="https://codecov.io/gh/moldyn/MoSAIC" alt="Code coverage">
         <img src="https://codecov.io/gh/moldyn/MoSAIC/branch/main/graph/badge.svg?token=KNWDAUXIGI" /></a>
-    <a href="https://lgtm.com/projects/g/moldyn/MoSAIC" alt="Code coverage">
-	<img src="https://img.shields.io/lgtm/grade/python/github/moldyn/MoSAIC" alt="LGTM Grade" /></a>
+    <a href="https://github.com/moldyn/MoSAIC/actions/workflows/codeql.yml" alt="CodeQL">
+        <img src="https://github.com/moldyn/MoSAIC/actions/workflows/codeql.yml/badge.svg?branch=main" /></a>
     <a href="https://img.shields.io/pypi/pyversions/mosaic-clustering" alt="PyPI - Python Version">
         <img src="https://img.shields.io/pypi/pyversions/mosaic-clustering" /></a>
     <a href="https://moldyn.github.io/MoSAIC" alt="Docs">
