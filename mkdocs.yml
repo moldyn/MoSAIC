@@ -4,5 +4,4 @@ theme:
   name: "material"
 
 nav:
-  - MoSAIC: index.md
-  - Tutorial: tutorials.md
+  - MoSAIC: README.md
