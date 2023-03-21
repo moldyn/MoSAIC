@@ -50,7 +50,7 @@ It is based on the Leiden community detection algorithm which is used to bring a
 correlation matrix in a block-diagonal form.
 
 The method was published in:
-> **Correlation-Based Feature Selection to Identify Functional Dynamcis
+> **Correlation-Based Feature Selection to Identify Functional Dynamics
 > in Proteins**  
 > G. Diez, D. Nagel, and G. Stock,
 > *J. Chem. Theory Comput.* **2022** 18 (8), 5079-5088,
