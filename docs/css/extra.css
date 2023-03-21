@@ -70,6 +70,9 @@ a[href^="https://pypi.org"]::after,
 a[href^="https://anaconda.org"]::after,
 a[href^="https://pepy.tech"]::after,
 a[href^="https://img.shields.io"]::after,
+a[href^="https://beartype.rtfd.io"]::after,
+a[href^="https://doi.org"]::after,
+a[href^="https://arxiv.org"]::after,
 a[href^="https://codecov.io"]::after
 {
   display: none !important;
