@@ -1,9 +1,17 @@
 # Extra requirements
 # package[version_required]: tag1, tag2, ...
-flake8:                testing
-pytest:                testing
-pytest-cov:            testing
-pytest-rerunfailures:  testing
-pdoc3:                 docs
-umap-learn:            docs, testing, umap
-decorit:               docs, testing, umap
+flake8:                       testing
+pytest:                       testing
+pytest-cov:                   testing
+pytest-rerunfailures:         testing
+umap-learn:                   docs, testing, umap
+decorit:                      docs, testing, umap
+mkdocs-material:              docs
+mkdocstrings:                 docs
+mkdocstrings-python:          docs
+mkdocs-literate-nav:          docs
+mkdocs-gen-files:             docs
+mkdocs-section-index:         docs
+mkdocs-jupyter:               docs
+mkdocs-click:                 docs
+jupyter_contrib_nbextensions: docs
