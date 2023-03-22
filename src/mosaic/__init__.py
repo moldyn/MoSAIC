@@ -7,13 +7,12 @@ describe the same biomolecular process.
 
 With MoSAIC, researchers and engineers can easily analyze large and complex
 datasets to gain insights into the underlying dynamics of biomolecular
-processes.
-The package provides the capability to calculate various similarity measures,
-such as linear correlation and mutual information, and to apply different
-clustering algorithms to find groups of coordinates which move in a concerted
-manner.
-By doing so, MoSAIC allows researchers and engineers to identify groups of
-coordinates that collectively describe the same process in MD simulations.
+processes. The package provides the capability to calculate various similarity
+measures, such as linear correlation and mutual information, and to apply
+different clustering algorithms to find groups of coordinates which move in a
+concerted manner. By doing so, MoSAIC allows researchers and engineers to
+identify groups of coordinates that collectively describe the same process in
+MD simulations.
 
 MoSAIC can be used as a stand-alone analysis tool or as a preprocessing step
 for feature selection for subsequent Markov state modeling.
