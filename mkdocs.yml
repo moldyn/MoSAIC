@@ -13,7 +13,10 @@ nav:
   - Overview: index.md
   - Changelog: changelog.md
   - License: license.md
-- Tutorial: tutorial/t4l_tutorial_github.ipynb
+- Tutorials:
+  - MoSAIC workflow: tutorial/t4l_tutorial_github.ipynb
+  - Crossvalidation: tutorial/cv.md
+
 - FAQ: faq.md
 - Code Reference: reference/
 - Development:
