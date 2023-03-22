@@ -22,7 +22,7 @@
     <a href="https://img.shields.io/pypi/pyversions/mosaic-clustering" alt="PyPI - Python Version">
         <img src="https://img.shields.io/pypi/pyversions/mosaic-clustering" /></a>
     <a href="https://moldyn.github.io/MoSAIC" alt="Docs">
-        <img src="https://img.shields.io/badge/pdoc3-Documentation-brightgreen" /></a>
+        <img src="https://img.shields.io/badge/mkdocs-Documentation-brightgreen" /></a>
     <a href="https://doi.org/10.1021/acs.jctc.2c00337" alt="doi">
         <img src="https://img.shields.io/badge/doi-10.1021%2Facs.jctc.2c00337-blue" /></a>
     <a href="https://arxiv.org/abs/2204.02770" alt="arXiv">
