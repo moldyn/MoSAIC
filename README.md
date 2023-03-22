@@ -45,7 +45,7 @@ MoSAIC is an unsupervised method for correlation analysis which automatically de
 Hence, it can be used as a feature selection scheme for Markov state modeling or simply to obtain a detailed picture of the key coordinates driving a biomolecular process.  It is based on the Leiden community detection algorithm which is used to bring a correlation matrix in a block-diagonal form.
 
 The method was published in:
-> **Correlation-Based Feature Selection to Identify Functional Dynamcis in Proteins**  
+> **Correlation-Based Feature Selection to Identify Functional Dynamics in Proteins**  
 > G. Diez, D. Nagel, and G. Stock,  
 > *J. Chem. Theory Comput.* **2022** 18 (8), 5079-5088,  
 > doi: [10.1021/acs.jctc.2c00337](https://pubs.acs.org/doi/10.1021/acs.jctc.2c00337)
