@@ -4,8 +4,6 @@ flake8:                       testing
 pytest:                       testing
 pytest-cov:                   testing
 pytest-rerunfailures:         testing
-umap-learn:                   docs, testing, umap
-decorit:                      docs, testing, umap
 mkdocs-material:              docs
 mkdocstrings:                 docs
 mkdocstrings-python:          docs
