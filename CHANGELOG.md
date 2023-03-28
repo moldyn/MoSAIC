@@ -7,6 +7,8 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added Features and Improvements 🙌:
+- Added py3.11 support
 
 
 ## [0.3.2] - 2022-09-21
