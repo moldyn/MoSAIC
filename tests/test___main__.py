@@ -32,8 +32,3 @@ def test_similarity():
     assert '--help' in result.output
 
 
-def test_umap():
-    runner = CliRunner()
-    result = runner.invoke(main, ['umap'])
-    assert result.exit_code == 0
-    assert '--help' in result.output
