@@ -24,6 +24,9 @@ Partially, yes. If you do not want to screw up your current Python environment t
 ### Is the silhouette method implemented?
 Yes, simply use the `score` method implemented in the `Clustering` class.
 
+### I want to use the UMAP embedding!
+This is still possible if you switch to the version 0.3.2. We removed that feature in newer versions.
+
 ### Feature X is missing
 If you believe that a crucial functionality/method is missing, feel free to [open an issue](https://github.com/moldyn/MoSAIC/issues) and describe the missing functionality and why it should be added. Alternatively, you can implement it yourself and create a PR to add it to this package, see [contributing guide](../contributing).
 
