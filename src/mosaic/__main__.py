@@ -359,53 +359,5 @@ def clustering(
         pplt.savefig(f'{output_file}.matrix.pdf')
 
 
-@click.option(
-    '--n-neighbors',
-    type=click.IntRange(min=2),
-    help=(
-        'Number of nearest neighbors used for estimating manifold. '
-        'If None, the sqrt of no. of features is used.'
-    ),
-)
-@click.option(
-    '-i',
-    '--input',
-    'input_file',
-    required=True,
-    type=click.Path(exists=True),
-    help=(
-        'Path to input file. Needs to be of shape (n_features, n_features).'
-        ' All command lines need to start with "#".'
-    ),
-)
-@click.option(
-    '-o',
-    '--output',
-    'output_file',
-    required=True,
-    type=click.Path(),
-    help=(
-        'Path to output file. Will be a matrix of shape (n_features, '
-        'n_features).'
-    ),
-)
-@click.option(
-    '--precision',
-    default='single',
-    show_default=True,
-    type=click.Choice(PRECISION, case_sensitive=True),
-    help=(
-        'Precision used for calculation. Lower precision reduces memory '
-        'impact but may lead to overflow errors.'
-    ),
-)
-@click.option(
-    '-v',
-    '--verbose',
-    is_flag=True,
-    help='Activate verbose mode.',
-)
-
-
 if __name__ == '__main__':
     main()
