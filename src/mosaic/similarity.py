@@ -49,7 +49,6 @@ class Similarity(BaseEstimator):
     ----------
     metric : str, default='correlation'
         the correlation metric to use for the feature distance matrix.
-
         - `'correlation'` will use the absolute value of the Pearson
           correlation
         - `'NMI'` will use the mutual information normalized by joined entropy
@@ -57,24 +56,19 @@ class Similarity(BaseEstimator):
         - `'JSD'` will use the Jensen-Shannon divergence between the joint
           probability distribution and the product of the marginal probability
           distributions to calculate their dissimilarity
-
         Note: `'NMI'` is supported only with low_memory=False
-
     low_memory : bool, default=False
         If True, the input of fit X needs to be a file name and the correlation
         is calculated on the fly. Otherwise, an array is assumed as input X.
-
     normalize_method : str, default='geometric'
         Only required for metric `'NMI'`. Determines the normalization factor
         for the mutual information:
-
         - `'joint'` is the joint entropy
         - `'max'` is the maximum of the individual entropies
         - `'arithmetic'` is the mean of the individual entropies
         - `'geometric'` is the square root of the product of the individual
           entropies
         - `'min'` is the minimum of the individual entropies
-
     use_knn_estimator : bool, default=False
         Can only be set for metric GY. If True, the mutual information
         is estimated reliably by a parameter free method based on entropy
@@ -104,8 +98,10 @@ class Similarity(BaseEstimator):
     Notes
     -----
     The Pearson correlation coefficient is defined as
+
     $$\rho_{X,Y} =
-    \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}$$.
+    \frac{\langle(X -\mu_X)(Y -\mu_Y)\rangle}{\sigma_X\sigma_Y}.$$
+
     For the online (low memory) option the Welford algorithm[^2] is used.
 
     [^1]: Gel'fand, I.M. and Yaglom, A.M. (1957). "Calculation of amount of
@@ -121,8 +117,10 @@ class Similarity(BaseEstimator):
         and Continuous Data Sets"
 
     The Jensen-Shannon divergence is defined as
+
     $$D_{\text{JS}} = \frac{1}{2} D_{\text{KL}}(p(x,y)||M)
     + \frac{1}{2} D_{\text{KL}}(p(x)p(y)||M)\;,$$
+
     where \(M = \frac{1}{2} [p(x,y) + p(x)p(y)]\) is an averaged probability
     distribution and \(D_{\text{KL}}\) denotes the Kullback-Leibler divergence.
 
@@ -173,7 +171,6 @@ class Similarity(BaseEstimator):
         ----------
         X : ndarray of shape (n_samples, n_features) or str if low_memory=True
             Training data.
-
         y : Ignored
             Not used, present for scikit API consistency by convention.
 
@@ -253,7 +250,6 @@ class Similarity(BaseEstimator):
         ----------
         X : ndarray of shape (n_samples, n_features) or str if low_memory=True
             Training data.
-
         y : Ignored
             Not used, present for scikit API consistency by convention.
 
@@ -277,7 +273,6 @@ class Similarity(BaseEstimator):
         ----------
         X : ndarray of shape (n_samples, n_features) or str if low_memory=True
             Training data.
-
         Returns
         -------
         Similarity : ndarray of shape (n_features, n_features)
