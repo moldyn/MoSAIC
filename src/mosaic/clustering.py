@@ -136,27 +136,22 @@ class Clustering(ClusterMixin, BaseEstimator):
         - 'modularity': will use modularity on a knn-graph
         - 'linkage': will use complete-linkage clustering
         - 'kmedoids': will use k-medoids clustering
-
     weighted : bool, default=True
         If True, the underlying graph has weighted edges. Otherwise, the graph
         is constructed using the adjacency matrix.
-
     n_neighbors : int, default=None
         This parameter specifies whether the whole matrix should be used, or
         a knn-graph, which reduces the required memory.
         The default depends on the `mode`
         - 'CPM': `None` uses the full graph, and
         - 'modularity': `None` uses square root of the number of features.
-
     resolution_parameter : float, default=None
         Required for mode 'CPM' and 'linkage'. If None, the resolution
         parameter will be set to the third quartile of `X` for
         `n_neighbors=None` and else to the mean value of the knn graph.
-
     n_clusters : int, default=None
         Required for 'kmedoids'. The number of medoids which will constitute
         the later clusters.
-
     seed : int, default=None
         Use an integer to make the randomness of Leidenalg deterministic. By
         default uses a random seed if nothing is specified.
@@ -166,29 +161,22 @@ class Clustering(ClusterMixin, BaseEstimator):
     clusters_ : ndarray of shape (n_clusters, )
         The result of the clustering process. A list of arrays, each
         containing all indices (features) corresponging to each cluster.
-
     labels_ : ndarray of shape (n_features, )
         Labels of each feature.
-
     matrix_ : ndarray of shape (n_features, n_features)
         Permuted matrix according to the determined clusters.
-
     ticks_ : ndarray of shape (n_clusters, )
         The cumulative number of features containing to the clusters.
         May be used as ticks for plotting `matrix_`.
-
     permutation_ : ndarray of shape (n_features, )
         Permutation of the input features (corresponds to flattened
         `clusters_`).
-
     n_neighbors_ : int
         Only avaiable when using knn graph. Indicates the number of nearest
         neighbors used for constructin the knn-graph.
-
     resolution_param_ : float
         Only for mode 'CPM' and 'linkage'. Indicates the resolution parameter
         used for the CPM based Leiden clustering.
-
     linkage_matrix_ : ndarray of shape (n_clusters - 1, 4)
         Only for mode 'linkage'. Contains the hierarchical clustering encoded
         as a linkage matrix, see
@@ -266,7 +254,6 @@ class Clustering(ClusterMixin, BaseEstimator):
             Matrix containing the correlation metric which is clustered. The
             values should go from [0, 1] where 1 means completely correlated
             and 0 no correlation.
-
         y : Ignored
             Not used, present for scikit API consistency by convention.
 
@@ -346,7 +333,6 @@ class Clustering(ClusterMixin, BaseEstimator):
             Matrix containing the correlation metric which is clustered. The
             values should go from [0, 1] where 1 means completely correlated
             and 0 no correlation.
-
         y : Ignored
             Not used, present for scikit API consistency by convention.
 
@@ -373,10 +359,8 @@ class Clustering(ClusterMixin, BaseEstimator):
             New matrix containing the correlation metric to score. The
             values should go from [0, 1] where 1 means completely correlated
             and 0 no correlation.
-
         y : Ignored
             Not used, present for scikit API consistency by convention.
-
         sample_weight: Ignored
             Not used, present for scikit API consistency by convention.
 

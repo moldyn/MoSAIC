@@ -28,17 +28,14 @@ class GridSearchCV(SKGridSearchCV):
         Similarity instance setup with constant parameters, see
         `mosaic.Similarity` for available parameters. `low_memory` is not
         supported.
-
     clustering : mosaic.Clustering
         Clustering instance setup with constant parameters, see
         `mosaic.Clustering` for available parameters.
-
     param_grid : dict
         Dictionary with parameters names (`str`) as keys and lists of
         parameter settings to try as values, or list of such dictionaries,
         in which case the grids spanned by each dictionary in the list are
         explored.
-
     gridsearch_kwargs : dict
         Dictionary with parameters to be used for
         [`sklearn.model_selection.GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html)
@@ -50,22 +47,17 @@ class GridSearchCV(SKGridSearchCV):
     ----------
     cv_results_ : dict of numpy (masked) ndarrays
         A dict with keys as column headers and values as columns.
-
     best_estimator_ : estimator
         Estimator that was chosen by the search, i.e. estimator
         which gave highest score (or smallest loss if specified)
         on the left out data.
-
     best_score_ : float
         Mean cross-validated score of the best_estimator.
-
     best_params_ : dict
         Parameter setting that gave the best results on the hold out data.
-
     best_index_ : int
         The index (of the `cv_results_` arrays) which corresponds to the best
         candidate parameter setting.
-
     n_splits_ : int
         The number of cross-validation splits (folds/iterations).
 
@@ -182,7 +174,6 @@ class GridSearchCV(SKGridSearchCV):
         X : ndarray of shape (n_samples, n_features)
             Training vector, where `n_samples` is the number of samples and
             `n_features` is the number of features.
-
         y : Ignored
             Not used, present for scikit API consistency by convention.
 
