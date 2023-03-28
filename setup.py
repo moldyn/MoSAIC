@@ -106,7 +106,6 @@ setuptools.setup(
         'scikit-learn-extra',
         'igraph',
         'leidenalg>=0.8.0',
-        'umap-learn',
         'click>=7.0.0',
         'typing_extensions>=3.9.0;python_version<"3.9"',
         'prettypyplot',
