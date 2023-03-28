@@ -48,7 +48,7 @@ be used to store and load the data or to provide runtume user information.
 
 
 """
-__all__ = ['Clustering', 'GridSearchCV', 'Similarity', 'UMAPSimilarity']
+__all__ = ['Clustering', 'GridSearchCV', 'Similarity']
 
 METRICS = {'correlation', 'NMI', 'JSD', 'GY'}
 MODES = {'CPM', 'modularity', 'linkage', 'kmedoids'}
@@ -60,4 +60,4 @@ from .gridsearch import GridSearchCV
 from .similarity import Similarity
 
 
-__version__ = '0.3.2'
+__version__ = '0.4.0'
