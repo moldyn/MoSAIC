@@ -359,17 +359,6 @@ def clustering(
         pplt.savefig(f'{output_file}.matrix.pdf')
 
 
-@main.command(
-    help='Embedd similarity matrix with UMAP.',
-    no_args_is_help=True,
-)
-@click.option(
-    '--n-components',
-    default=mosaic.UMAPSimilarity._default_n_components,  # noqa: WPS437
-    show_default=True,
-    type=click.IntRange(min=2),
-    help='Dimensionality of UMAP embedding.',
-)
 @click.option(
     '--n-neighbors',
     type=click.IntRange(min=2),
@@ -377,12 +366,6 @@ def clustering(
         'Number of nearest neighbors used for estimating manifold. '
         'If None, the sqrt of no. of features is used.'
     ),
-)
-@click.option(
-    '--densmap/--umap',
-    default=True,
-    is_flag=True,
-    show_default=True,
 )
 @click.option(
     '-i',
@@ -422,43 +405,6 @@ def clustering(
     is_flag=True,
     help='Activate verbose mode.',
 )
-def umap(
-    n_components,
-    n_neighbors,
-    densmap,
-    input_file,
-    output_file,
-    precision,
-    verbose,
-):
-    if verbose:
-        click.echo('\nMoSAIC UMAP\n~~~ Initialize umap similarity class')
-    umapsim = mosaic.UMAPSimilarity(
-        densmap=densmap,
-        n_neighbors=n_neighbors,
-        n_components=n_components,
-    )
-    if verbose:
-        click.echo(f'~~~ Load file {input_file}')
-    X = pd.read_csv(
-        input_file,
-        sep=r'\s+',
-        header=None,
-        comment='#',
-        dtype=PRECISION_TO_DTYPE[precision],
-    ).values
-    if verbose:
-        click.echo('~~~ Fit input.')
-    umapsim.fit(X)
-    if verbose:
-        click.echo(f'~~~ Store similarity matrix in {output_file}')
-    savetxt(
-        output_file,
-        umapsim.matrix_,
-        fmt='%.5f',
-        submodule='umap',
-        header='Similarity matrix',
-    )
 
 
 if __name__ == '__main__':
