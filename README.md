@@ -120,7 +120,7 @@ A simple workflow example for clustering the input file `input_file` using
 correlation and Leiden with CPM and the default resolution parameter:
 ```bash
 # creating correlation matrix
-$ python -m mosaic similarity -i input_file -o output_similarity -metric correlation -v
+$ python -m mosaic similarity -i input_file -o output_similarity --metric correlation -v
 
 MoSAIC SIMILARITY
 ~~~ Initialize similarity class
