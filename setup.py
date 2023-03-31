@@ -108,7 +108,7 @@ setuptools.setup(
         'leidenalg>=0.8.0',
         'click>=7.0.0',
         'typing_extensions>=3.9.0;python_version<"3.9"',
-        'prettypyplot',
+        'matplotlib>=3.5',
     ],
     extras_require=get_extra_requirements('extra-requirements.txt'),
 )
