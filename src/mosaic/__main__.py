@@ -349,8 +349,8 @@ def clustering(
             set_ticks(ticks[~major_mask], minor=True)
             set_ticklabels([], minor=True)
 
-        ax.grid(b=True, ls='-', lw=0.5)
-        ax.grid(b=True, ls='-', which='minor', lw=0.1)
+        ax.grid(visible=True, ls='-', lw=0.5)
+        ax.grid(visible=True, ls='-', which='minor', lw=0.1)
 
         ax.set_xlabel('clusters')
         ax.set_ylabel('clusters')
