@@ -198,6 +198,14 @@ class Similarity(BaseEstimator):
                 'data has a single feature or array.reshape(1, -1) if it '
                 'contains a single sample.',
             )
+        std_devs = np.std(X, axis=0)
+        if np.any(std_devs == 0) or np.any(np.isnan(std_devs)):
+            raise ValueError(
+                'At lease one column has a zero or NaN standard deviation.'
+                'As the standard deviation for each feature should be non-zero'
+                'and finite delte this column or change the feature'
+                'accordingly.'
+            )
 
         n_samples, n_features = X.shape
         self._n_samples: int = n_samples
