@@ -224,7 +224,7 @@ class Similarity(BaseEstimator):
         matrix_: np.ndarray
         # parse data
         if not self.low_memory:
-            raise TypeError('Mode low_memory=False reuqires X:np.ndarray.')
+            raise TypeError('Mode low_memory=False requires X:np.ndarray.')
 
         if self.metric == 'correlation':
             corr = self._online_correlation(X)
