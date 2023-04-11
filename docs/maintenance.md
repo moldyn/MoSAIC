@@ -7,7 +7,7 @@ Please ensure that,
 1. the version number in `setup.py` and `src/MoSAIC/__init__.py` are bumped,
 1. a new tag is created via `git tag v1.*.*` and pushed `git push --tags`, and 
 1. the changelog includes the new tag and all changes of the release.
-As an example see for e.g. the commit of `v0.3.2`, [`130a3df`](https://github.com/moldyn/MoSAIC/commit/130a3dfdc8993d6591bbb6b6027a3777d7e78e12).
+As an example see for e.g. the commit of `v0.3.2`, [`d43073`](https://github.com/moldyn/MoSAIC/commit/d430738b0eae2de0cda10de513cc652c8043dab8).
 
 ## Build and Upload to PyPI
 
