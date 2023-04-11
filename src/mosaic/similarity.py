@@ -203,7 +203,7 @@ class Similarity(BaseEstimator):
             raise ValueError(
                 'At lease one column has a zero or NaN standard deviation.'
                 'As the standard deviation for each feature should be non-zero'
-                'and finite delte this column or change the feature'
+                'and finite delete this column or change the feature'
                 'accordingly.'
             )
 
