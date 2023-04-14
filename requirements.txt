@@ -5,5 +5,5 @@ scipy
 scikit-learn
 leidenalg>=0.8.0
 click>=7.0.0
-prettypyplot
+matplotlib>=3.5.0
 typing_extensions>=3.9.0
