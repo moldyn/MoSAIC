@@ -23,6 +23,8 @@
         <img src="https://img.shields.io/pypi/pyversions/mosaic-clustering" /></a>
     <a href="https://moldyn.github.io/MoSAIC" alt="Docs">
         <img src="https://img.shields.io/badge/MkDocs-Documentation-brightgreen" /></a>
+    <a href="https://moldyn.github.io/MoSAIC/tutorial/t4l_tutorial_github/" alt="Tutorials">
+        <img src="https://img.shields.io/badge/Tutorials-Notebooks-brightgreen" /></a>
     <a href="https://doi.org/10.1021/acs.jctc.2c00337" alt="doi">
         <img src="https://img.shields.io/badge/doi-10.1021%2Facs.jctc.2c00337-blue" /></a>
     <a href="https://arxiv.org/abs/2204.02770" alt="arXiv">
@@ -57,6 +59,7 @@ If you use this software package, please cite the above mentioned paper.
 - Sklearn-style API for fast integration into your Python workflow
 - No magic, only a  single parameter which can be optimized via cross-validation
 - Extensive [documentation](https://moldyn.github.io/MoSAIC) and detailed discussion in publication
+- Step by step [tutorial](https://moldyn.github.io/MoSAIC/tutorial/t4l_tutorial_github/) to follow
 
 
 ## Installation
