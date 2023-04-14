@@ -8,14 +8,12 @@ All rights reserved.
 import click
 import numpy as np
 import pandas as pd
-import prettypyplot as pplt
 from matplotlib import pyplot as plt
 
 import mosaic
 from mosaic.utils import save_clusters, savetxt
 
 # setup matplotlibs rcParam
-pplt.use_style(figsize=2, figratio=1, cmap='turbo')
 
 PRECISION = ['half', 'single', 'double']
 PRECISION_TO_DTYPE = {
@@ -331,8 +329,8 @@ def clustering(
         _, ax = plt.subplots()
         mat = clust.matrix_.astype(np.float64)
         mat[np.diag_indices_from(mat)] = np.nan
-        im = ax.imshow(
-            mat, aspect='equal', origin='upper', interpolation='none',
+        im = ax.pcolormesh(
+            mat, snap=True, vim=0, vmax=np.nanmax(mat),
         )
 
         ticks = np.array([0, *clust.ticks_[: -1]]) - 0.5
@@ -349,14 +347,14 @@ def clustering(
             set_ticks(ticks[~major_mask], minor=True)
             set_ticklabels([], minor=True)
 
-        ax.grid(b=True, ls='-', lw=0.5)
-        ax.grid(b=True, ls='-', which='minor', lw=0.1)
+        ax.grid(True, ls='-', lw=0.5)
+        ax.grid(True, ls='-', which='minor', lw=0.1)
 
         ax.set_xlabel('clusters')
         ax.set_ylabel('clusters')
 
-        pplt.colorbar(im, width='3%')
-        pplt.savefig(f'{output_file}.matrix.pdf')
+        plt.colorbar(im, width='3%')
+        plt.savefig(f'{output_file}.matrix.pdf')
 
 
 if __name__ == '__main__':

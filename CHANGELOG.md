@@ -9,13 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.4.1] - 2023-04-04
+### API changes warning ⚠️:
+- Removed the `grid_b` keyword from all plot examples to support a broader
+  range of matplotlib versions.
+- Removed `prettypyplot` dependency
+- Added `matplotlib` dependency
+
+### Added Features and Improvements 🙌:
+- Now checking whether all features have a non-zero and finite standard deviation
+
+
 ## [0.4.0] - 2023-03-28
 ### API changes warning ⚠️:
 - Class `UMAPSimilarity` was removed
 
 ### Added Features and Improvements 🙌:
 - Added py3.11 support
-- All new Mkdocs, including tutorials 🎉
+- All new MkDocs, including tutorials 🎉
 
 ### Other changes:
 - Fixed CI's
@@ -149,7 +160,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 
 
-[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.4.0...main
+[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.4.1...main
+[0.4.1]: https://github.com/moldyn/MoSAIC/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/moldyn/MoSAIC/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/moldyn/MoSAIC/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/moldyn/MoSAIC/compare/v0.3.0...v0.3.1

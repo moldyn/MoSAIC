@@ -99,7 +99,7 @@ The module brings a rich CI using [click](https://click.palletsprojects.com). Ea
 $ python -m mosaic
 Usage: python -m mosaic [OPTIONS] COMMAND [ARGS]...
 
-  MoSAIC motion v0.3.2
+  MoSAIC motion v0.4.1
 
   Molecular systems automated identification of collective motion, is
   a correlation based feature selection framework for MD data.
@@ -111,7 +111,6 @@ Options:
 Commands:
   clustering  Clustering similarity matrix of coordinates.
   similarity  Creating similarity matrix of coordinates.
-  umap        Embedd similarity matrix with UMAP.
 ```
 For more details on the submodule one needs to specify one of the three
 commands.
