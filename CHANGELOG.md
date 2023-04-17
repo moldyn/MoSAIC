@@ -7,6 +7,8 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Other changes:
+- Fixed minor issues in docs
 
 
 ## [0.4.1] - 2023-04-04

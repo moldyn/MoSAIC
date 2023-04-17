@@ -281,6 +281,7 @@ class Similarity(BaseEstimator):
         ----------
         X : ndarray of shape (n_samples, n_features) or str if low_memory=True
             Training data.
+
         Returns
         -------
         Similarity : ndarray of shape (n_features, n_features)
