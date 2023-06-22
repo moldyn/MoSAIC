@@ -67,8 +67,8 @@ setuptools.setup(
         'MD analysis',
     ],
     author='braniii',
-    url='https://github.com/moldyn/feature_selection',
-    license='BSD 3-Clause License',
+    url='https://github.com/moldyn/MoSAIC',
+    license='MIT License',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
