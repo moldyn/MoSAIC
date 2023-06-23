@@ -7,6 +7,9 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added Features and Improvements 🙌:
+- Added trogon terminal user interface for easier usage of CI
+
 ### Other changes:
 - Fixed minor issues in docs
 

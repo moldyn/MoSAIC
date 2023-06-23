@@ -114,9 +114,10 @@ Options:
 Commands:
   clustering  Clustering similarity matrix of coordinates.
   similarity  Creating similarity matrix of coordinates.
+  tui         Open Textual TUI for interactive usage.
 ```
-For more details on the submodule one needs to specify one of the three
-commands.
+For more details on the submodule one needs to specify one of the two
+commands, or by opening the terminal user interface (tui).
 
 A simple workflow example for clustering the input file `input_file` using
 correlation and Leiden with CPM and the default resolution parameter:

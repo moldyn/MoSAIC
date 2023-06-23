@@ -1,5 +1,9 @@
 # Frequently Asked Questions
 
+### How can I use the terminal user interface (TUI)?
+This can be simply achieved by calling `python -m mosaic tui` or `mosaic tui`. It can be navigated via keyboard and mouse.
+
+
 #### How to load the clusters file back to Python?
 Simply use the function provided in `tools`:
 ```python
@@ -12,20 +16,26 @@ clusters = mosaic.tools.load_clusters(clusterfile)
 #### Is it possible to use cross validation together with silhouette score?
 The new release `v0.3.0` refactored the classes, so that the [`sklearn.model_selection.GridSearchCV`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html) can be used. Check out the [cv example](#cross-validation-of-parameters).
 
+
 ### Should I upgrade the package?
 You can check out the CHANGELOG.md to see what changed.
+
 
 ### How can I interpretate the results?
 Check out our publication for two detailed examples.
 
+
 ### Is it possible to install the CLI only?
 Partially, yes. If you do not want to screw up your current Python environment there are multiples possibilities. Either create a virtual environment on your own via `conda` or `venv`, or you can simply use [pipx](https://pypa.github.io/pipx/)
+
 
 ### Is the silhouette method implemented?
 Yes, simply use the `score` method implemented in the `Clustering` class.
 
+
 ### I want to use the UMAP embedding!
 This is still possible if you switch to the version 0.3.2. We removed that feature in newer versions.
+
 
 ### Feature X is missing
 If you believe that a crucial functionality/method is missing, feel free to [open an issue](https://github.com/moldyn/MoSAIC/issues) and describe the missing functionality and why it should be added. Alternatively, you can implement it yourself and create a PR to add it to this package, see [contributing guide](../contributing).

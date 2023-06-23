@@ -8,6 +8,7 @@ All rights reserved.
 import click
 import numpy as np
 import pandas as pd
+import trogon
 from matplotlib import pyplot as plt
 
 import mosaic
@@ -31,6 +32,7 @@ Copyright (c) 2021-2022, Georg Diez and Daniel Nagel
 """
 
 
+@trogon.tui(help='Open Textual TUI for interactive usage.')
 @click.group(help=HELP_STR)
 def main():
     """Empty group to show on help available submodules."""
