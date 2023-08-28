@@ -12,7 +12,7 @@
     <a href="https://anaconda.org/conda-forge/mosaic-clustering" alt="conda version">
 	<img src="https://img.shields.io/conda/vn/conda-forge/mosaic-clustering" /></a>
     <a href="https://pepy.tech/project/mosaic-clustering" alt="Downloads">
-        <img src="https://pepy.tech/badge/mosaic-clustering" /></a>
+        <img src="https://static.pepy.tech/badge/mosaic-clustering" /></a>
     <a href="https://github.com/moldyn/MoSAIC/actions/workflows/pytest.yml" alt="GitHub Workflow Status">
         <img src="https://img.shields.io/github/actions/workflow/status/moldyn/MoSAIC/pytest.yml?branch=main"></a>
     <a href="https://codecov.io/gh/moldyn/MoSAIC" alt="Code coverage">
