@@ -13,3 +13,4 @@ mkdocs-section-index:         docs
 mkdocs-jupyter:               docs
 mkdocs-click:                 docs
 jupyter_contrib_nbextensions: docs
+notebook>=6.4.12,<7.0.0:      docs
