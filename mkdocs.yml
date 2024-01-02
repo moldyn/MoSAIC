@@ -27,8 +27,8 @@ nav:
 theme:
   name: material
   favicon: icon.png
-  logo_slate_mode: logo_large_dark.svg
-  logo_default_mode: logo_large_light.svg
+  logo_slate_mode: icon.png
+  logo_default_mode: icon.png
   custom_dir: docs/overrides
   features:
   - content.code.annotate
@@ -72,8 +72,8 @@ markdown_extensions:
   - pymdownx.caret
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight
   - pymdownx.inlinehilite
   - pymdownx.keys
@@ -93,7 +93,6 @@ plugins:
 - section-index
 - search
 - privacy
-- social
 - gen-files:
     scripts:
     - docs/gen_ref_nav.py
