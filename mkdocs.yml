@@ -92,6 +92,8 @@ markdown_extensions:
 plugins:
 - section-index
 - search
+- privacy
+- social
 - gen-files:
     scripts:
     - docs/gen_ref_nav.py
