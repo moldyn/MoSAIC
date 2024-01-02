@@ -12,6 +12,10 @@
     height: 1.4rem;
 }
 
+.md-header__title {
+  margin-left: 0.4rem !important;
+}
+
 /* change icon depending on light/dark mode */
 #logo_default_mode {
     display: var(--md-logo-default-mode);
