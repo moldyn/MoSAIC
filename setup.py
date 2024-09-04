@@ -98,7 +98,7 @@ setuptools.setup(
         ],
     },
     install_requires=[
-        'numpy>=1.21.0',
+        'numpy>=1.21.0,<2',
         'pandas',
         'beartype>=0.10.4',
         'scipy',
