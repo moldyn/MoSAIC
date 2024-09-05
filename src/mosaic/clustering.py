@@ -13,13 +13,13 @@ import leidenalg as la
 import numpy as np
 from beartype import beartype
 from beartype.typing import Any, Dict, Optional
+from kmedoids import KMedoids
 from scipy.cluster.hierarchy import cut_tree, linkage
 from scipy.spatial.distance import squareform
 from sklearn.base import BaseEstimator, ClusterMixin
-from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import silhouette_score
+from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.validation import check_is_fitted
-from sklearn_extra.cluster import KMedoids
 
 from mosaic._typing import (  # noqa: WPS436
     ClusteringModeString,
@@ -497,7 +497,11 @@ class Clustering(ClusterMixin, BaseEstimator):
             'method': 'pam',
         }
 
-        kmedoids = KMedoids(n_clusters=self.n_clusters, **kmedoids_kwargs)
+        kmedoids = KMedoids(
+            _clusters=self.n_clusters,
+            **kmedoids_kwargs,
+        )
+
         kmedoids.fit(1 - matrix)
         labels = kmedoids.labels_
 
