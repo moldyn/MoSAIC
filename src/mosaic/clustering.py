@@ -494,7 +494,7 @@ class Clustering(ClusterMixin, BaseEstimator):
         kmedoids_kwargs = {
             'metric': 'precomputed',
             'max_iter': 100000,
-            'method': 'pam',
+            'method': 'fasterpam',
         }
 
         kmedoids = KMedoids(
