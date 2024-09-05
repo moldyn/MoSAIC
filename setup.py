@@ -110,6 +110,7 @@ setuptools.setup(
         'typing_extensions>=3.9.0;python_version<"3.9"',
         'matplotlib>=3.5',
         'trogon>=0.5',
+        'kmedoids',
     ],
     extras_require=get_extra_requirements('extra-requirements.txt'),
 )
