@@ -503,7 +503,7 @@ class Clustering(ClusterMixin, BaseEstimator):
         )
 
         kmedoids.fit(1 - matrix)
-        labels = kmedoids.labels_
+        labels = kmedoids.labels
 
         # store number of clusters
         nclusters: int = len(np.unique(labels))
