@@ -498,12 +498,12 @@ class Clustering(ClusterMixin, BaseEstimator):
         }
 
         kmedoids = KMedoids(
-            _clusters=self.n_clusters,
+            n_clusters=self.n_clusters,
             **kmedoids_kwargs,
         )
 
         kmedoids.fit(1 - matrix)
-        labels = kmedoids.labels
+        labels = kmedoids.labels_
 
         # store number of clusters
         nclusters: int = len(np.unique(labels))
