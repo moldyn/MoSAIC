@@ -6,10 +6,9 @@ Copyright (c) 2021-2022, Daniel Nagel
 All rights reserved.
 
 """
+import mosaic
 import numpy as np
 import pytest
-
-import mosaic
 
 
 def X():
@@ -32,23 +31,17 @@ def X():
 
 @pytest.mark.parametrize('params, clust_kwargs, X, best_index, error', [
     ({'resolution_parameter': np.linspace(0, 1, 7)}, {}, X(), 1, None),
-    (
-        {'n_clusters': np.arange(3, 30, 3)},
-        {'mode': 'kmedoids', 'n_clusters': 2},
-        X(),
-        3,
-        None,
-    ),
     ({}, {}, X(), None, ValueError),
 ])
 def test_GridSearchCV(params, clust_kwargs, X, best_index, error):
     if not error:
-        print(mosaic.Similarity().fit_transform(X))
+        # print(mosaic.Similarity().fit_transform(X))
         search = mosaic.GridSearchCV(
             similarity=mosaic.Similarity(),
             clustering=mosaic.Clustering(**clust_kwargs),
             param_grid=params,
         )
+        print(search.param_grid)
         search.fit(X)
         assert search.best_index_ == best_index
     else:

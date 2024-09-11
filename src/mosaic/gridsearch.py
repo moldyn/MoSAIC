@@ -14,9 +14,9 @@ from beartype.typing import Dict, Optional
 from sklearn.model_selection import GridSearchCV as SKGridSearchCV
 from sklearn.pipeline import Pipeline
 
+from mosaic._typing import FloatMax2DArray  # noqa: WPS436
 from mosaic.clustering import Clustering
 from mosaic.similarity import Similarity
-from mosaic._typing import FloatMax2DArray  # noqa: WPS436
 
 
 class GridSearchCV(SKGridSearchCV):
@@ -150,6 +150,7 @@ class GridSearchCV(SKGridSearchCV):
                 self.param_grid[
                     f'{self._clust_prefix}__{param}'
                 ] = values
+                print('######################', self.param_grid)
             else:
                 raise ValueError(
                     f"param_grid key '{param}' is not available."
