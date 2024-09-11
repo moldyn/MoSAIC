@@ -2,11 +2,13 @@
 """Class for clustering the correlation matrices.
 
 MIT License
-Copyright (c) 2021-2022, Daniel Nagel, Georg Diez
+Copyright (c) 2021-2024, Daniel Nagel, Georg Diez
 All rights reserved.
 
 """
 __all__ = ['Clustering']  # noqa: WPS410
+
+import warnings
 
 import igraph as ig
 import leidenalg as la
@@ -33,6 +35,8 @@ from mosaic._typing import (  # noqa: WPS436
     PositiveInt,
     SimilarityMatrix,
 )
+
+warnings.simplefilter('always', DeprecationWarning)
 
 
 @beartype
@@ -224,10 +228,16 @@ class Clustering(ClusterMixin, BaseEstimator):
                 f"mode='{mode}' does not support knn-graphs.",
             )
 
-        if mode == 'kmedoids' and self.n_clusters is None:
-            raise TypeError(
-                f"mode='{mode}' needs parameter 'n_clusters'",
+        if mode == 'kmedoids':
+            warnings.warn(
+                "The 'kmedoids' mode is deprecated and will be removed in a future release.",
+                DeprecationWarning,
+                stacklevel=2
             )
+            if self.n_clusters is None:
+                raise TypeError(
+                    f"mode='{mode}' needs parameter 'n_clusters'",
+                )
         elif mode != 'kmedoids' and self.n_clusters is not None:
             raise NotImplementedError(
                 f"mode='{mode}' does not support the usage of 'n_clusters'",
@@ -493,16 +503,17 @@ class Clustering(ClusterMixin, BaseEstimator):
         """Perform k-medoids clustering."""
         kmedoids_kwargs = {
             'metric': 'precomputed',
-            'max_iter': 100000,
             'method': 'fasterpam',
+            'init': 'random',
+            'max_iter': 100000,
         }
 
         kmedoids = KMedoids(
-            n_clusters=self.n_clusters,
+            self.n_clusters,
             **kmedoids_kwargs,
         )
 
-        kmedoids.fit(X=1 - matrix)
+        kmedoids.fit(1 - matrix)
         labels = kmedoids.labels_
 
         # store number of clusters

@@ -355,7 +355,7 @@ def clustering(
         ax.set_xlabel('clusters')
         ax.set_ylabel('clusters')
 
-        plt.colorbar(im, width='3%')
+        plt.colorbar(im)
         plt.savefig(f'{output_file}.matrix.pdf')
 
 
