@@ -230,7 +230,8 @@ class Clustering(ClusterMixin, BaseEstimator):
 
         if mode == 'kmedoids':
             warnings.warn(
-                "The 'kmedoids' mode is deprecated and will be removed in a future release.",
+                "The 'kmedoids' mode is deprecated and will be removed in a "
+                "future release.",
                 DeprecationWarning,
                 stacklevel=2
             )
