@@ -332,7 +332,7 @@ def clustering(
         mat = clust.matrix_.astype(np.float64)
         mat[np.diag_indices_from(mat)] = np.nan
         im = ax.pcolormesh(
-            mat, snap=True, vim=0, vmax=np.nanmax(mat),
+            mat, snap=True, vmin=0, vmax=np.nanmax(mat),
         )
 
         ticks = np.array([0, *clust.ticks_[: -1]]) - 0.5
@@ -355,7 +355,7 @@ def clustering(
         ax.set_xlabel('clusters')
         ax.set_ylabel('clusters')
 
-        plt.colorbar(im, width='3%')
+        plt.colorbar(im)
         plt.savefig(f'{output_file}.matrix.pdf')
 
 

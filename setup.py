@@ -99,7 +99,7 @@ setuptools.setup(
         ],
     },
     install_requires=[
-        'numpy>=1.21.0',
+        'numpy>=1.21.0,<2',
         'pandas',
         'beartype>=0.10.4',
         'scipy',
@@ -111,6 +111,7 @@ setuptools.setup(
         'typing_extensions>=3.9.0;python_version<"3.9"',
         'matplotlib>=3.5',
         'trogon>=0.5',
+        'kmedoids',
     ],
     extras_require=get_extra_requirements('extra-requirements.txt'),
 )

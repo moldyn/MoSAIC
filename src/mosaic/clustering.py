@@ -2,24 +2,26 @@
 """Class for clustering the correlation matrices.
 
 MIT License
-Copyright (c) 2021-2022, Daniel Nagel, Georg Diez
+Copyright (c) 2021-2024, Daniel Nagel, Georg Diez
 All rights reserved.
 
 """
 __all__ = ['Clustering']  # noqa: WPS410
+
+import warnings
 
 import igraph as ig
 import leidenalg as la
 import numpy as np
 from beartype import beartype
 from beartype.typing import Any, Dict, Optional
+from kmedoids import KMedoids
 from scipy.cluster.hierarchy import cut_tree, linkage
 from scipy.spatial.distance import squareform
 from sklearn.base import BaseEstimator, ClusterMixin
-from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import silhouette_score
+from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.validation import check_is_fitted
-from sklearn_extra.cluster import KMedoids
 
 from mosaic._typing import (  # noqa: WPS436
     ClusteringModeString,
@@ -33,6 +35,8 @@ from mosaic._typing import (  # noqa: WPS436
     PositiveInt,
     SimilarityMatrix,
 )
+
+warnings.simplefilter('always', DeprecationWarning)
 
 
 @beartype
@@ -224,10 +228,17 @@ class Clustering(ClusterMixin, BaseEstimator):
                 f"mode='{mode}' does not support knn-graphs.",
             )
 
-        if mode == 'kmedoids' and self.n_clusters is None:
-            raise TypeError(
-                f"mode='{mode}' needs parameter 'n_clusters'",
+        if mode == 'kmedoids':
+            warnings.warn(
+                "The 'kmedoids' mode is deprecated and will be removed in a "
+                "future release.",
+                DeprecationWarning,
+                stacklevel=2
             )
+            if self.n_clusters is None:
+                raise TypeError(
+                    f"mode='{mode}' needs parameter 'n_clusters'",
+                )
         elif mode != 'kmedoids' and self.n_clusters is not None:
             raise NotImplementedError(
                 f"mode='{mode}' does not support the usage of 'n_clusters'",
@@ -493,11 +504,16 @@ class Clustering(ClusterMixin, BaseEstimator):
         """Perform k-medoids clustering."""
         kmedoids_kwargs = {
             'metric': 'precomputed',
+            'method': 'fasterpam',
+            'init': 'random',
             'max_iter': 100000,
-            'method': 'pam',
         }
 
-        kmedoids = KMedoids(n_clusters=self.n_clusters, **kmedoids_kwargs)
+        kmedoids = KMedoids(
+            self.n_clusters,
+            **kmedoids_kwargs,
+        )
+
         kmedoids.fit(1 - matrix)
         labels = kmedoids.labels_
 
