@@ -6,8 +6,8 @@ from collections import defaultdict
 import setuptools
 
 # check for python version
-if sys.version_info < (3, 8):
-    raise SystemExit('Python 3.8+ is required!')
+if sys.version_info < (3, 9):
+    raise SystemExit('Python 3.9+ is required!')
 
 
 def get_extra_requirements(path, add_all=True):
@@ -75,11 +75,12 @@ setuptools.setup(
         'Intended Audience :: Science/Research',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Topic :: Scientific/Engineering :: Physics',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Software Development :: Libraries :: Python Modules',
@@ -92,7 +93,7 @@ setuptools.setup(
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),
     include_package_data=True,
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     entry_points={
         'console_scripts': [
             'mosaic = mosaic.__main__:main',
@@ -107,7 +108,6 @@ setuptools.setup(
         'igraph',
         'leidenalg>=0.8.0',
         'click>=7.0.0,<9.0.0',
-        'typing_extensions>=3.9.0;python_version<"3.9"',
         'matplotlib>=3.5',
         'trogon>=0.5',
     ],
