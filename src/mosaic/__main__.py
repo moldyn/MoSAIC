@@ -5,14 +5,33 @@ Copyright (c) 2021-2022, Daniel Nagel
 All rights reserved.
 
 """
-import click
-import numpy as np
-import pandas as pd
-import trogon
-from matplotlib import pyplot as plt
+import warnings
 
-import mosaic
-from mosaic.utils import save_clusters, savetxt
+# Suppress trogon's DeprecationWarning about BaseCommand in Click
+# Must be set before importing trogon
+warnings.filterwarnings(
+    'ignore',
+    message=r"'BaseCommand' is deprecated and will be removed in Click 9\.0",
+    category=DeprecationWarning,
+    module=r'trogon\.introspect',
+)
+
+import click  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import trogon  # noqa: E402
+from matplotlib import pyplot as plt  # noqa: E402
+
+import mosaic  # noqa: E402
+from mosaic.utils import save_clusters, savetxt  # noqa: E402
+
+# Fix for Click 8.3.0+: NoArgsIsHelpError should return exit code 0, not 2
+# when showing help. This is a bug in Click 8.3.0 where no_args_is_help=True
+# and groups without subcommands raise NoArgsIsHelpError with exit_code=2.
+# We fix this by changing the exit code to 0, which is the correct behavior
+# for displaying help text.
+if hasattr(click.exceptions, 'NoArgsIsHelpError'):
+    click.exceptions.NoArgsIsHelpError.exit_code = 0
 
 # setup matplotlibs rcParam
 
