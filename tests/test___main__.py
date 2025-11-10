@@ -35,10 +35,9 @@ def test_similarity():
 
 
 def test_no_trogon_deprecation_warning():
-    """Test that trogon's DeprecationWarning about BaseCommand is suppressed."""
+    """Test that trogon DeprecationWarning about BaseCommand is suppressed."""
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
-        # The import happens at module level, but we can test by invoking the CLI
         runner = CliRunner()
         result = runner.invoke(main)
         
@@ -48,7 +47,8 @@ def test_no_trogon_deprecation_warning():
             if issubclass(warning.category, DeprecationWarning)
             and 'BaseCommand' in str(warning.message)
         ]
-        assert len(basecommand_warnings) == 0, (
-            f"Found {len(basecommand_warnings)} BaseCommand deprecation warnings"
+        n_bc_warnings = len(basecommand_warnings)
+        assert n_bc_warnings == 0, (
+            f"Found {n_bc_warnings} BaseCommand deprecation warnings"
         )
         assert result.exit_code == 0
