@@ -25,6 +25,14 @@ from matplotlib import pyplot as plt  # noqa: E402
 import mosaic  # noqa: E402
 from mosaic.utils import save_clusters, savetxt  # noqa: E402
 
+# Fix for Click 8.3.0+: NoArgsIsHelpError should return exit code 0, not 2
+# when showing help. This is a bug in Click 8.3.0 where no_args_is_help=True
+# and groups without subcommands raise NoArgsIsHelpError with exit_code=2.
+# We fix this by changing the exit code to 0, which is the correct behavior
+# for displaying help text.
+if hasattr(click.exceptions, 'NoArgsIsHelpError'):
+    click.exceptions.NoArgsIsHelpError.exit_code = 0
+
 # setup matplotlibs rcParam
 
 PRECISION = ['half', 'single', 'double']
