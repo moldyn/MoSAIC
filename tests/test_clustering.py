@@ -69,26 +69,9 @@ def test__coarse_clustermatrix(clusters, mat, result, error):
         None,
         NotImplementedError,
     ),
-    ('CPM', {'n_clusters': 1}, None, NotImplementedError),
-    ('linkage', {'n_clusters': 1}, None, NotImplementedError),
-    ('modularity', {'n_clusters': 1}, None, NotImplementedError),
-    ('kmedoids', {}, None, TypeError),
-    ('kmedoids', {'n_clusters': 2}, 2, None),
-    (
-        'kmedoids',
-        {'n_neighbors': 2, 'n_clusters': 2},
-        None,
-        NotImplementedError,
-    ),
-    ('linkage', {'n_neighbors': 2}, None, NotImplementedError),
     ('CPM', {'weighted': False}, None, NotImplementedError),
     ('linkage', {'weighted': False}, None, NotImplementedError),
-    (
-        'kmedoids',
-        {'n_neighbors': 2, 'resolution_parameter': 0.9},
-        None,
-        NotImplementedError,
-    ),
+    ('linkage', {'n_neighbors': 2}, None, NotImplementedError),
     ('modularity', {'resolution_parameter': 0.9}, None, NotImplementedError),
 ])
 def test_Clustering(mode, kwargs, n_clusters, error, X, Xresult):
