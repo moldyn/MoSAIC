@@ -51,7 +51,7 @@ def _freedman_diaconis_rule(x: Float1DArray) -> int:
 @beartype
 def _entropy(p: ArrayLikeFloat) -> float:
     """Calculate entropy of density p."""
-    return -1 * np.sum(p * np.ma.log(p))
+    return float(-1 * np.sum(p * np.ma.log(p)))
 
 
 @beartype
@@ -62,9 +62,9 @@ def _kullback(p: ArrayLikeFloat, q: ArrayLikeFloat) -> float:
             f'Arrays p, q need to be of same length, but {len(p):.0f} vs '
             f'{len(q):.0f}.',
         )
-    return np.sum(
+    return float(np.sum(
         p * np.ma.log(np.ma.divide(p, q)),
-    )
+    ))
 
 
 @beartype
@@ -161,9 +161,9 @@ def _gy(
 ) -> float:
     """Return the dissimilarity based on Gel'fand-Yaglom."""
     mutual_info: float = _kullback(pij, pipj)
-    return np.sqrt(
+    return float(np.sqrt(
         1 - np.exp(-2 * mutual_info),
-    )
+    ))
 
 
 @beartype
@@ -174,11 +174,11 @@ def _jsd(
     pj: Float1DArray,
 ) -> float:
     """Return the Jensen-Shannon based dissimilarity."""
-    return jensenshannon(
+    return float(jensenshannon(
         pij.flatten(),
         pipj.flatten(),
         base=2,
-    )
+    ))
 
 
 @beartype
@@ -190,10 +190,10 @@ def _normalization(
         return _entropy(pij)
 
     func: Callable = {
-        'geometric': lambda arr: np.sqrt(np.prod(arr)),
-        'arithmetic': np.mean,
-        'min': np.min,
-        'max': np.max,
+        'geometric': lambda arr: float(np.sqrt(np.prod(arr))),
+        'arithmetic': lambda arr: float(np.mean(arr)),
+        'min': lambda arr: float(np.min(arr)),
+        'max': lambda arr: float(np.max(arr)),
     }[method]
     return func([_entropy(pi), _entropy(pj)])
 
