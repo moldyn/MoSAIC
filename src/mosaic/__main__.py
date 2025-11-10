@@ -189,11 +189,6 @@ def similarity(
     help='Resolution parameter used for CPM.',
 )
 @click.option(
-    '--n-clusters',
-    type=click.IntRange(min=2),
-    help='Required for mode="kmedoids". The number of clusters to form.',
-)
-@click.option(
     '-i',
     '--input',
     'input_file',
@@ -251,7 +246,6 @@ def clustering(
     input_file,
     n_neighbors,
     resolution_parameter,
-    n_clusters,
     weighted,
     output_file,
     name_file,
@@ -269,7 +263,6 @@ def clustering(
         mode=mode,
         weighted=weighted,
         n_neighbors=n_neighbors,
-        n_clusters=n_clusters,
         resolution_parameter=resolution_parameter,
     )
 

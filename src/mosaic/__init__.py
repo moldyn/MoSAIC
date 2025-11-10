@@ -51,7 +51,7 @@ be used to store and load the data or to provide runtume user information.
 __all__ = ['Clustering', 'GridSearchCV', 'Similarity']
 
 METRICS = {'correlation', 'NMI', 'JSD', 'GY'}
-MODES = {'CPM', 'modularity', 'linkage', 'kmedoids'}
+MODES = {'CPM', 'modularity', 'linkage'}
 NORMS = {'joint', 'geometric', 'arithmetic', 'min', 'max'}
 
 import mosaic.utils  # noqa: F401
