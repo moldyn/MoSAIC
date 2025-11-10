@@ -40,12 +40,12 @@ def test_no_trogon_deprecation_warning():
         warnings.simplefilter("always")
         runner = CliRunner()
         result = runner.invoke(main)
-        
+
         # Check that no DeprecationWarning about BaseCommand was raised
         basecommand_warnings = [
             warning for warning in w
-            if issubclass(warning.category, DeprecationWarning)
-            and 'BaseCommand' in str(warning.message)
+            if (issubclass(warning.category, DeprecationWarning) and
+                'BaseCommand' in str(warning.message))
         ]
         n_bc_warnings = len(basecommand_warnings)
         assert n_bc_warnings == 0, (
