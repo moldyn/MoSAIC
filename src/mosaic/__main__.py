@@ -7,6 +7,15 @@ All rights reserved.
 """
 import warnings
 
+# Suppress trogon's DeprecationWarning about BaseCommand in Click
+# Must be set before importing trogon
+warnings.filterwarnings(
+    'ignore',
+    message=r"'BaseCommand' is deprecated and will be removed in Click 9\.0",
+    category=DeprecationWarning,
+    module=r'trogon\.introspect',
+)
+
 import click
 import numpy as np
 import pandas as pd
@@ -15,14 +24,6 @@ from matplotlib import pyplot as plt
 
 import mosaic
 from mosaic.utils import save_clusters, savetxt
-
-# Suppress trogon's DeprecationWarning about BaseCommand in Click
-warnings.filterwarnings(
-    'ignore',
-    message="'BaseCommand' is deprecated and will be removed in Click 9.0",
-    category=DeprecationWarning,
-    module='trogon.introspect',
-)
 
 # setup matplotlibs rcParam
 
