@@ -15,7 +15,6 @@ import leidenalg as la
 import numpy as np
 from beartype import beartype
 from beartype.typing import Any, Dict, Optional
-from kmedoids import KMedoids
 from scipy.cluster.hierarchy import cut_tree, linkage
 from scipy.spatial.distance import squareform
 from sklearn.base import BaseEstimator, ClusterMixin
@@ -139,7 +138,6 @@ class Clustering(ClusterMixin, BaseEstimator):
         - 'CPM': will use the constant Potts model on the full, weighted graph
         - 'modularity': will use modularity on a knn-graph
         - 'linkage': will use complete-linkage clustering
-        - 'kmedoids': will use k-medoids clustering
     weighted : bool, default=True
         If True, the underlying graph has weighted edges. Otherwise, the graph
         is constructed using the adjacency matrix.
@@ -153,9 +151,6 @@ class Clustering(ClusterMixin, BaseEstimator):
         Required for mode 'CPM' and 'linkage'. If None, the resolution
         parameter will be set to the third quartile of `X` for
         `n_neighbors=None` and else to the mean value of the knn graph.
-    n_clusters : int, default=None
-        Required for 'kmedoids'. The number of medoids which will constitute
-        the later clusters.
     seed : int, default=None
         Use an integer to make the randomness of Leidenalg deterministic. By
         default uses a random seed if nothing is specified.
@@ -210,12 +205,10 @@ class Clustering(ClusterMixin, BaseEstimator):
         weighted: bool = True,
         n_neighbors: Optional[PositiveInt] = None,
         resolution_parameter: Optional[NumInRange0to1] = None,
-        n_clusters: Optional[PositiveInt] = None,
         seed: Optional[int] = None,
     ) -> None:
         """Initialize Clustering class."""
         self.mode: ClusteringModeString = mode
-        self.n_clusters: Optional[PositiveInt] = n_clusters
         self.n_neighbors: Optional[PositiveInt] = n_neighbors
         self.resolution_parameter: Optional[NumInRange0to1] = (
             resolution_parameter
@@ -223,25 +216,9 @@ class Clustering(ClusterMixin, BaseEstimator):
         self.seed: Optional[int] = seed
         self.weighted: bool = weighted
 
-        if mode in {'linkage', 'kmedoids'} and self.n_neighbors is not None:
+        if mode == 'linkage' and self.n_neighbors is not None:
             raise NotImplementedError(
                 f"mode='{mode}' does not support knn-graphs.",
-            )
-
-        if mode == 'kmedoids':
-            warnings.warn(
-                "The 'kmedoids' mode is deprecated and will be removed in a "
-                "future release.",
-                DeprecationWarning,
-                stacklevel=2
-            )
-            if self.n_clusters is None:
-                raise TypeError(
-                    f"mode='{mode}' needs parameter 'n_clusters'",
-                )
-        elif mode != 'kmedoids' and self.n_clusters is not None:
-            raise NotImplementedError(
-                f"mode='{mode}' does not support the usage of 'n_clusters'",
             )
 
         if mode in {'CPM', 'linkage'}:
@@ -278,7 +255,7 @@ class Clustering(ClusterMixin, BaseEstimator):
 
         # prepare matric for graph construction
         mat: FloatMatrix
-        if self.mode in {'linkage', 'kmedoids'}:
+        if self.mode == 'linkage':
             mat = np.copy(X)
         elif self.mode == 'CPM' and self.n_neighbors is None:
             mat = np.copy(X)
@@ -309,8 +286,6 @@ class Clustering(ClusterMixin, BaseEstimator):
         clusters: Object1DArray
         if self.mode == 'linkage':
             clusters = self._clustering_linkage(mat)
-        elif self.mode == 'kmedoids':
-            clusters = self._clustering_kmedoids(mat)
         else:  # _mode in {'CPM', 'modularity'}
             graph: ig.Graph = ig.Graph.Weighted_Adjacency(
                 list(mat.astype(np.float64)), loops=False,
@@ -412,8 +387,6 @@ class Clustering(ClusterMixin, BaseEstimator):
             del self.n_neighbors_  # noqa: WPS420
         if hasattr(self, 'resolution_param_'):  # noqa: WPS421
             del self.resolution_param_  # noqa: WPS420
-        if hasattr(self, 'n_clusters_'):  # noqa: WPS421
-            del self.n_clusters_  # noqa: WPS420
 
     @beartype
     def _construct_knn_mat(self, matrix: FloatMatrix) -> FloatMatrix:
@@ -496,42 +469,5 @@ class Clustering(ClusterMixin, BaseEstimator):
         cluster_list[:] = [  # noqa: WPS362
             np.where(cuttree == cluster)[0].tolist()
             for cluster in np.unique(cuttree)
-        ]
-        return cluster_list
-
-    @beartype
-    def _clustering_kmedoids(self, matrix: FloatMatrix) -> Object1DArray:
-        """Perform k-medoids clustering."""
-        kmedoids_kwargs = {
-            'metric': 'precomputed',
-            'method': 'fasterpam',
-            'init': 'random',
-            'max_iter': 100000,
-        }
-
-        kmedoids = KMedoids(
-            self.n_clusters,
-            **kmedoids_kwargs,
-        )
-
-        kmedoids.fit(1 - matrix)
-        labels = kmedoids.labels_
-
-        # store number of clusters
-        nclusters: int = len(np.unique(labels))
-        if nclusters != self.n_clusters:
-            raise ValueError(
-                f'k-medoids tried to find {self.n_clusters} clusters'
-                f'but only {nclusters} found. Please try a different value.',
-            )
-        self.n_clusters_: Float2DArray = nclusters
-
-        # In case of clusters of same length, numpy casted it as a 2D array.
-        # To ensure that the result is an numpy array of list, we need to
-        # create an empty list, adding the values in the second step
-        cluster_list: Object1DArray = np.empty(nclusters, dtype=object)
-        cluster_list[:] = [  # noqa: WPS362
-            np.where(labels == label)[0].tolist()
-            for label in np.unique(labels)
         ]
         return cluster_list
