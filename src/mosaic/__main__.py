@@ -16,14 +16,14 @@ warnings.filterwarnings(
     module=r'trogon\.introspect',
 )
 
-import click
-import numpy as np
-import pandas as pd
-import trogon
-from matplotlib import pyplot as plt
+import click  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import trogon  # noqa: E402
+from matplotlib import pyplot as plt  # noqa: E402
 
-import mosaic
-from mosaic.utils import save_clusters, savetxt
+import mosaic  # noqa: E402
+from mosaic.utils import save_clusters, savetxt  # noqa: E402
 
 # setup matplotlibs rcParam
 
