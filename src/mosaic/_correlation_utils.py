@@ -15,6 +15,7 @@ from sklearn.feature_selection import mutual_info_regression
 from mosaic._typing import (  # noqa: WPS436
     ArrayLikeFloat,
     DTypeLike,
+    Float,
     Float1DArray,
     Float2DArray,
     FloatMatrix,
@@ -49,22 +50,22 @@ def _freedman_diaconis_rule(x: Float1DArray) -> int:
 
 
 @beartype
-def _entropy(p: ArrayLikeFloat) -> float:
+def _entropy(p: ArrayLikeFloat) -> Float:
     """Calculate entropy of density p."""
-    return float(-1 * np.sum(p * np.ma.log(p)))
+    return -1 * np.sum(p * np.ma.log(p))
 
 
 @beartype
-def _kullback(p: ArrayLikeFloat, q: ArrayLikeFloat) -> float:
+def _kullback(p: ArrayLikeFloat, q: ArrayLikeFloat) -> Float:
     """Calculate Kullback-Leibler divergence of density p, q."""
     if len(p) != len(q):
         raise ValueError(
             f'Arrays p, q need to be of same length, but {len(p):.0f} vs '
             f'{len(q):.0f}.',
         )
-    return float(np.sum(
+    return np.sum(
         p * np.ma.log(np.ma.divide(p, q)),
-    ))
+    )
 
 
 @beartype
@@ -158,12 +159,12 @@ def _gy(
     pipj: Float2DArray,
     pi: Float1DArray,
     pj: Float1DArray,
-) -> float:
+) -> Float:
     """Return the dissimilarity based on Gel'fand-Yaglom."""
-    mutual_info: float = _kullback(pij, pipj)
-    return float(np.sqrt(
+    mutual_info: Float = _kullback(pij, pipj)
+    return np.sqrt(
         1 - np.exp(-2 * mutual_info),
-    ))
+    )
 
 
 @beartype
@@ -172,28 +173,28 @@ def _jsd(
     pipj: Float2DArray,
     pi: Float1DArray,
     pj: Float1DArray,
-) -> float:
+) -> Float:
     """Return the Jensen-Shannon based dissimilarity."""
-    return float(jensenshannon(
+    return jensenshannon(
         pij.flatten(),
         pipj.flatten(),
         base=2,
-    ))
+    )
 
 
 @beartype
 def _normalization(
     pi: np.ndarray, pj: np.ndarray, pij: np.ndarray, method: NormString,
-) -> float:
+) -> Float:
     """Calculate the normalization factor for the MI matrix."""
     if method == 'joint':
         return _entropy(pij)
 
     func: Callable = {
-        'geometric': lambda arr: float(np.sqrt(np.prod(arr))),
-        'arithmetic': lambda arr: float(np.mean(arr)),
-        'min': lambda arr: float(np.min(arr)),
-        'max': lambda arr: float(np.max(arr)),
+        'geometric': lambda arr: np.sqrt(np.prod(arr)),
+        'arithmetic': np.mean,
+        'min': np.min,
+        'max': np.max,
     }[method]
     return func([_entropy(pi), _entropy(pj)])
 
@@ -206,10 +207,10 @@ def _nmi_gen(method: str) -> Callable:
         pipj: Float2DArray,
         pi: Float1DArray,
         pj: Float1DArray,
-    ) -> float:
+    ) -> Float:
         """Return the Jensen-Shannon based dissimilarity."""
-        mutual_info: float = _kullback(pij, pipj)
-        normalization: float = _normalization(pi, pj, pij, method=method)
+        mutual_info: Float = _kullback(pij, pipj)
+        normalization: Float = _normalization(pi, pj, pij, method=method)
         return mutual_info / normalization
 
     return _nmi
