@@ -30,8 +30,8 @@ measures, making it a valuable addition to any data analysis pipeline.
 - [**clustering**][mosaic.clustering] This submodule is the most central
 component of MoSAIC that offers various techniques for analyzing similarity
 matrices. It provides different modes for clustering a correlation matrix,
-including the Leiden algorithm with different objective functions,
-linkage clustering, and k-medoids, and supports both weighted and unweighted,
+including the Leiden algorithm with different objective functions
+and linkage clustering, and supports both weighted and unweighted,
 as well as full and sparse graphs.
 The resulting clusters and labels can be accessed through the attributes of
 the class.
