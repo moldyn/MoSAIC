@@ -102,11 +102,11 @@ The module brings a rich CI using [click](https://click.palletsprojects.com). Ea
 $ python -m mosaic
 Usage: python -m mosaic [OPTIONS] COMMAND [ARGS]...
 
-  MoSAIC motion v0.4.1
+  MoSAIC motion v0.5.0
 
   Molecular systems automated identification of collective motion, is
   a correlation based feature selection framework for MD data.
-  Copyright (c) 2021-2023, Georg Diez and Daniel Nagel
+  Copyright (c) 2021-2025, Georg Diez and Daniel Nagel
 
 Options:
   --help  Show this message and exit.
@@ -162,7 +162,7 @@ sim.fit(X)
 
 # Cluster matrix
 clust = mosaic.Clustering(
-    mode='CPM',  # or 'modularity
+    mode='CPM',  # or 'modularity', 'linkage'
 )
 clust.fit(sim.matrix_)
 
