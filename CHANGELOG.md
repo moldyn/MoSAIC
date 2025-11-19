@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Other changes:
 - Fixed minor issues in docs
 
+### Bugfix 🐛:
+- Fix broken documentation by increasing Python version
+
 
 ## [0.4.1] - 2023-04-04
 ### API changes warning ⚠️:
