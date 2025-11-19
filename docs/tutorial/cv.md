@@ -4,7 +4,7 @@ Selecting the optimal parameters, e.g., `resolution_parameter`, can be quite dif
 
 Here a figure visualizing the optimal resolution parameter and the code to produce it.
 
-<img class="lightmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/cv_silhouette_light.svg?raw=true#gh-light-mode-only" /><img class="darkmode" style="width: 400px;" src="https://github.com/moldyn/MoSAIC/blob/main/docs/cv_silhouette_dark.svg?raw=true#gh-dark-mode-only" />
+<img class="lightmode" style="width: 400px;" src="../cv_silhouette_light.svg" /><img class="darkmode" style="width: 400px;" src="../cv_silhouette_dark.svg" />
 
 ```python
 import mosaic
