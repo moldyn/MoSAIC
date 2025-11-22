@@ -7,11 +7,25 @@ and [Element](https://github.com/vector-im/element-android)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [0.5.0] - 2025-11-11
+### API changes warning ⚠️:
+- The `kmedoids` clustering mode has been deprecated and removed. Users should use `CPM`, `modularity`, or `linkage` modes instead.
+- Dropped Python 3.8 support
+- Removed `scikit-learn-extra` dependency (was used for k-medoids clustering)
+- Switched to numpy 2.x (minimum version is now `numpy>=2.0.0`)
+
 ### Added Features and Improvements 🙌:
 - Added trogon terminal user interface for easier usage of CI
+- Added support for Python 3.12, 3.13, and 3.14
+
+### Bugfix 🐛:
+- Fixed matplotlib plotting error in CLI (typo: `vim` → `vmin`), fixing [#28](/../../issues/28)
 
 ### Other changes:
 - Fixed minor issues in docs
+- Updated copyright year to 2024 in source files
 
 ### Bugfix 🐛:
 - Fix broken documentation by increasing Python version
@@ -168,7 +182,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 
 
-[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.4.1...main
+[Unreleased]: https://github.com/moldyn/MoSAIC/compare/v0.5.0...main
+[0.5.0]: https://github.com/moldyn/MoSAIC/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/moldyn/MoSAIC/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/moldyn/MoSAIC/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/moldyn/MoSAIC/compare/v0.3.1...v0.3.2
