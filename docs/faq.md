@@ -37,6 +37,10 @@ Yes, simply use the `score` method implemented in the `Clustering` class.
 This is still possible if you switch to the version 0.3.2. We removed that feature in newer versions.
 
 
+### What happened to the k-medoids clustering mode?
+The k-medoids clustering mode (`mode='kmedoids'`) has been deprecated and removed in version 0.5.0. We recommend using one of the following clustering modes instead: `CPM`, `modularity`, or `linkage`. These modes provide more robust and efficient clustering capabilities for correlation-based feature selection.
+
+
 ### Feature X is missing
 If you believe that a crucial functionality/method is missing, feel free to [open an issue](https://github.com/moldyn/MoSAIC/issues) and describe the missing functionality and why it should be added. Alternatively, you can implement it yourself and create a PR to add it to this package, see [contributing guide](../contributing).
 
