@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
-## [0.5.0] - 2025-11-11
+## [0.5.0] - 2025-11-24
 ### API changes warning ⚠️:
 - The `kmedoids` clustering mode has been deprecated and removed. Users should use `CPM`, `modularity`, or `linkage` modes instead.
 - Dropped Python 3.8 support
@@ -22,13 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Bugfix 🐛:
 - Fixed matplotlib plotting error in CLI (typo: `vim` → `vmin`), fixing [#28](/../../issues/28)
+- Fix broken documentation by increasing Python version
 
 ### Other changes:
 - Fixed minor issues in docs
-- Updated copyright year to 2024 in source files
 
-### Bugfix 🐛:
-- Fix broken documentation by increasing Python version
 
 
 ## [0.4.1] - 2023-04-04
