@@ -32,7 +32,7 @@ for path in sorted(Path('src').glob('**/*.py')):
         with mkdocs_gen_files.open(full_doc_path, 'w') as fd:
             mkdocs_click = (
                 '::: mkdocs-click\n'
-                '    :module: src.mosaic.__main__\n'
+                '    :module: mosaic.__main__\n'
                 '    :command: main\n'
                 '    :prog_name: mosaic\n'
                 '    :list_subcommands: True\n'

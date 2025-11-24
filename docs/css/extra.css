@@ -35,6 +35,15 @@
     --md-logo-default-mode: none;
 }
 
+/* change logo display depending on light/dark mode for README logos */
+.darkmode {
+    display: var(--md-logo-slate-mode);
+}
+
+.lightmode {
+    display: var(--md-logo-default-mode);
+}
+
 /* adjust fonts */
 body {
     --md-headline-font-family: var(--md-headline-font,_),-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
