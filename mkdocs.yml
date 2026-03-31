@@ -5,7 +5,7 @@ repo_url: "https://github.com/moldyn/MoSAIC"
 edit_uri: "blob/main/docs/"
 repo_name: "moldyn/MoSAIC"
 site_dir: "site"
-copyright: Copyright &copy; 2019-2023 Daniel Nagel and Georg Diez
+copyright: Copyright &copy; 2019-2026 Daniel Nagel and Georg Diez
 watch: [src/mosaic]
 
 nav:
@@ -107,7 +107,7 @@ plugins:
     handlers:
       python:
         paths: [src]
-        import:
+        inventories:
         - https://numpy.org/doc/stable/objects.inv
         options:
           members_order: "source"
