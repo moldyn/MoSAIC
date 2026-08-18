@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="43.354mm" height="22.722mm" version="1.1" viewBox="0 0 43.354 22.722" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(-20.566 -27.909)">
+        <g transform="matrix(-.89518 0 0 .89518 51.536 3.2779)" stroke-width="1.1171">
+            <g stroke-width="1.1171">
+                <rect transform="rotate(45)" x="40.928" y="3.9674" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="43.92" y="3.9674" width="2.9914" height="2.9914" fill="#e9c46a" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="3.9674" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="43.92" y="6.9588" width="2.9914" height="2.9914" fill="#f4a261" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="6.9588" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="6.9588" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="3.9674" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="9.9502" width="2.9914" height="2.9914" fill="#f4a261" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="9.9502" width="2.9914" height="2.9914" fill="#e9c46a" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="12.942" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="49.902" y="15.933" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="12.942" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="43.92" y="9.9502" width="2.9914" height="2.9914" fill="#e76f51" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="40.928" y="6.9588" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="37.937" y="3.9674" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="34.945" y="3.9674" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="37.937" y="6.9588" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="40.928" y="9.9502" width="2.9914" height="2.9914" fill="#2a9d8f" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="43.92" y="12.942" width="2.9914" height="2.9914" fill="#2a9d8f" style="paint-order:stroke markers fill"/>
+                <rect transform="rotate(45)" x="46.911" y="15.933" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+            </g>
+            <rect transform="rotate(45)" x="49.902" y="18.924" width="2.9914" height="2.9914" fill="#264653" style="paint-order:stroke markers fill"/>
+        </g>
+    </g>
+    <g>
+        <g transform="translate(-20.566 -28.947)" font-family="'Latin Modern Math'" letter-spacing="0px" stroke-width=".26458" word-spacing="0px">
+            <text x="37.46793" y="38.855167" fill="#264653" font-size="7.0556px" style="line-height:1.05" xml:space="preserve"><tspan x="37.46793" y="38.855167" fill="#264653" font-size="7.0556px" stroke-width=".26458">MoSAIC</tspan></text>
+            <text x="37.586464" y="39.421814" fill="#41778d" font-size="4.9389px" style="line-height:0" xml:space="preserve"><tspan x="37.586464" y="39.421814" style="line-height:1.25"/><tspan x="37.586464" y="43.572247" font-size="3.175px" style="line-height:1.01">correlation-based</tspan><tspan x="37.586464" y="46.778999" font-size="3.175px" style="line-height:1.01">feature selection</tspan></text>
+        </g>
+    </g>
+    <g display="none">
+        <g transform="translate(-20.566 -28.947)" display="inline">
+            <text x="37.46793" y="38.855167" fill="#ecf3f6" font-family="'Latin Modern Math'" font-size="7.0556px" letter-spacing="0px" stroke-width=".26458" word-spacing="0px" style="line-height:1.05" xml:space="preserve"><tspan x="37.46793" y="38.855167" fill="#ecf3f6" font-size="7.0556px" stroke-width=".26458">MoSAIC</tspan></text>
+            <text x="37.586464" y="39.421814" fill="#c6dce5" font-family="'Latin Modern Math'" font-size="4.9389px" letter-spacing="0px" stroke-width=".26458" word-spacing="0px" style="line-height:0" xml:space="preserve"><tspan x="37.586464" y="39.421814" style="line-height:1.25"/><tspan x="37.586464" y="43.572247" font-size="3.175px" style="line-height:1.01">correlation-based</tspan><tspan x="37.586464" y="46.778999" font-size="3.175px" style="line-height:1.01">feature selection</tspan></text>
+            <path d="m36.339 61.218c9.085-4.2229 18.023-6.9507 26.006 0.068" fill="none"/>
+        </g>
+    </g>
+</svg>

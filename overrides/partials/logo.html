@@ -1,0 +1,8 @@
+<!-- Logo -->
+{% if config.theme.logo_default_mode %}
+  <img id="logo_default_mode" src="{{ config.theme.logo_default_mode | url }}" alt="logo" />
+  <img id="logo_slate_mode" src="{{ config.theme.logo_slate_mode | url }}" alt="logo" />
+{% else %}
+  {% set icon = config.theme.icon.logo or "material/library" %}
+  {% include ".icons/" ~ icon ~ ".svg" %}
+{% endif %}
